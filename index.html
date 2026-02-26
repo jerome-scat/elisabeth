@@ -83,13 +83,13 @@ const ENTITES = [
 ];
 
 const KPI_DATA = {
-  groupe:{produits:45.1,ebe:8.8,excedent:4.3,effectifs:2050,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:13100},
-  anne:{produits:12.5,ebe:2.3,excedent:1.1,effectifs:445,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:4020},
-  claire:{produits:7.8,ebe:1.4,excedent:0.7,effectifs:295,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:2200},
-  marie:{produits:12.8,ebe:2.8,excedent:1.3,effectifs:545,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:4450},
-  yolande:{produits:6.1,ebe:1.2,excedent:0.6,effectifs:410,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:2010},
-  inclusion:{produits:1.4,ebe:0.3,excedent:0.3,effectifs:175,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:420},
-  apollonia:{produits:4.5,ebe:0.8,excedent:0.3,effectifs:180,taux_exec:97.4,ecart_budget:+0.08,fin_public:0.2,benef:0},
+  groupe:{produits:45.1,ebe:3.2,excedent:0.9,effectifs:2050,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:13100},
+  anne:{produits:12.5,ebe:0.9,excedent:0.25,effectifs:445,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:4020},
+  claire:{produits:7.8,ebe:0.5,excedent:0.12,effectifs:295,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:2200},
+  marie:{produits:12.8,ebe:1.0,excedent:0.28,effectifs:545,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:4450},
+  yolande:{produits:6.1,ebe:0.4,excedent:0.10,effectifs:410,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:2010},
+  inclusion:{produits:1.4,ebe:0.1,excedent:0.03,effectifs:175,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:420},
+  apollonia:{produits:4.5,ebe:0.3,excedent:0.12,effectifs:180,taux_exec:97.4,ecart_budget:+0.08,fin_public:0.2,benef:0},
 };
 
 const MONTHLY_DATA = {
@@ -163,13 +163,13 @@ const PL_DATA = {
       {n:'Produits conventionn\u00E9s & autres',budget:4800,reel:4800,n1:4600},
     ],
     charges:[
-      {n:'Frais de personnel',budget:25200,reel:24600,n1:22800},
-      {n:'Alimentation & fournitures',budget:3400,reel:3350,n1:3100},
-      {n:'Services ext\u00E9rieurs',budget:3000,reel:3200,n1:2800},
-      {n:'Entretien & maintenance',budget:2600,reel:2550,n1:2400},
-      {n:'Loyers & charges locatives',budget:1950,reel:1950,n1:1800},
-      {n:'Dotations amortissements',budget:3850,reel:3850,n1:3600},
-      {n:'Charges financi\u00E8res',budget:1500,reel:1300,n1:1400},
+      {n:'Frais de personnel (Conv. SAS)',budget:33800,reel:33600,n1:31600},
+      {n:'Alimentation & fournitures',budget:3500,reel:3400,n1:3200},
+      {n:'Services ext\u00E9rieurs',budget:2900,reel:2800,n1:2700},
+      {n:'Entretien & maintenance',budget:1900,reel:1900,n1:1800},
+      {n:'Loyers & charges locatives',budget:1200,reel:1200,n1:1150},
+      {n:'Dotations amortissements',budget:800,reel:800,n1:850},
+      {n:'Charges financi\u00E8res & autres',budget:400,reel:500,n1:500},
     ],
   }
 };
@@ -303,12 +303,12 @@ const GRILLE_SAS = [
 const SAS_INFO = {biennale:2.0,indice:968.04,prochaine:'T3 2026 (estim\u00E9)',impact_tranche:'+2.3M\u20AC masse salariale',masse:24200};
 
 const PLAN_PLURIANNUEL = [
-  {annee:2023,produits:39.6,charges:36.2,excedent:3.4,effectifs:1868,invest:2.8,benef:11200},
-  {annee:2024,produits:42.6,charges:38.5,excedent:4.1,effectifs:1957,invest:3.2,benef:12400},
-  {annee:2025,produits:45.1,charges:40.8,excedent:4.3,effectifs:2050,invest:4.8,benef:13100},
-  {annee:2026,produits:47.8,charges:43.2,excedent:4.6,effectifs:2150,invest:5.2,benef:13800},
-  {annee:2027,produits:50.2,charges:45.4,excedent:4.8,effectifs:2240,invest:3.6,benef:14500},
-  {annee:2028,produits:52.8,charges:47.6,excedent:5.2,effectifs:2320,invest:2.8,benef:15200},
+  {annee:2023,produits:39.6,charges:38.9,excedent:0.7,effectifs:1868,invest:2.8,benef:11200},
+  {annee:2024,produits:42.6,charges:41.8,excedent:0.8,effectifs:1957,invest:3.2,benef:12400},
+  {annee:2025,produits:45.1,charges:44.2,excedent:0.9,effectifs:2050,invest:4.8,benef:13100},
+  {annee:2026,produits:47.8,charges:46.8,excedent:1.0,effectifs:2150,invest:5.2,benef:13800},
+  {annee:2027,produits:50.2,charges:49.1,excedent:1.1,effectifs:2240,invest:3.6,benef:14500},
+  {annee:2028,produits:52.8,charges:51.6,excedent:1.2,effectifs:2320,invest:2.8,benef:15200},
 ];
 
 const VEILLE_REGLEMENTAIRE = [
@@ -1137,7 +1137,7 @@ var VueBudget = function(props){
       React.createElement(KPICard,{label:'Produits projet\u00E9s 2026',value:projCA,unit:'k\u20AC',delta:+((projCA/baseCA-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-gold)'}),
       React.createElement(KPICard,{label:'Masse salariale 2026',value:projMasse,unit:'k\u20AC',delta:+((projMasse/baseMasse-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-purple)'}),
       React.createElement(KPICard,{label:'Exc\u00E9dent projet\u00E9',value:projResult,unit:'k\u20AC',delta:projResult>0?1:-1,deltaUnit:projResult>0?' exc\u00E9dent':' d\u00E9ficit',color:projResult>0?'var(--c-green)':'var(--c-red)'}),
-      React.createElement(KPICard,{label:'Taux d\u2019exc\u00E9dent',value:parseFloat(projMarge),unit:'%',delta:parseFloat(projMarge)>5?1:-1,deltaUnit:parseFloat(projMarge)>5?' sain':' attention',color:parseFloat(projMarge)>5?'var(--c-green)':'var(--c-orange)'})
+      React.createElement(KPICard,{label:'Taux d\u2019exc\u00E9dent',value:parseFloat(projMarge),unit:'%',delta:parseFloat(projMarge)>0?1:-1,deltaUnit:parseFloat(projMarge)>0?' exc\u00E9dent':' d\u00E9ficit',color:parseFloat(projMarge)>0?'var(--c-green)':'var(--c-red)'})
     ),
     React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
       React.createElement(SectionTitle,{title:'Plan pluriannuel 2023\u20142028',sub:'Projection strat\u00E9gique \u2014 Groupe Elisabeth'}),
@@ -1155,7 +1155,7 @@ var VueBudget = function(props){
       React.createElement('table',{style:{width:'100%',borderCollapse:'collapse',marginTop:16}},
         React.createElement('thead',null,
           React.createElement('tr',null,
-            ['Ann\u00E9e','Produits','Charges','Exc\u00E9dent','Effectifs','Invest.','B\u00E9n\u00E9f.'].map(function(h){
+            ['Ann\u00E9e','Produits','Charges','Exc\u00E9dent','Effectifs','Invest.','Accueillis'].map(function(h){
               return React.createElement('th',{key:h,style:{textAlign:h==='Ann\u00E9e'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 8px 8px',borderBottom:'1px solid var(--c-border)'}},h);
             })
           )
@@ -1298,7 +1298,7 @@ var VueConsolidee = function(){
       var k=KPI_DATA[e.id];
       rows.push([e.label,k.produits,k.ebe,(k.ebe/k.produits*100).toFixed(1),k.effectifs,k.taux_exec,k.fin_public,k.ecart_budget >= 0?'Favorable':'D\u00E9ficitaire']);
     });
-    rows.push(['GROUPE TOTAL',45.1,8.8,'19.5',2050,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
+    rows.push(['GROUPE TOTAL',45.1,3.2,'7.1',2050,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
     exportXLSX(rows,'consolide_groupe');
   };
 
@@ -1352,8 +1352,8 @@ var VueConsolidee = function(){
           React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)'}},
             React.createElement('td',{style:{padding:'12px 10px',fontWeight:700,fontSize:13,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'\u{1F339} GROUPE TOTAL'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'45.1M\u20AC'),
-            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'8.8M\u20AC'),
-            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},'19.5%'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'3.2M\u20AC'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},'7.1%'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},'2 050'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-green)',fontWeight:600}},'97.1%'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-cyan)',fontWeight:600}},'19.6M\u20AC'),
