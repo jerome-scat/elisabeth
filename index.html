@@ -21,22 +21,22 @@ tailwind.config={theme:{extend:{fontFamily:{display:['Playfair Display','serif']
 :root, [data-theme="dark"] {
   --c-bg: #0a0c10; --c-surface: #111318; --c-surface2: #161b24;
   --c-border: #1e2738; --c-text: #e8eaf0; --c-muted: #6b7491;
-  --c-gold: #c9a96e; --c-gold2: #8a6a3e;
-  --c-blue: #6e9ec9; --c-green: #52c97a; --c-red: #e85a5a;
-  --c-orange: #e8a45a; --c-purple: #a78bfa; --c-cyan: #38bdf8;
+  --c-gold: #E20613; --c-gold2: #9b0410;
+  --c-blue: #00479B; --c-green: #09BC8A; --c-red: #e85a5a;
+  --c-orange: #F8C537; --c-purple: #9B5DE5; --c-cyan: #00BBF9;
   --c-header-bg: rgba(10,12,16,.92);
 }
 [data-theme="light"] {
-  --c-bg: #f4f5f7; --c-surface: #ffffff; --c-surface2: #f8f9fb;
-  --c-border: #e2e5ea; --c-text: #1a1d2e; --c-muted: #7c8194;
-  --c-gold: #b08d3e; --c-gold2: #8a6a3e;
-  --c-blue: #2563eb; --c-green: #16a34a; --c-red: #dc2626;
-  --c-orange: #d97706; --c-purple: #7c3aed; --c-cyan: #0284c7;
-  --c-header-bg: rgba(244,245,247,.92);
+  --c-bg: #f4f2f4; --c-surface: #ffffff; --c-surface2: #f8f7f9;
+  --c-border: #e2e0e5; --c-text: #000022; --c-muted: #717184;
+  --c-gold: #c70510; --c-gold2: #9b0410;
+  --c-blue: #00479B; --c-green: #07a878; --c-red: #dc2626;
+  --c-orange: #d4a100; --c-purple: #7b42d6; --c-cyan: #009ae0;
+  --c-header-bg: rgba(244,242,244,.92);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',sans-serif;background:var(--c-bg);color:var(--c-text);overflow-x:hidden;transition:background-color .3s,color .3s}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(201,169,110,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(226,6,19,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(226,6,19,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--c-bg)}
 ::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:3px}
@@ -59,7 +59,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .leaflet-popup-content{font-family:'DM Sans',sans-serif!important;font-size:12px!important;margin:8px 12px!important}
 .leaflet-control-zoom a{background:var(--c-surface)!important;color:var(--c-text)!important;border-color:var(--c-border)!important}
 .xbtn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-green);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
-.xbtn:hover{border-color:var(--c-green);background:rgba(82,201,122,.08)}
+.xbtn:hover{border-color:var(--c-green);background:rgba(9,188,138,.08)}
 </style>
 </head>
 <body>
@@ -73,49 +73,49 @@ const {ResponsiveContainer,ComposedChart,Bar,Line,Area,AreaChart,XAxis,YAxis,Car
 ================================================================ */
 
 const ENTITES = [
-  {id:'groupe',label:'Groupe Elisabeth',color:'#c9a96e',icon:'\u{1F339}',type:'global'},
-  {id:'anne',label:'Anne asbl \u2014 Enfance & Jeunesse',color:'#52c97a',icon:'\u{1F9D2}',type:'ops'},
-  {id:'claire',label:'Claire asbl \u2014 Seniors',color:'#e8a45a',icon:'\u{1F338}',type:'ops'},
-  {id:'marie',label:'Marie asbl \u2014 \u00C9ducation',color:'#a78bfa',icon:'\u{1F393}',type:'ops'},
-  {id:'yolande',label:'Yolande asbl \u2014 Handicap',color:'#e85a5a',icon:'\u265F',type:'ops'},
-  {id:'inclusion',label:'e4inclusion \u2014 Inclusion',color:'#38bdf8',icon:'\u{1F91D}',type:'ops'},
-  {id:'apollonia',label:'Apollonia SA \u2014 Direction',color:'#6e9ec9',icon:'\u{1F3DB}\uFE0F',type:'holding'},
+  {id:'groupe',label:'Groupe Elisabeth',color:'#E20613',icon:'\u{1F339}',type:'global'},
+  {id:'anne',label:'Anne asbl \u2014 Enfance & Jeunesse',color:'#09BC8A',icon:'\u{1F9D2}',type:'ops'},
+  {id:'claire',label:'Claire asbl \u2014 Seniors',color:'#F8C537',icon:'\u{1F338}',type:'ops'},
+  {id:'marie',label:'Marie asbl \u2014 \u00C9ducation',color:'#9B5DE5',icon:'\u{1F393}',type:'ops'},
+  {id:'yolande',label:'Yolande asbl \u2014 Handicap',color:'#F47CC4',icon:'\u265F',type:'ops'},
+  {id:'inclusion',label:'e4inclusion \u2014 Inclusion',color:'#00BBF9',icon:'\u{1F91D}',type:'ops'},
+  {id:'apollonia',label:'Apollonia SA \u2014 Direction',color:'#00479B',icon:'\u{1F3DB}\uFE0F',type:'holding'},
 ];
 
 const KPI_DATA = {
-  groupe:{produits:45.1,ebe:3.2,excedent:0.9,effectifs:2050,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:13100},
-  anne:{produits:12.5,ebe:0.9,excedent:0.25,effectifs:445,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:4020},
-  claire:{produits:7.8,ebe:0.5,excedent:0.12,effectifs:295,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:2200},
-  marie:{produits:12.8,ebe:1.0,excedent:0.28,effectifs:545,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:4450},
-  yolande:{produits:6.1,ebe:0.4,excedent:0.10,effectifs:410,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:2010},
-  inclusion:{produits:1.4,ebe:0.1,excedent:0.03,effectifs:175,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:420},
-  apollonia:{produits:4.5,ebe:0.3,excedent:0.12,effectifs:180,taux_exec:97.4,ecart_budget:+0.08,fin_public:0.2,benef:0},
+  groupe:{produits:45.1,ebe:3.2,excedent:0.9,effectifs:680,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:5900},
+  anne:{produits:12.5,ebe:0.9,excedent:0.25,effectifs:205,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:3800},
+  claire:{produits:7.8,ebe:0.5,excedent:0.12,effectifs:115,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:480},
+  marie:{produits:12.8,ebe:1.0,excedent:0.28,effectifs:185,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:1200},
+  yolande:{produits:6.1,ebe:0.4,excedent:0.10,effectifs:95,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:380},
+  inclusion:{produits:1.4,ebe:0.1,excedent:0.03,effectifs:18,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:55},
+  apollonia:{produits:4.5,ebe:0.3,excedent:0.12,effectifs:62,taux_exec:97.4,ecart_budget:+0.08,fin_public:0.2,benef:0},
 };
 
 const MONTHLY_DATA = {
   groupe:[
-    {m:'Jan',budget:3200,reel:3100,n1:2950},{m:'F\u00E9v',budget:3200,reel:3280,n1:3050},
-    {m:'Mar',budget:3400,reel:3350,n1:3200},{m:'Avr',budget:3400,reel:3500,n1:3280},
-    {m:'Mai',budget:3600,reel:3600,n1:3400},{m:'Jun',budget:3600,reel:3550,n1:3480},
-    {m:'Jul',budget:3400,reel:3380,n1:3100},{m:'Ao\u00FB',budget:3200,reel:3100,n1:2980},
-    {m:'Sep',budget:3600,reel:3620,n1:3400},{m:'Oct',budget:3600,reel:3680,n1:3520},
-    {m:'Nov',budget:3800,reel:3820,n1:3600},{m:'D\u00E9c',budget:4000,reel:null,n1:3780},
+    {m:'Jan',budget:3460,reel:3330,n1:3160},{m:'F\u00E9v',budget:3460,reel:3520,n1:3270},
+    {m:'Mar',budget:3675,reel:3600,n1:3430},{m:'Avr',budget:3675,reel:3760,n1:3515},
+    {m:'Mai',budget:3890,reel:3865,n1:3645},{m:'Jun',budget:3890,reel:3810,n1:3730},
+    {m:'Jul',budget:3675,reel:3630,n1:3325},{m:'Ao\u00FB',budget:3460,reel:3330,n1:3195},
+    {m:'Sep',budget:3890,reel:3890,n1:3645},{m:'Oct',budget:3890,reel:3950,n1:3775},
+    {m:'Nov',budget:4110,reel:4100,n1:3860},{m:'D\u00E9c',budget:4325,reel:4315,n1:4050},
   ],
   anne:[
-    {m:'Jan',budget:890,reel:865,n1:820},{m:'F\u00E9v',budget:890,reel:910,n1:840},
-    {m:'Mar',budget:950,reel:935,n1:890},{m:'Avr',budget:950,reel:980,n1:910},
-    {m:'Mai',budget:1000,reel:995,n1:950},{m:'Jun',budget:1000,reel:990,n1:960},
-    {m:'Jul',budget:950,reel:940,n1:860},{m:'Ao\u00FB',budget:880,reel:870,n1:830},
-    {m:'Sep',budget:1000,reel:1005,n1:940},{m:'Oct',budget:1000,reel:1020,n1:960},
-    {m:'Nov',budget:1060,reel:1065,n1:1000},{m:'D\u00E9c',budget:1110,reel:null,n1:1050},
+    {m:'Jan',budget:960,reel:930,n1:880},{m:'F\u00E9v',budget:960,reel:980,n1:900},
+    {m:'Mar',budget:1020,reel:1005,n1:955},{m:'Avr',budget:1020,reel:1055,n1:975},
+    {m:'Mai',budget:1080,reel:1070,n1:1020},{m:'Jun',budget:1080,reel:1065,n1:1030},
+    {m:'Jul',budget:1020,reel:1010,n1:925},{m:'Ao\u00FB',budget:950,reel:935,n1:890},
+    {m:'Sep',budget:1080,reel:1080,n1:1010},{m:'Oct',budget:1080,reel:1095,n1:1030},
+    {m:'Nov',budget:1140,reel:1145,n1:1075},{m:'D\u00E9c',budget:1210,reel:1200,n1:1130},
   ],
   marie:[
-    {m:'Jan',budget:930,reel:980,n1:890},{m:'F\u00E9v',budget:930,reel:975,n1:895},
-    {m:'Mar',budget:1010,reel:1060,n1:960},{m:'Avr',budget:1010,reel:1055,n1:970},
-    {m:'Mai',budget:1080,reel:1090,n1:1020},{m:'Jun',budget:1080,reel:1085,n1:1030},
-    {m:'Jul',budget:1000,reel:1010,n1:940},{m:'Ao\u00FB',budget:950,reel:970,n1:900},
-    {m:'Sep',budget:1080,reel:1095,n1:1040},{m:'Oct',budget:1080,reel:1100,n1:1050},
-    {m:'Nov',budget:1150,reel:1160,n1:1100},{m:'D\u00E9c',budget:1210,reel:null,n1:1140},
+    {m:'Jan',budget:1000,reel:1055,n1:955},{m:'F\u00E9v',budget:1000,reel:1050,n1:960},
+    {m:'Mar',budget:1085,reel:1140,n1:1030},{m:'Avr',budget:1085,reel:1135,n1:1040},
+    {m:'Mai',budget:1160,reel:1170,n1:1095},{m:'Jun',budget:1160,reel:1165,n1:1105},
+    {m:'Jul',budget:1075,reel:1085,n1:1010},{m:'Ao\u00FB',budget:1020,reel:1040,n1:965},
+    {m:'Sep',budget:1160,reel:1175,n1:1115},{m:'Oct',budget:1160,reel:1180,n1:1125},
+    {m:'Nov',budget:1235,reel:1245,n1:1180},{m:'D\u00E9c',budget:1300,reel:1290,n1:1220},
   ],
 };
 ['apollonia','claire','yolande','inclusion'].forEach(function(id){
@@ -128,13 +128,13 @@ const MONTHLY_DATA = {
 });
 
 const CHARGES_DATA = {
-  groupe:[{n:'RH',v:52,c:'var(--c-gold)'},{n:'Immob.',v:18,c:'var(--c-blue)'},{n:'Fonctionnement',v:15,c:'var(--c-green)'},{n:'Autres',v:15,c:'var(--c-orange)'}],
-  anne:[{n:'RH',v:58,c:'var(--c-gold)'},{n:'Immob.',v:14,c:'var(--c-blue)'},{n:'Fonctionnement',v:16,c:'var(--c-green)'},{n:'Autres',v:12,c:'var(--c-orange)'}],
-  marie:[{n:'RH',v:65,c:'var(--c-gold)'},{n:'Immob.',v:12,c:'var(--c-blue)'},{n:'Fonctionnement',v:13,c:'var(--c-green)'},{n:'Autres',v:10,c:'var(--c-orange)'}],
-  claire:[{n:'RH',v:55,c:'var(--c-gold)'},{n:'Immob.',v:15,c:'var(--c-blue)'},{n:'Fonctionnement',v:18,c:'var(--c-green)'},{n:'Autres',v:12,c:'var(--c-orange)'}],
-  yolande:[{n:'RH',v:60,c:'var(--c-gold)'},{n:'Immob.',v:16,c:'var(--c-blue)'},{n:'Fonctionnement',v:14,c:'var(--c-green)'},{n:'Autres',v:10,c:'var(--c-orange)'}],
-  inclusion:[{n:'RH',v:48,c:'var(--c-gold)'},{n:'Immob.',v:20,c:'var(--c-blue)'},{n:'Fonctionnement',v:18,c:'var(--c-green)'},{n:'Autres',v:14,c:'var(--c-orange)'}],
-  apollonia:[{n:'RH',v:42,c:'var(--c-gold)'},{n:'IT & Infra',v:25,c:'var(--c-blue)'},{n:'Fonctionnement',v:20,c:'var(--c-green)'},{n:'Autres',v:13,c:'var(--c-orange)'}],
+  groupe:[{n:'RH',v:76,c:'var(--c-gold)'},{n:'Services ext.',v:10,c:'var(--c-blue)'},{n:'Fonctionnement',v:9,c:'var(--c-green)'},{n:'Autres',v:5,c:'var(--c-orange)'}],
+  anne:[{n:'RH',v:78,c:'var(--c-gold)'},{n:'Services ext.',v:9,c:'var(--c-blue)'},{n:'Fonctionnement',v:8,c:'var(--c-green)'},{n:'Autres',v:5,c:'var(--c-orange)'}],
+  marie:[{n:'RH',v:77,c:'var(--c-gold)'},{n:'Services ext.',v:9,c:'var(--c-blue)'},{n:'Fonctionnement',v:9,c:'var(--c-green)'},{n:'Autres',v:5,c:'var(--c-orange)'}],
+  claire:[{n:'RH',v:80,c:'var(--c-gold)'},{n:'Services ext.',v:8,c:'var(--c-blue)'},{n:'Fonctionnement',v:8,c:'var(--c-green)'},{n:'Autres',v:4,c:'var(--c-orange)'}],
+  yolande:[{n:'RH',v:79,c:'var(--c-gold)'},{n:'Services ext.',v:8,c:'var(--c-blue)'},{n:'Fonctionnement',v:8,c:'var(--c-green)'},{n:'Autres',v:5,c:'var(--c-orange)'}],
+  inclusion:[{n:'RH',v:72,c:'var(--c-gold)'},{n:'Services ext.',v:11,c:'var(--c-blue)'},{n:'Fonctionnement',v:11,c:'var(--c-green)'},{n:'Autres',v:6,c:'var(--c-orange)'}],
+  apollonia:[{n:'RH',v:65,c:'var(--c-gold)'},{n:'IT & Infra',v:14,c:'var(--c-blue)'},{n:'Fonctionnement',v:13,c:'var(--c-green)'},{n:'Autres',v:8,c:'var(--c-orange)'}],
 };
 
 const ECARTS_DATA = {
@@ -204,24 +204,24 @@ const TREASURY_DATA = {
 
 const FINANCEMENT = {
   groupe:[
-    {source:'Subventions \u00C9tat (MFSVA)',montant:13.2,pct:29.3,color:'#c9a96e'},
-    {source:'Assurance d\u00E9pendance (CNS)',montant:6.2,pct:13.7,color:'#6e9ec9'},
-    {source:'Ch\u00E8ques-service accueil (CSA)',montant:8.7,pct:19.3,color:'#52c97a'},
-    {source:'Participations familles',montant:9.8,pct:21.7,color:'#e8a45a'},
-    {source:'Produits conventionn\u00E9s',montant:4.8,pct:10.6,color:'#a78bfa'},
-    {source:'Dons, legs & autres',montant:2.4,pct:5.3,color:'#38bdf8'},
+    {source:'Subventions \u00C9tat (MFSVA)',montant:13.2,pct:29.3,color:'#E20613'},
+    {source:'Assurance d\u00E9pendance (CNS)',montant:6.2,pct:13.7,color:'#00479B'},
+    {source:'Ch\u00E8ques-service accueil (CSA)',montant:8.7,pct:19.3,color:'#09BC8A'},
+    {source:'Participations familles',montant:9.8,pct:21.7,color:'#F8C537'},
+    {source:'Produits conventionn\u00E9s',montant:4.8,pct:10.6,color:'#9B5DE5'},
+    {source:'Dons, legs & autres',montant:2.4,pct:5.3,color:'#00BBF9'},
   ],
   anne:[
-    {source:'Subventions \u00C9tat (MFSVA)',montant:3.4,pct:27.2,color:'#c9a96e'},
-    {source:'Ch\u00E8ques-service accueil (CSA)',montant:5.1,pct:40.8,color:'#52c97a'},
-    {source:'Participations familles',montant:2.7,pct:21.6,color:'#e8a45a'},
-    {source:'Autres produits',montant:1.3,pct:10.4,color:'#38bdf8'},
+    {source:'Subventions \u00C9tat (MFSVA)',montant:3.4,pct:27.2,color:'#E20613'},
+    {source:'Ch\u00E8ques-service accueil (CSA)',montant:5.1,pct:40.8,color:'#09BC8A'},
+    {source:'Participations familles',montant:2.7,pct:21.6,color:'#F8C537'},
+    {source:'Autres produits',montant:1.3,pct:10.4,color:'#00BBF9'},
   ],
   claire:[
-    {source:'Assurance d\u00E9pendance (CNS)',montant:3.6,pct:46.2,color:'#6e9ec9'},
-    {source:'Subventions \u00C9tat',montant:1.9,pct:24.4,color:'#c9a96e'},
-    {source:'Participations r\u00E9sidents',montant:1.7,pct:21.8,color:'#e8a45a'},
-    {source:'Autres',montant:0.6,pct:7.7,color:'#38bdf8'},
+    {source:'Assurance d\u00E9pendance (CNS)',montant:3.6,pct:46.2,color:'#00479B'},
+    {source:'Subventions \u00C9tat',montant:1.9,pct:24.4,color:'#E20613'},
+    {source:'Participations r\u00E9sidents',montant:1.7,pct:21.8,color:'#F8C537'},
+    {source:'Autres',montant:0.6,pct:7.7,color:'#00BBF9'},
   ],
 };
 ['marie','yolande','inclusion','apollonia'].forEach(function(id){
@@ -291,59 +291,35 @@ const KPIS_SOCIAL = {
 };
 
 const GRILLE_SAS = [
-  {code:'C1',intitule:'Agent d\u2019ex\u00E9cution',indice:100,salaire:2570,effectifs:245,pct:12.5},
-  {code:'C2',intitule:'Agent qualifi\u00E9',indice:130,salaire:3341,effectifs:412,pct:21.1},
-  {code:'C3',intitule:'Agent hautement qualifi\u00E9',indice:155,salaire:3983,effectifs:385,pct:19.7},
-  {code:'C4',intitule:'Technicien',indice:180,salaire:4626,effectifs:348,pct:17.8},
-  {code:'C5',intitule:'Technicien sup\u00E9rieur',indice:220,salaire:5654,effectifs:267,pct:13.6},
-  {code:'C6',intitule:'Cadre (CDG)',indice:260,salaire:6682,effectifs:178,pct:9.1},
-  {code:'C7',intitule:'Cadre sup\u00E9rieur',indice:310,salaire:7967,effectifs:89,pct:4.5},
-  {code:'C8',intitule:'Direction',indice:370,salaire:9509,effectifs:33,pct:1.7},
+  {code:'C1',intitule:'Agent d\u2019ex\u00E9cution',indice:100,salaire:2570,effectifs:85,pct:12.5},
+  {code:'C2',intitule:'Agent qualifi\u00E9',indice:130,salaire:3341,effectifs:143,pct:21.0},
+  {code:'C3',intitule:'Agent hautement qualifi\u00E9',indice:155,salaire:3983,effectifs:134,pct:19.7},
+  {code:'C4',intitule:'Technicien',indice:180,salaire:4626,effectifs:121,pct:17.8},
+  {code:'C5',intitule:'Technicien sup\u00E9rieur',indice:220,salaire:5654,effectifs:93,pct:13.7},
+  {code:'C6',intitule:'Cadre (CDG)',indice:260,salaire:6682,effectifs:62,pct:9.1},
+  {code:'C7',intitule:'Cadre sup\u00E9rieur',indice:310,salaire:7967,effectifs:31,pct:4.6},
+  {code:'C8',intitule:'Direction',indice:370,salaire:9509,effectifs:11,pct:1.6},
 ];
-const SAS_INFO = {biennale:2.0,indice:968.04,prochaine:'T3 2026 (estim\u00E9)',impact_tranche:'+2.3M\u20AC masse salariale',masse:24200};
+const SAS_INFO = {biennale:2.0,indice:968.04,prochaine:'T3 2026 (estim\u00E9)',impact_tranche:'+2.3M\u20AC masse salariale',masse:33600};
 
 const PLAN_PLURIANNUEL = [
-  {annee:2023,produits:39.6,charges:38.9,excedent:0.7,effectifs:1868,invest:2.8,benef:11200},
-  {annee:2024,produits:42.6,charges:41.8,excedent:0.8,effectifs:1957,invest:3.2,benef:12400},
-  {annee:2025,produits:45.1,charges:44.2,excedent:0.9,effectifs:2050,invest:4.8,benef:13100},
-  {annee:2026,produits:47.8,charges:46.8,excedent:1.0,effectifs:2150,invest:5.2,benef:13800},
-  {annee:2027,produits:50.2,charges:49.1,excedent:1.1,effectifs:2240,invest:3.6,benef:14500},
-  {annee:2028,produits:52.8,charges:51.6,excedent:1.2,effectifs:2320,invest:2.8,benef:15200},
+  {annee:2023,produits:39.6,charges:38.9,excedent:0.7,effectifs:620,invest:2.8,benef:5000},
+  {annee:2024,produits:42.6,charges:41.8,excedent:0.8,effectifs:650,invest:3.2,benef:5500},
+  {annee:2025,produits:45.1,charges:44.2,excedent:0.9,effectifs:680,invest:4.8,benef:5900},
+  {annee:2026,produits:47.8,charges:46.8,excedent:1.0,effectifs:714,invest:5.2,benef:6200},
+  {annee:2027,produits:50.2,charges:49.1,excedent:1.1,effectifs:744,invest:3.6,benef:6500},
+  {annee:2028,produits:52.8,charges:51.6,excedent:1.2,effectifs:770,invest:2.8,benef:6800},
 ];
 
 const VEILLE_REGLEMENTAIRE = [
   {date:'Jan 2026',titre:'Tranche indiciaire +2.5% activ\u00E9e',impact:'+1.1M\u20AC masse salariale annuelle',type:'Conv. SAS',risque:'\u00E9lev\u00E9',color:'#e85a5a'},
   {date:'Mar 2026',titre:'Nouveau ratio encadrement cr\u00E8ches 1/6 (MFSVA)',impact:'+45 ETP n\u00E9cessaires, +2.4M\u20AC/an',type:'MFSVA',risque:'\u00E9lev\u00E9',color:'#e85a5a'},
-  {date:'Avr 2026',titre:'Revalorisation CSA ch\u00E8ques-service +3.5%',impact:'+290k\u20AC produits annuels',type:'CSA',risque:'favorable',color:'#52c97a'},
-  {date:'Jun 2026',titre:'R\u00E9forme assurance d\u00E9pendance \u2014 hausse bar\u00E8mes CNS',impact:'+420k\u20AC pour p\u00F4le Seniors',type:'CNS',risque:'favorable',color:'#52c97a'},
-  {date:'Sep 2026',titre:'Biennales automatiques \u2014 progression \u00E9chelons',impact:'+450k\u20AC masse salariale',type:'Conv. SAS',risque:'moyen',color:'#e8a45a'},
-  {date:'Jan 2027',titre:'CSRD \u2014 reporting extra-financier obligatoire',impact:'Co\u00FBt estim\u00E9 150k\u20AC mise en conformit\u00E9',type:'EU/RSE',risque:'moyen',color:'#e8a45a'},
-  {date:'Jan 2027',titre:'Plan comptable normalis\u00E9 secteur social',impact:'Migration SI estim\u00E9e 6 mois',type:'Comptabilit\u00E9',risque:'moyen',color:'#e8a45a'},
+  {date:'Avr 2026',titre:'Revalorisation CSA ch\u00E8ques-service +3.5%',impact:'+290k\u20AC produits annuels',type:'CSA',risque:'favorable',color:'#09BC8A'},
+  {date:'Jun 2026',titre:'R\u00E9forme assurance d\u00E9pendance \u2014 hausse bar\u00E8mes CNS',impact:'+420k\u20AC pour p\u00F4le Seniors',type:'CNS',risque:'favorable',color:'#09BC8A'},
+  {date:'Sep 2026',titre:'Biennales automatiques \u2014 progression \u00E9chelons',impact:'+450k\u20AC masse salariale',type:'Conv. SAS',risque:'moyen',color:'#F8C537'},
+  {date:'Jan 2027',titre:'CSRD \u2014 reporting extra-financier obligatoire',impact:'Co\u00FBt estim\u00E9 150k\u20AC mise en conformit\u00E9',type:'EU/RSE',risque:'moyen',color:'#F8C537'},
+  {date:'Jan 2027',titre:'Plan comptable normalis\u00E9 secteur social',impact:'Migration SI estim\u00E9e 6 mois',type:'Comptabilit\u00E9',risque:'moyen',color:'#F8C537'},
 ];
-
-const INDICATORS = {
-  groupe:[
-    {n:'Taux occupation moyen',v:94.2,u:'%',trend:+1.8,color:'var(--c-green)'},
-    {n:'Co\u00FBt moyen/b\u00E9n\u00E9ficiaire',v:3.44,u:'k\u20AC/an',trend:+2.1,color:'var(--c-orange)'},
-    {n:'Ratio charges/CA',v:80.7,u:'%',trend:-0.4,color:'var(--c-blue)'},
-    {n:'Subventions/CA',v:42.7,u:'%',trend:+0.5,color:'var(--c-gold)'},
-  ],
-  anne:[
-    {n:'Taux remplissage cr\u00E8ches',v:97.1,u:'%',trend:+2.2,color:'var(--c-green)'},
-    {n:'Co\u00FBt/enfant/jour',v:48.2,u:'\u20AC',trend:+1.9,color:'var(--c-orange)'},
-    {n:'Heures gratuit\u00E9/enfant',v:23.4,u:'h/sem',trend:+0.3,color:'var(--c-blue)'},
-    {n:'Nb institutions actives',v:31,u:'sites',trend:+2,color:'var(--c-gold)'},
-  ],
-  marie:[
-    {n:'Taux occupation \u00E9tablissements',v:92.8,u:'%',trend:+0.5,color:'var(--c-green)'},
-    {n:'Co\u00FBt/r\u00E9sident/jour',v:89.4,u:'\u20AC',trend:+3.1,color:'var(--c-orange)'},
-    {n:'Nb \u00E9l\u00E8ves accueillis',v:1840,u:'pers.',trend:+42,color:'var(--c-blue)'},
-    {n:'Score qualit\u00E9 interne',v:87.3,u:'/100',trend:+1.4,color:'var(--c-gold)'},
-  ],
-};
-['claire','yolande','inclusion','apollonia'].forEach(function(id){
-  INDICATORS[id]=INDICATORS.groupe.map(function(d){return Object.assign({},d,{v:+(d.v*(0.9+Math.random()*0.2)).toFixed(1)});});
-});
 
 const INSTITUTIONS = [
   {name:'Cr\u00E8che A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.991,entity:'anne',tel:'+352 99 80 81',budget:415,eff:24},
@@ -397,17 +373,92 @@ const INSTITUTIONS = [
   {name:'Duerfbuttek "beim Lis"',loc:'Roodt-sur-Syre',lat:49.667,lng:6.367,entity:'inclusion',tel:'+352 71 02 05',budget:185,eff:12},
   {name:'Si\u00E8ge & Administration',loc:'Luxembourg',lat:49.612,lng:6.132,entity:'apollonia',tel:'+352 26 44 10',budget:5000,eff:182},
 ];
+/* Scale institution eff to match KPI_DATA effectifs per entity */
+(function(){
+  var sumEff={};
+  INSTITUTIONS.forEach(function(inst){sumEff[inst.entity]=(sumEff[inst.entity]||0)+inst.eff;});
+  INSTITUTIONS.forEach(function(inst){
+    var target=KPI_DATA[inst.entity]?KPI_DATA[inst.entity].effectifs:null;
+    if(target&&sumEff[inst.entity]) inst.eff=Math.max(1,Math.round(inst.eff*target/sumEff[inst.entity]));
+  });
+})();
 
 const NEWS = [
-  {id:1,date:'18 f\u00E9v. 2026',titre:'Cl\u00F4ture 2025 : exc\u00E9dent consolid\u00E9 +4.3M\u20AC',tag:'Finance',tag_color:'#c9a96e',entite:'groupe',texte:'La cl\u00F4ture de l\'exercice 2025 confirme un exc\u00E9dent brut de 4.3M\u20AC, en ligne avec le plan pluriannuel. Les produits progressent de +5.9% gr\u00E2ce \u00E0 la hausse des bar\u00E8mes CSA et CNS.',urgent:false},
+  {id:1,date:'18 f\u00E9v. 2026',titre:'Cl\u00F4ture 2025 : EBE consolid\u00E9 3.2M\u20AC',tag:'Finance',tag_color:'#E20613',entite:'groupe',texte:'La cl\u00F4ture de l\'exercice 2025 confirme un EBE de 3.2M\u20AC et un exc\u00E9dent net de 0.9M\u20AC, en ligne avec le plan pluriannuel. Les produits progressent de +5.9% gr\u00E2ce \u00E0 la hausse des bar\u00E8mes CSA et CNS.',urgent:false},
   {id:2,date:'10 f\u00E9v. 2026',titre:'D\u00E9passement RH Claire asbl : +380k\u20AC',tag:'Alerte',tag_color:'#e85a5a',entite:'claire',texte:'Surco\u00FBt RH de 380k\u20AC sur Q3-Q4 2025 li\u00E9 \u00E0 22 recrutements d\'urgence en soins. Plan de ma\u00EEtrise valid\u00E9 : mutualisation inter-sites T1 2026.',urgent:true},
-  {id:3,date:'28 jan. 2026',titre:'Budget 2026 valid\u00E9 en Conseil d\'administration',tag:'Finance',tag_color:'#c9a96e',entite:'groupe',texte:'Le CA a valid\u00E9 le budget 2026 avec une enveloppe de 47.8M\u20AC (+5.9%). Priorit\u00E9s : extension du p\u00F4le Seniors (+8 lits) et digitalisation compl\u00E8te.',urgent:false},
-  {id:4,date:'15 jan. 2026',titre:'Tranche indiciaire +2.5% activ\u00E9e',tag:'RH',tag_color:'#a78bfa',entite:'groupe',texte:'La tranche indiciaire de janvier 2026 augmente la masse salariale de +1.1M\u20AC/an. Impact int\u00E9gr\u00E9 dans le budget 2026. Provision d\u00E9j\u00E0 constitu\u00E9e en 2025.',urgent:false},
-  {id:5,date:'20 d\u00E9c. 2025',titre:'Subvention MFSVA 480k\u20AC confirm\u00E9e pour Anne asbl',tag:'Bonne nouvelle',tag_color:'#52c97a',entite:'anne',texte:'Le dossier de financement pour l\'extension du centre de Bettembourg a \u00E9t\u00E9 accept\u00E9. Travaux lanc\u00E9s Q1 2026, livraison pr\u00E9vue Q3 2026.',urgent:false},
-  {id:6,date:'05 d\u00E9c. 2025',titre:'R\u00E9forme assurance d\u00E9pendance : +3.2% bar\u00E8mes CNS',tag:'Bonne nouvelle',tag_color:'#52c97a',entite:'claire',texte:'La hausse des bar\u00E8mes CNS repr\u00E9sente +420k\u20AC de produits annuels pour le p\u00F4le Seniors. Effet r\u00E9troactif au 1er octobre 2025.',urgent:false},
-  {id:7,date:'18 nov. 2025',titre:'2 050 ETP \u2014 nouveau record d\'effectifs',tag:'RH',tag_color:'#a78bfa',entite:'groupe',texte:'Le groupe d\u00E9passe les 2 050 collaborateurs avec 93 recrutements nets en 2025, renfor\u00E7ant la capacit\u00E9 d\'accueil de +380 b\u00E9n\u00E9ficiaires.',urgent:false},
-  {id:8,date:'02 nov. 2025',titre:'Audit interne Q3 2025 : conformit\u00E9 93%',tag:'Audit',tag_color:'#6e9ec9',entite:'apollonia',texte:'L\'audit interne trimestriel confirme la conformit\u00E9 des processus comptables dans 93% des contr\u00F4les (+2 pts vs Q3 2024). 2 points mineurs en cours.',urgent:false},
+  {id:3,date:'28 jan. 2026',titre:'Budget 2026 valid\u00E9 en Conseil d\'administration',tag:'Finance',tag_color:'#E20613',entite:'groupe',texte:'Le CA a valid\u00E9 le budget 2026 avec une enveloppe de 47.8M\u20AC (+5.9%). Priorit\u00E9s : extension du p\u00F4le Seniors (+8 lits) et digitalisation compl\u00E8te.',urgent:false},
+  {id:4,date:'15 jan. 2026',titre:'Tranche indiciaire +2.5% activ\u00E9e',tag:'RH',tag_color:'#9B5DE5',entite:'groupe',texte:'La tranche indiciaire de janvier 2026 augmente la masse salariale de +1.1M\u20AC/an. Impact int\u00E9gr\u00E9 dans le budget 2026. Provision d\u00E9j\u00E0 constitu\u00E9e en 2025.',urgent:false},
+  {id:5,date:'20 d\u00E9c. 2025',titre:'Subvention MFSVA 480k\u20AC confirm\u00E9e pour Anne asbl',tag:'Bonne nouvelle',tag_color:'#09BC8A',entite:'anne',texte:'Le dossier de financement pour l\'extension du centre de Bettembourg a \u00E9t\u00E9 accept\u00E9. Travaux lanc\u00E9s Q1 2026, livraison pr\u00E9vue Q3 2026.',urgent:false},
+  {id:6,date:'05 d\u00E9c. 2025',titre:'R\u00E9forme assurance d\u00E9pendance : +3.2% bar\u00E8mes CNS',tag:'Bonne nouvelle',tag_color:'#09BC8A',entite:'claire',texte:'La hausse des bar\u00E8mes CNS repr\u00E9sente +420k\u20AC de produits annuels pour le p\u00F4le Seniors. Effet r\u00E9troactif au 1er octobre 2025.',urgent:false},
+  {id:7,date:'18 nov. 2025',titre:'680 ETP \u2014 nouveau record d\'effectifs',tag:'RH',tag_color:'#9B5DE5',entite:'groupe',texte:'Le groupe d\u00E9passe les 680 collaborateurs avec 30 recrutements nets en 2025, renfor\u00E7ant la capacit\u00E9 d\'accueil de +400 b\u00E9n\u00E9ficiaires.',urgent:false},
+  {id:8,date:'02 nov. 2025',titre:'Audit interne Q3 2025 : conformit\u00E9 93%',tag:'Audit',tag_color:'#00479B',entite:'apollonia',texte:'L\'audit interne trimestriel confirme la conformit\u00E9 des processus comptables dans 93% des contr\u00F4les (+2 pts vs Q3 2024). 2 points mineurs en cours.',urgent:false},
 ];
+
+/* ================================================================
+   PROJET: ETUDE DE FAISABILITE CRECHE DUDELANGE
+================================================================ */
+
+const PROJET_DUDELANGE = {
+  nom:'Cr\u00E8che \u00AB Les Petits Pas \u00BB \u2014 Dudelange',
+  entite:'anne',
+  type:'Cr\u00E8che & Maison Relais',
+  localisation:'Dudelange-centre (rue de la Lib\u00E9ration)',
+  capacite:60,
+  surface:'480 m\u00B2 + 200 m\u00B2 ext\u00E9rieur',
+  ouverture:'T1 2027',
+  statut:'En \u00E9tude',
+  investissement:{
+    travaux:1850,amenagement:420,materiel:180,frais_divers:150,
+    total:2600,
+    financement:[
+      {source:'Subvention MFSVA (60%)',montant:1560,pct:60},
+      {source:'Fonds propres Elisabeth',montant:520,pct:20},
+      {source:'Emprunt bancaire (10 ans, 3.2%)',montant:520,pct:20},
+    ]
+  },
+  exploitation:{
+    montee_en_charge:[
+      {annee:2027,trim:'T1-T4',places_ouvertes:60,taux_remplissage:55,etp:14,produits:720,charges:810,resultat:-90},
+      {annee:2028,trim:'Annuel',places_ouvertes:60,taux_remplissage:82,etp:16,produits:1140,charges:1060,resultat:80},
+      {annee:2029,trim:'Annuel',places_ouvertes:60,taux_remplissage:92,etp:17,produits:1310,charges:1150,resultat:160},
+      {annee:2030,trim:'Annuel',places_ouvertes:60,taux_remplissage:95,etp:17,produits:1390,charges:1190,resultat:200},
+      {annee:2031,trim:'Annuel',places_ouvertes:60,taux_remplissage:96,etp:17,produits:1440,charges:1220,resultat:220},
+    ],
+    hypotheses:[
+      'Tarif CSA ch\u00E8ques-service : 5.50\u20AC/h (bar\u00E8me MFSVA 2026)',
+      'Ratio encadrement : 1 pour 8 enfants (norme MFSVA)',
+      'Salaires Convention SAS : C2-C4 + 1 C5 (responsable site)',
+      'Co\u00FBt moyen ETP charg\u00E9 : 62k\u20AC/an (incl. patronal 13.5%)',
+      'Inflation charges fonctionnement : +2.5%/an',
+      'Mont\u00E9e en charge progressive : 12 mois pour atteindre 90%+',
+    ],
+    produits_detail:[
+      {n:'Ch\u00E8ques-service accueil (CSA)',pct:52},
+      {n:'Subvention MFSVA fonctionnement',pct:28},
+      {n:'Participations familles',pct:15},
+      {n:'Autres (commune, dons)',pct:5},
+    ],
+    charges_detail:[
+      {n:'Frais de personnel (Conv. SAS)',pct:78},
+      {n:'Alimentation & p\u00E9dagogie',pct:8},
+      {n:'Loyer & charges locatives',pct:7},
+      {n:'Services & fonctionnement',pct:5},
+      {n:'Amortissements',pct:2},
+    ]
+  },
+  scenarii:{
+    optimiste:{taux_an2:90,produits_an3:1420,resultat_an3:230,tri:'18%',payback:'8.2 ans'},
+    central:{taux_an2:82,produits_an3:1310,resultat_an3:160,tri:'12%',payback:'10.5 ans'},
+    pessimiste:{taux_an2:65,produits_an3:1050,resultat_an3:-20,tri:'3%',payback:'>15 ans'},
+  },
+  risques:[
+    {risque:'Retard travaux',probabilite:'Moyen',impact:'D\u00E9calage ouverture T2 2027',mitigation:'P\u00E9nalit\u00E9s contractuelles + marge planning 3 mois'},
+    {risque:'Remplissage insuffisant',probabilite:'Faible',impact:'D\u00E9ficit Ann\u00E9e 1-2',mitigation:'Liste d\'attente d\u00E9j\u00E0 100+ familles sur commune'},
+    {risque:'Hausse co\u00FBts construction',probabilite:'\u00C9lev\u00E9',impact:'+10-15% sur investissement',mitigation:'Clause de r\u00E9vision + provision 8%'},
+    {risque:'\u00C9volution ratio encadrement',probabilite:'Moyen',impact:'+3 ETP si passage \u00E0 1/6',mitigation:'V\u00E9ille r\u00E9glementaire + surfaces modulables'},
+  ],
+  contexte:'Dudelange est la 4e commune du Luxembourg (22 000 hab.) avec un taux de croissance d\u00E9mographique de +2.8%/an. La demande en places d\'accueil petite enfance d\u00E9passe l\'offre de +35%. Le plan d\'am\u00E9nagement communal pr\u00E9voit 1 200 logements suppl\u00E9mentaires d\'ici 2030 (quartier NeiSchmelz). La commune a confirm\u00E9 son soutien au projet par lettre d\'intention (oct. 2025).'
+};
 
 /* ================================================================
    HELPERS
@@ -440,7 +491,7 @@ var Delta = function(props){
   var pos=v>0, zero=v===0;
   return React.createElement('span',{
     className:'inline-flex items-center gap-1 text-xs font-mono px-2 py-0.5 rounded',
-    style:{background:zero?'rgba(107,116,145,.15)':pos?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+    style:{background:zero?'rgba(107,116,145,.15)':pos?'rgba(9,188,138,.12)':'rgba(232,90,90,.12)',
            color:zero?'var(--c-muted)':pos?'var(--c-green)':'var(--c-red)'}
   },(zero?'\u25C6':pos?'\u25B2':'\u25BC')+' '+(pos?'+':'')+v+suffix);
 };
@@ -491,7 +542,7 @@ var CustomTooltip = function(props){
 
 var DonutChart = function(props){
   var data=props.data, size=props.size||110;
-  var colors=['#c9a96e','#6e9ec9','#52c97a','#e8a45a','#a78bfa'];
+  var colors=['#E20613','#00479B','#09BC8A','#F8C537','#9B5DE5'];
   var total=data.reduce(function(s,d){return s+d.v;},0);
   var cum=0, r=42, cx=55, cy=55, cir=2*Math.PI*r;
   var slices=data.map(function(d,idx){
@@ -543,7 +594,7 @@ var Sparkline = function(props){
 var VueSynthese = function(props){
   var entity=props.entity, kpi=props.kpi, monthly=props.monthly, charges=props.charges, ecarts=props.ecarts;
   var ent=ENTITES.find(function(e){return e.id===entity;});
-  var chargeColors=['#c9a96e','#6e9ec9','#52c97a','#e8a45a'];
+  var chargeColors=['#E20613','#00479B','#09BC8A','#F8C537'];
 
   var handleExportEcarts = function(){
     var rows=[['Centre de co\u00FBts','Budget','R\u00E9alis\u00E9','\u00C9cart','%']];
@@ -555,13 +606,32 @@ var VueSynthese = function(props){
   };
 
   return React.createElement('div',{className:'space-y-6 slide-up'},
+    entity==='groupe'&&React.createElement('div',{className:'rounded-2xl p-6 mb-2',style:{background:'linear-gradient(135deg, #E20613 0%, #9b0410 60%, #000022 100%)',border:'none',position:'relative',overflow:'hidden'}},
+      React.createElement('div',{style:{position:'absolute',top:0,right:0,width:300,height:'100%',background:'radial-gradient(circle at 80% 30%, rgba(9,188,138,.15) 0%, transparent 60%)',pointerEvents:'none'}}),
+      React.createElement('div',{style:{position:'absolute',bottom:0,left:0,width:200,height:120,background:'radial-gradient(circle at 20% 90%, rgba(248,197,55,.1) 0%, transparent 60%)',pointerEvents:'none'}}),
+      React.createElement('div',{className:'flex items-center justify-between',style:{position:'relative',zIndex:1}},
+        React.createElement('div',null,
+          React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:26,fontWeight:900,color:'#ffffff',letterSpacing:'.02em',marginBottom:4}},'Groupe Elisabeth'),
+          React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:12,color:'rgba(255,255,255,.7)',letterSpacing:'.08em',textTransform:'uppercase'}},'Acteur social historique du Luxembourg \u00B7 Depuis 1672')
+        ),
+        React.createElement('div',{className:'flex gap-8'},
+          [{v:'5 505',l:'B\u00E9n\u00E9ficiaires quotidiens',icon:'\u2764\uFE0F'},{v:'48',l:'Institutions dans le pays',icon:'\u{1F3E0}'},{v:'5',l:'Secteurs d\u2019activit\u00E9s',icon:'\u{1F91D}'}].map(function(s,i){
+            return React.createElement('div',{key:i,className:'text-center'},
+              React.createElement('div',{style:{fontSize:10,marginBottom:2}},s.icon),
+              React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:28,fontWeight:900,color:'#ffffff'}},s.v),
+              React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:10,color:'rgba(255,255,255,.65)',letterSpacing:'.05em',textTransform:'uppercase',maxWidth:120}},s.l)
+            );
+          })
+        )
+      )
+    ),
     React.createElement('div',null,
       React.createElement(SectionTitle,{title:'Indicateurs cl\u00E9s',sub:'Exercice 2025 \u2014 '+ent.label}),
       React.createElement('div',{className:'grid grid-cols-4 gap-4'},
         React.createElement(KPICard,{label:'Produits totaux',value:kpi.produits,unit:'M\u20AC',delta:7.2,deltaUnit:'%',color:ent.color}),
         React.createElement(KPICard,{label:'Exc\u00E9dent brut (EBE)',value:kpi.ebe,unit:'M\u20AC',delta:+(kpi.ebe/kpi.produits*100).toFixed(1),deltaUnit:'% taux',color:'var(--c-blue)'}),
         React.createElement(KPICard,{label:'Exc\u00E9dent d\u2019exercice',value:kpi.excedent,unit:'M\u20AC',delta:12.4,deltaUnit:'%',color:'var(--c-green)'}),
-        React.createElement(KPICard,{label:'Effectifs (Conv. SAS)',value:kpi.effectifs,unit:'ETP',delta:89,deltaUnit:' recr.',color:'var(--c-purple)'})
+        React.createElement(KPICard,{label:'Effectifs (Conv. SAS)',value:kpi.effectifs,unit:'ETP',delta:30,deltaUnit:' recr.',color:'var(--c-purple)'})
       ),
       React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-4'},
         React.createElement(KPICard,{label:"Taux d'ex\u00E9cution",value:kpi.taux_exec,unit:'%',delta:+(kpi.taux_exec-95).toFixed(1),deltaUnit:' pts',color:ent.color}),
@@ -626,7 +696,7 @@ var VueSynthese = function(props){
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:fav?'var(--c-green)':'var(--c-red)',borderBottom:'1px solid rgba(30,39,56,.5)',fontWeight:600}},(fav?'+':'-')+Math.abs(ecart).toLocaleString('fr')),
               React.createElement('td',{style:{textAlign:'right',padding:'10px',borderBottom:'1px solid rgba(30,39,56,.5)'}},
                 React.createElement('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
-                  background:fav?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+                  background:fav?'rgba(9,188,138,.12)':'rgba(232,90,90,.12)',
                   color:fav?'var(--c-green)':'var(--c-red)'}},(fav?'Fav.':'D\u00E9f.')+' '+Math.abs(pct)+'%')
               )
             );
@@ -654,6 +724,73 @@ var VueSynthese = function(props){
             )
           );
         })
+      )
+    ),
+    /* Projections & Alertes institutions */
+    React.createElement('div',{className:'grid grid-cols-2 gap-4'},
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Projection fin d\u2019exercice 2026',sub:'Forecast bas\u00E9 sur le r\u00E9alis\u00E9 2025 et tendance'}),
+        (function(){
+          var pl=PL_DATA[entity]||PL_DATA.groupe;
+          var totalPR=pl.produits.reduce(function(s,p){return s+p.reel;},0);
+          var totalCR=pl.charges.reduce(function(s,c){return s+c.reel;},0);
+          var totalPN1=pl.produits.reduce(function(s,p){return s+p.n1;},0);
+          var totalCN1=pl.charges.reduce(function(s,c){return s+c.n1;},0);
+          var growthP=totalPR/totalPN1-1;
+          var growthC=totalCR/totalCN1-1;
+          var projP2026=Math.round(totalPR*(1+growthP*0.85));
+          var projC2026=Math.round(totalCR*(1+growthC*0.90));
+          var projExc=projP2026-projC2026;
+          var projMarge=(projExc/projP2026*100).toFixed(1);
+          var items=[
+            {n:'Produits 2026 (proj.)',v:projP2026,c:'var(--c-green)',note:'Croissance estim\u00E9e '+(growthP*85).toFixed(1)+'%'},
+            {n:'Charges 2026 (proj.)',v:projC2026,c:'var(--c-red)',note:'Inflation int\u00E9gr\u00E9e '+(growthC*90).toFixed(1)+'%'},
+            {n:'Exc\u00E9dent projet\u00E9',v:projExc,c:projExc>0?'var(--c-green)':'var(--c-red)',note:'Marge '+projMarge+'%'},
+          ];
+          return React.createElement('div',{className:'space-y-3'},
+            items.map(function(item,i){
+              return React.createElement('div',{key:i,className:'flex items-center justify-between p-3 rounded-lg',style:{background:'var(--c-surface2)'}},
+                React.createElement('div',null,
+                  React.createElement('div',{className:'text-sm',style:{color:'var(--c-text)'}},item.n),
+                  React.createElement('div',{className:'text-xs font-mono',style:{color:'var(--c-muted)'}},item.note)
+                ),
+                React.createElement('span',{className:'font-mono text-lg font-bold',style:{color:item.c}},item.v.toLocaleString('fr')+'k\u20AC')
+              );
+            }),
+            React.createElement('div',{className:'mt-3 p-3 rounded-lg',style:{background:projExc>0?'rgba(9,188,138,.06)':'rgba(232,90,90,.06)',border:'1px solid '+(projExc>0?'rgba(9,188,138,.2)':'rgba(232,90,90,.2)')}},
+              React.createElement('div',{className:'flex items-center gap-2'},
+                React.createElement('span',{style:{fontSize:14}},projExc>0?'\u2705':'\u26A0\uFE0F'),
+                React.createElement('span',{className:'text-sm font-bold',style:{color:projExc>0?'var(--c-green)':'var(--c-red)'}},projExc>0?'Projection favorable \u2014 exc\u00E9dent maintenu':'Attention \u2014 risque de d\u00E9ficit')
+              )
+            )
+          );
+        })()
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Alertes par institution',sub:'\u00C9carts significatifs \u2014 suivi mensuel'}),
+        React.createElement('div',{className:'space-y-2'},
+          [
+            {inst:'Foyer Ste Elisabeth',loc:'Bettembourg',type:'D\u00E9passement RH',ecart:'+48k\u20AC',pct:'+6.2%',color:'var(--c-red)',note:'22 recrutements urgence Q3-Q4'},
+            {inst:'Maison Relais Conter',loc:'Contern',type:'Sous-ex\u00E9cution',ecart:'-32k\u20AC',pct:'-4.8%',color:'var(--c-orange)',note:'Taux remplissage 87% (obj. 95%)'},
+            {inst:'Haaptmann\'s Schlass',loc:'Berbourg',type:'D\u00E9passement maintenance',ecart:'+28k\u20AC',pct:'+12%',color:'var(--c-red)',note:'R\u00E9paration chaudi\u00E8re impr\u00E9vue'},
+            {inst:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',type:'\u00C9conomie r\u00E9alis\u00E9e',ecart:'-18k\u20AC',pct:'-3.1%',color:'var(--c-green)',note:'Mutualisation achats p\u00E9dagogiques'},
+            {inst:'Institut St Joseph',loc:'Betzdorf',type:'D\u00E9passement transport',ecart:'+15k\u20AC',pct:'+8.5%',color:'var(--c-orange)',note:'Hausse carburant + nouveau circuit'},
+          ].map(function(a,i){
+            return React.createElement('div',{key:i,className:'flex items-center gap-3 p-3 rounded-lg',style:{background:'var(--c-surface2)',borderLeft:'3px solid '+a.color}},
+              React.createElement('div',{className:'flex-1'},
+                React.createElement('div',{className:'flex items-center gap-2'},
+                  React.createElement('span',{className:'text-xs font-bold',style:{color:'var(--c-text)'}},a.inst),
+                  React.createElement('span',{className:'text-xs',style:{color:'var(--c-muted)'}},'\u00B7 '+a.loc)
+                ),
+                React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)',marginTop:2}},a.type+' \u2014 '+a.note)
+              ),
+              React.createElement('div',{className:'text-right'},
+                React.createElement('div',{className:'font-mono text-sm font-bold',style:{color:a.color}},a.ecart),
+                React.createElement('div',{className:'font-mono text-xs',style:{color:a.color}},a.pct)
+              )
+            );
+          })
+        )
       )
     )
   );
@@ -750,7 +887,7 @@ var VuePL = function(props){
             return React.createElement('button',{key:v,onClick:function(){setPlView(v);},
               style:{padding:'4px 12px',fontSize:10,borderRadius:6,cursor:'pointer',border:'none',
                 background:plView===v?'var(--c-gold)':'transparent',
-                color:plView===v?'#0a0c10':'var(--c-muted)',
+                color:plView===v?'#ffffff':'var(--c-muted)',
                 fontFamily:'DM Mono,monospace',fontWeight:plView===v?700:400,transition:'all .2s'}},labels[v]);
           })
         ),
@@ -777,7 +914,7 @@ var VuePL = function(props){
           React.createElement(Area,{type:'monotone',dataKey:'pBudget',name:'Produits Budget',stroke:'var(--c-gold)',fill:'var(--c-gold)',fillOpacity:0.08,strokeDasharray:'4 2'}),
           React.createElement(Area,{type:'monotone',dataKey:'pReel',name:'Produits R\u00E9alis\u00E9',stroke:'var(--c-gold)',fill:'var(--c-gold)',fillOpacity:0.2,strokeWidth:2}),
           React.createElement(Area,{type:'monotone',dataKey:'cReel',name:'Charges R\u00E9alis\u00E9',stroke:'var(--c-red)',fill:'var(--c-red)',fillOpacity:0.1,strokeWidth:2}),
-          React.createElement(Line,{dataKey:'excReel',name:'Exc\u00E9dent cumul\u00E9',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#52c97a'},type:'monotone'})
+          React.createElement(Line,{dataKey:'excReel',name:'Exc\u00E9dent cumul\u00E9',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#09BC8A'},type:'monotone'})
         ):
         React.createElement(ComposedChart,{data:chartData,margin:{top:5,right:20,bottom:0,left:0}},
           React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
@@ -786,7 +923,7 @@ var VuePL = function(props){
           React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
           React.createElement(Bar,{dataKey:'Produits',name:'Produits',fill:'var(--c-gold)',fillOpacity:0.7,radius:[3,3,0,0]}),
           React.createElement(Bar,{dataKey:'Charges',name:'Charges',fill:'var(--c-red)',fillOpacity:0.5,radius:[3,3,0,0]}),
-          React.createElement(Line,{dataKey:'Exc\u00E9dent',name:'Exc\u00E9dent',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#52c97a'},type:'monotone'}),
+          React.createElement(Line,{dataKey:'Exc\u00E9dent',name:'Exc\u00E9dent',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#09BC8A'},type:'monotone'}),
           React.createElement(Line,{dataKey:'Budget Prod.',name:'Budget',stroke:'var(--c-gold)',strokeWidth:1,dot:false,strokeDasharray:'4 2',strokeOpacity:0.5}),
           React.createElement(Line,{dataKey:'N-1 Prod.',name:'N-1',stroke:'var(--c-blue)',strokeWidth:1,dot:false,strokeDasharray:'4 2',strokeOpacity:0.5})
         )
@@ -823,7 +960,7 @@ var VuePL = function(props){
             var excB=pB-cB;
             var excR=pR!==null&&cR!==null?pR-cR:null;
             var isLast=i===11;
-            return React.createElement('tr',{key:i,style:{background:isLast&&plView!=='ytd'?'rgba(201,169,110,.04)':'transparent'}},
+            return React.createElement('tr',{key:i,style:{background:isLast&&plView!=='ytd'?'rgba(226,6,19,.04)':'transparent'}},
               React.createElement('td',{style:{padding:'6px',fontSize:11,color:'var(--c-text)',fontWeight:isLast?600:400,borderBottom:'1px solid rgba(30,39,56,.3)'}},d.m),
               React.createElement('td',{style:tdStyle('var(--c-text)',false)},pB.toLocaleString('fr')),
               React.createElement('td',{style:tdStyle(pR!==null?'var(--c-text)':'var(--c-muted)',false)},pR!==null?pR.toLocaleString('fr'):'\u2014'),
@@ -837,7 +974,7 @@ var VuePL = function(props){
               React.createElement('td',{style:tdStyle(excR!==null?(excR>=0?'var(--c-green)':'var(--c-red)'):'var(--c-muted)',true)},excR!==null?excR.toLocaleString('fr'):'\u2014')
             );
           }),
-          React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)',background:'rgba(201,169,110,.06)'}},
+          React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)',background:'rgba(226,6,19,.06)'}},
             React.createElement('td',{style:{padding:'8px 6px',fontSize:12,fontWeight:700,color:'var(--c-gold)'}},'TOTAL'),
             React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalP('budget').toLocaleString('fr')),
             React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalP('reel').toLocaleString('fr')),
@@ -907,13 +1044,15 @@ var VueAnalytique = function(props){
   var ent=ENTITES.find(function(e){return e.id===entity;});
   var kpis=KPIS_SOCIAL[entity]||KPIS_SOCIAL.groupe;
   var monthly=MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
-  var kpiColors=['#52c97a','#6e9ec9','#e8a45a','#e85a5a','#a78bfa','#c9a96e'];
+  var kpiColors=['#09BC8A','#00479B','#F8C537','#e85a5a','#9B5DE5','#E20613'];
 
+  var chData=CHARGES_DATA[entity]||CHARGES_DATA.groupe;
+  var pctRH=(chData[0].v||76)/100, pctSvc=(chData[1].v||10)/100, pctFonct=(chData[2].v||9)/100;
   var areaData=monthly.map(function(d){
     return {m:d.m,
-      rh:d.reel?Math.round(d.reel*0.52):null,
-      immo:d.reel?Math.round(d.reel*0.18):null,
-      fonct:d.reel?Math.round(d.reel*0.15):null
+      rh:d.reel?Math.round(d.reel*pctRH):null,
+      immo:d.reel?Math.round(d.reel*pctSvc):null,
+      fonct:d.reel?Math.round(d.reel*pctFonct):null
     };
   });
 
@@ -957,9 +1096,9 @@ var VueAnalytique = function(props){
           React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
-          React.createElement(Area,{type:'monotone',dataKey:'rh',name:'RH',stackId:'1',stroke:'#c9a96e',fill:'#c9a96e',fillOpacity:0.4}),
-          React.createElement(Area,{type:'monotone',dataKey:'immo',name:'Immobilier',stackId:'1',stroke:'#6e9ec9',fill:'#6e9ec9',fillOpacity:0.4}),
-          React.createElement(Area,{type:'monotone',dataKey:'fonct',name:'Fonctionnement',stackId:'1',stroke:'#52c97a',fill:'#52c97a',fillOpacity:0.4})
+          React.createElement(Area,{type:'monotone',dataKey:'rh',name:'RH',stackId:'1',stroke:'#E20613',fill:'#E20613',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'immo',name:'Immobilier',stackId:'1',stroke:'#00479B',fill:'#00479B',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'fonct',name:'Fonctionnement',stackId:'1',stroke:'#09BC8A',fill:'#09BC8A',fillOpacity:0.4})
         )
       )
     ),
@@ -1027,9 +1166,9 @@ var VueTresorerie = function(props){
           React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
-          React.createElement(Bar,{dataKey:'enc',name:'Encaissements',fill:'#52c97a',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Bar,{dataKey:'enc',name:'Encaissements',fill:'#09BC8A',fillOpacity:0.7,radius:[3,3,0,0]}),
           React.createElement(Bar,{dataKey:'dec',name:'D\u00E9caissements',fill:'#e85a5a',fillOpacity:0.7,radius:[3,3,0,0]}),
-          React.createElement(Line,{dataKey:'cumule',name:'Solde cumul\u00E9',stroke:'#c9a96e',strokeWidth:2.5,dot:{r:3,fill:'#c9a96e'},type:'monotone'})
+          React.createElement(Line,{dataKey:'cumule',name:'Solde cumul\u00E9',stroke:'#E20613',strokeWidth:2.5,dot:{r:3,fill:'#E20613'},type:'monotone'})
         )
       )
     ),
@@ -1129,9 +1268,9 @@ var VueBudget = function(props){
       )
     ),
     React.createElement('div',{className:'grid grid-cols-3 gap-4'},
-      makeSlider('Variation effectifs',varEff,setVarEff,-10,10,0.5,'%','#a78bfa'),
-      makeSlider('Variation subventions',varSub,setVarSub,-10,10,0.5,'%','#38bdf8'),
-      makeSlider('Inflation',inflation,setInflation,0,5,0.1,'%','#e8a45a')
+      makeSlider('Variation effectifs',varEff,setVarEff,-10,10,0.5,'%','#9B5DE5'),
+      makeSlider('Variation subventions',varSub,setVarSub,-10,10,0.5,'%','#00BBF9'),
+      makeSlider('Inflation',inflation,setInflation,0,5,0.1,'%','#F8C537')
     ),
     React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-2'},
       React.createElement(KPICard,{label:'Produits projet\u00E9s 2026',value:projCA,unit:'k\u20AC',delta:+((projCA/baseCA-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-gold)'}),
@@ -1147,9 +1286,9 @@ var VueBudget = function(props){
           React.createElement(XAxis,{dataKey:'annee',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
-          React.createElement(Bar,{dataKey:'produits',name:'Produits M\u20AC',fill:'#c9a96e',fillOpacity:0.7,radius:[3,3,0,0]}),
-          React.createElement(Bar,{dataKey:'charges',name:'Charges M\u20AC',fill:'#6e9ec9',fillOpacity:0.5,radius:[3,3,0,0]}),
-          React.createElement(Line,{dataKey:'excedent',name:'Exc\u00E9dent M\u20AC',stroke:'#52c97a',strokeWidth:2.5,dot:{r:4,fill:'#52c97a'},type:'monotone'})
+          React.createElement(Bar,{dataKey:'produits',name:'Produits M\u20AC',fill:'#E20613',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Bar,{dataKey:'charges',name:'Charges M\u20AC',fill:'#00479B',fillOpacity:0.5,radius:[3,3,0,0]}),
+          React.createElement(Line,{dataKey:'excedent',name:'Exc\u00E9dent M\u20AC',stroke:'#09BC8A',strokeWidth:2.5,dot:{r:4,fill:'#09BC8A'},type:'monotone'})
         )
       ),
       React.createElement('table',{style:{width:'100%',borderCollapse:'collapse',marginTop:16}},
@@ -1164,7 +1303,7 @@ var VueBudget = function(props){
           PLAN_PLURIANNUEL.map(function(p,i){
             var isCurrent=p.annee===2025;
             var isFuture=p.annee>2025;
-            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',opacity:isFuture?0.7:1,background:isCurrent?'rgba(201,169,110,.06)':'transparent'}},
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',opacity:isFuture?0.7:1,background:isCurrent?'rgba(226,6,19,.06)':'transparent'}},
               React.createElement('td',{style:{padding:'8px',fontSize:12,fontWeight:isCurrent?700:400,color:isCurrent?'var(--c-gold)':'var(--c-text)'}},p.annee+(isCurrent?' \u25C0':'')),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-gold)'}},p.produits+'M\u20AC'),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-blue)'}},p.charges+'M\u20AC'),
@@ -1192,7 +1331,7 @@ var VueBudget = function(props){
             React.createElement('span',{className:'font-mono text-xs',style:{color:'var(--c-muted)'}},'\u2192'),
             React.createElement('span',{className:'font-mono text-sm font-bold',style:{color:item.color}},item.proj.toLocaleString('fr')+'k\u20AC'),
             React.createElement('span',{className:'font-mono text-xs px-2 py-0.5 rounded',style:{
-              background:parseFloat(pctChange)>=0?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+              background:parseFloat(pctChange)>=0?'rgba(9,188,138,.12)':'rgba(232,90,90,.12)',
               color:parseFloat(pctChange)>=0?'var(--c-green)':'var(--c-red)'
             }},(parseFloat(pctChange)>=0?'+':'')+pctChange+'%')
           );
@@ -1298,7 +1437,7 @@ var VueConsolidee = function(){
       var k=KPI_DATA[e.id];
       rows.push([e.label,k.produits,k.ebe,(k.ebe/k.produits*100).toFixed(1),k.effectifs,k.taux_exec,k.fin_public,k.ecart_budget >= 0?'Favorable':'D\u00E9ficitaire']);
     });
-    rows.push(['GROUPE TOTAL',45.1,3.2,'7.1',2050,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
+    rows.push(['GROUPE TOTAL',45.1,3.2,'7.1',680,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
     exportXLSX(rows,'consolide_groupe');
   };
 
@@ -1342,7 +1481,7 @@ var VueConsolidee = function(){
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-cyan)'}},k.fin_public?k.fin_public+'M\u20AC':'\u2014'),
               React.createElement('td',{style:{textAlign:'right',padding:'12px 10px'}},
                 React.createElement('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
-                  background:ok?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+                  background:ok?'rgba(9,188,138,.12)':'rgba(232,90,90,.12)',
                   color:ok?'var(--c-green)':'var(--c-red)'}},(ok?'Fav.':'D\u00E9f.')+' '+Math.abs(k.ecart_budget).toFixed(1)+'M\u20AC')
               )
             );
@@ -1354,7 +1493,7 @@ var VueConsolidee = function(){
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'45.1M\u20AC'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'3.2M\u20AC'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},'7.1%'),
-            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},'2 050'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},'680'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-green)',fontWeight:600}},'97.1%'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-cyan)',fontWeight:600}},'19.6M\u20AC'),
             React.createElement('td',{style:{textAlign:'right',padding:'12px 10px'}},
@@ -1388,7 +1527,7 @@ var VueConsolidee = function(){
         React.createElement(SectionTitle,{title:'Effectifs par entit\u00E9',sub:'ETP \u2014 exercice 2025'}),
         React.createElement('div',{className:'space-y-3 mt-2'},
           ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
-            var pct=Math.round(KPI_DATA[e.id].effectifs/1957*100);
+            var pct=Math.round(KPI_DATA[e.id].effectifs/KPI_DATA.groupe.effectifs*100);
             return React.createElement('div',{key:i},
               React.createElement('div',{className:'flex justify-between mb-1'},
                 React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},e.icon+' '+e.label.split('\u2014')[0].trim()),
@@ -1488,7 +1627,7 @@ var VueReglementaire = function(){
         React.createElement('tbody',null,
           GRILLE_SAS.map(function(g,i){
             var isHighlight=g.code==='C6'||g.code==='C7';
-            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',background:isHighlight?'rgba(201,169,110,.06)':'transparent'}},
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',background:isHighlight?'rgba(226,6,19,.06)':'transparent'}},
               React.createElement('td',{style:{padding:'10px',fontFamily:'DM Mono,monospace',fontSize:13,fontWeight:isHighlight?700:400,color:isHighlight?'var(--c-gold)':'var(--c-text)'}},g.code+(isHighlight?' \u2190':'')),
               React.createElement('td',{style:{padding:'10px',fontSize:13,color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isHighlight?600:400}},g.intitule),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'var(--c-muted)'}},g.indice),
@@ -1539,6 +1678,249 @@ var VueReglementaire = function(){
 };
 
 /* ================================================================
+   TAB 10: PROJETS (Etude de faisabilit\u00E9)
+================================================================ */
+
+var VueProjets = function(){
+  var p=PROJET_DUDELANGE;
+  var inv=p.investissement;
+  var exp=p.exploitation;
+  var sc=p.scenarii;
+
+  /* Seuil de rentabilit\u00E9 chart data */
+  var seuilData=exp.montee_en_charge.map(function(a){
+    return {annee:a.annee,Produits:a.produits,Charges:a.charges,'R\u00E9sultat':a.resultat};
+  });
+
+  var cumInvest=[];
+  var cum=-inv.total;
+  exp.montee_en_charge.forEach(function(a){
+    cum+=a.resultat;
+    cumInvest.push({annee:a.annee,cumul:cum});
+  });
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    /* Header projet */
+    React.createElement('div',{className:'rounded-2xl p-6',style:{background:'linear-gradient(135deg, #000022 0%, #0f1118 100%)',border:'1px solid var(--c-border)',position:'relative',overflow:'hidden'}},
+      React.createElement('div',{style:{position:'absolute',top:0,right:0,width:250,height:'100%',background:'radial-gradient(circle at 90% 30%, rgba(226,6,19,.12) 0%, transparent 60%)',pointerEvents:'none'}}),
+      React.createElement('div',{className:'flex items-start justify-between',style:{position:'relative',zIndex:1}},
+        React.createElement('div',null,
+          React.createElement('div',{className:'flex items-center gap-3 mb-2'},
+            React.createElement('span',{style:{padding:'3px 12px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'rgba(226,6,19,.15)',color:'var(--c-gold)',fontWeight:600}},'NOUVEAU PROJET'),
+            React.createElement('span',{style:{padding:'3px 10px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'rgba(9,188,138,.12)',color:'var(--c-green)'}},p.statut)
+          ),
+          React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:22,fontWeight:700,color:'var(--c-text)',marginBottom:6}},p.nom),
+          React.createElement('div',{style:{fontSize:13,color:'var(--c-muted)',lineHeight:1.7,maxWidth:700}},p.contexte)
+        ),
+        React.createElement('div',{className:'text-right',style:{flexShrink:0}},
+          React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:32,fontWeight:900,color:'var(--c-gold)'}},inv.total+'k\u20AC'),
+          React.createElement('div',{style:{fontSize:11,color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},'Investissement total'),
+          React.createElement('div',{style:{fontSize:13,fontFamily:'DM Mono,monospace',color:'var(--c-green)',marginTop:8}},'\u{1F4CD} '+p.localisation),
+          React.createElement('div',{style:{fontSize:12,fontFamily:'DM Mono,monospace',color:'var(--c-muted)',marginTop:2}},p.capacite+' places \u00B7 '+p.surface)
+        )
+      )
+    ),
+
+    /* KPIs projet */
+    React.createElement('div',{className:'grid grid-cols-5 gap-4'},
+      React.createElement(KPICard,{label:'Capacit\u00E9 d\u2019accueil',value:p.capacite,unit:'places',color:'var(--c-gold)'}),
+      React.createElement(KPICard,{label:'Investissement',value:inv.total,unit:'k\u20AC',color:'var(--c-purple)'}),
+      React.createElement(KPICard,{label:'ETP \u00E0 maturit\u00E9',value:17,unit:'ETP',color:'var(--c-blue)'}),
+      React.createElement(KPICard,{label:'Exc\u00E9dent r\u00E9current',value:200,unit:'k\u20AC',delta:14.4,deltaUnit:'% marge',color:'var(--c-green)'}),
+      React.createElement(KPICard,{label:'Ouverture pr\u00E9vue',value:0,unit:'',delta:1,deltaUnit:' '+p.ouverture,color:'var(--c-orange)'})
+    ),
+
+    /* Plan de financement */
+    React.createElement('div',{className:'grid grid-cols-2 gap-4'},
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Plan de financement',sub:'R\u00E9partition de l\u2019investissement \u2014 k\u20AC'}),
+        React.createElement('div',{className:'space-y-3 mb-4'},
+          [{n:'Travaux & construction',v:inv.travaux,c:'var(--c-gold)'},{n:'Am\u00E9nagement int\u00E9rieur',v:inv.amenagement,c:'var(--c-blue)'},{n:'Mat\u00E9riel p\u00E9dagogique',v:inv.materiel,c:'var(--c-green)'},{n:'Frais divers & honoraires',v:inv.frais_divers,c:'var(--c-orange)'}].map(function(item,i){
+            var pct=Math.round(item.v/inv.total*100);
+            return React.createElement('div',{key:i},
+              React.createElement('div',{className:'flex justify-between mb-1'},
+                React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},item.n),
+                React.createElement('span',{className:'text-xs font-mono font-bold',style:{color:item.c}},item.v+'k\u20AC ('+pct+'%)')
+              ),
+              React.createElement('div',{style:{height:6,background:'var(--c-surface2)',borderRadius:3,overflow:'hidden'}},
+                React.createElement('div',{className:'progress-bar',style:{width:pct+'%',height:'100%',background:item.c,borderRadius:3}})
+              )
+            );
+          })
+        ),
+        React.createElement('div',{style:{borderTop:'1px solid var(--c-border)',paddingTop:12}},
+          React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-3',style:{color:'var(--c-muted)'}},'Sources de financement'),
+          React.createElement('div',{className:'space-y-2'},
+            inv.financement.map(function(f,i){
+              var colors=['var(--c-gold)','var(--c-blue)','var(--c-purple)'];
+              return React.createElement('div',{key:i,className:'flex items-center justify-between p-3 rounded-lg',style:{background:'var(--c-surface2)'}},
+                React.createElement('span',{className:'text-sm',style:{color:'var(--c-text)'}},f.source),
+                React.createElement('div',{className:'flex items-center gap-3'},
+                  React.createElement('span',{className:'font-mono text-sm font-bold',style:{color:colors[i]}},f.montant+'k\u20AC'),
+                  React.createElement('span',{className:'font-mono text-xs px-2 py-0.5 rounded',style:{background:colors[i]+'22',color:colors[i]}},f.pct+'%')
+                )
+              );
+            })
+          )
+        )
+      ),
+
+      /* Sc\u00E9narios */
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Analyse de sc\u00E9narios',sub:'Projections \u00E0 3 ans (Ann\u00E9e 3 = 2029)'}),
+        React.createElement('div',{className:'space-y-3'},
+          [{k:'optimiste',label:'Optimiste',color:'var(--c-green)',icon:'\u25B2'},{k:'central',label:'Central',color:'var(--c-orange)',icon:'\u25C6'},{k:'pessimiste',label:'Pessimiste',color:'var(--c-red)',icon:'\u25BC'}].map(function(s){
+            var d=sc[s.k];
+            return React.createElement('div',{key:s.k,className:'rounded-lg p-4',style:{background:'var(--c-surface2)',border:s.k==='central'?'1px solid var(--c-gold)':'1px solid var(--c-border)'}},
+              React.createElement('div',{className:'flex items-center justify-between mb-2'},
+                React.createElement('div',{className:'flex items-center gap-2'},
+                  React.createElement('span',{style:{color:s.color,fontSize:12}},s.icon),
+                  React.createElement('span',{className:'text-sm font-bold',style:{color:s.color}},s.label),
+                  s.k==='central'&&React.createElement('span',{style:{padding:'1px 6px',borderRadius:10,fontSize:9,background:'var(--c-gold)',color:'#fff',fontFamily:'DM Mono,monospace'}},'Retenu')
+                ),
+                React.createElement('span',{className:'font-mono text-sm font-bold',style:{color:s.color}},d.resultat_an3>0?'+':'',(d.resultat_an3)+'k\u20AC')
+              ),
+              React.createElement('div',{className:'grid grid-cols-4 gap-3 mt-2'},
+                [{l:'Taux An2',v:d.taux_an2+'%'},{l:'Produits An3',v:d.produits_an3+'k\u20AC'},{l:'TRI',v:d.tri},{l:'Payback',v:d.payback}].map(function(m,j){
+                  return React.createElement('div',{key:j,className:'text-center'},
+                    React.createElement('div',{className:'font-mono text-xs font-bold',style:{color:'var(--c-text)'}},m.v),
+                    React.createElement('div',{style:{fontSize:9,color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},m.l)
+                  );
+                })
+              )
+            );
+          })
+        ),
+        React.createElement('div',{style:{borderTop:'1px solid var(--c-border)',paddingTop:16,marginTop:16}},
+          React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-2',style:{color:'var(--c-muted)'}},'Matrice des risques'),
+          React.createElement('div',{className:'space-y-2'},
+            p.risques.map(function(r,i){
+              var rColors={'Faible':'var(--c-green)','Moyen':'var(--c-orange)','\u00C9lev\u00E9':'var(--c-red)'};
+              return React.createElement('div',{key:i,className:'flex items-center gap-3 p-2 rounded',style:{background:'var(--c-surface)'}},
+                React.createElement('span',{style:{padding:'2px 8px',borderRadius:12,fontSize:9,fontFamily:'DM Mono,monospace',background:rColors[r.probabilite]+'22',color:rColors[r.probabilite],minWidth:48,textAlign:'center'}},r.probabilite),
+                React.createElement('div',{className:'flex-1'},
+                  React.createElement('div',{className:'text-xs font-bold',style:{color:'var(--c-text)'}},r.risque),
+                  React.createElement('div',{style:{fontSize:10,color:'var(--c-muted)'}},r.mitigation)
+                )
+              );
+            })
+          )
+        )
+      )
+    ),
+
+    /* Business Plan 5 ans */
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'Business Plan \u2014 Mont\u00E9e en charge',sub:'Projection d\u2019exploitation sur 5 ans \u2014 k\u20AC'}),
+      React.createElement('div',{className:'grid grid-cols-2 gap-6'},
+        React.createElement('div',null,
+          React.createElement(ResponsiveContainer,{width:'100%',height:220},
+            React.createElement(ComposedChart,{data:seuilData,margin:{top:5,right:20,bottom:0,left:0}},
+              React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+              React.createElement(XAxis,{dataKey:'annee',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+              React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+              React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+              React.createElement(Bar,{dataKey:'Produits',name:'Produits',fill:'var(--c-green)',fillOpacity:0.7,radius:[3,3,0,0]}),
+              React.createElement(Bar,{dataKey:'Charges',name:'Charges',fill:'var(--c-red)',fillOpacity:0.5,radius:[3,3,0,0]}),
+              React.createElement(Line,{dataKey:'R\u00E9sultat',name:'R\u00E9sultat',stroke:'var(--c-gold)',strokeWidth:2.5,dot:{r:4,fill:'#E20613'},type:'monotone'})
+            )
+          )
+        ),
+        React.createElement('div',null,
+          React.createElement(ResponsiveContainer,{width:'100%',height:220},
+            React.createElement(ComposedChart,{data:cumInvest,margin:{top:5,right:20,bottom:0,left:0}},
+              React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+              React.createElement(XAxis,{dataKey:'annee',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+              React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+              React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+              React.createElement(Area,{type:'monotone',dataKey:'cumul',name:'Retour cumul\u00E9',stroke:'var(--c-purple)',fill:'var(--c-purple)',fillOpacity:0.15,strokeWidth:2.5}),
+              React.createElement(Line,{dataKey:function(){return 0;},name:'Seuil rentabilit\u00E9',stroke:'var(--c-muted)',strokeWidth:1,strokeDasharray:'6 3',dot:false})
+            )
+          ),
+          React.createElement('div',{className:'text-center mt-2'},
+            React.createElement('span',{className:'text-xs font-mono',style:{color:'var(--c-muted)'}},'Retour sur investissement cumul\u00E9 \u2014 seuil de rentabilit\u00E9 = 0')
+          )
+        )
+      ),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse',marginTop:20}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Ann\u00E9e','Places','Taux rempl.','ETP','Produits','Charges','R\u00E9sultat','Marge'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Ann\u00E9e'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 8px 10px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          exp.montee_en_charge.map(function(a,i){
+            var marge=(a.resultat/a.produits*100).toFixed(1);
+            var pos=a.resultat>=0;
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)'}},
+              React.createElement('td',{style:{padding:'8px',fontSize:12,fontWeight:600,color:'var(--c-text)'}},a.annee),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-text)'}},a.places_ouvertes),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:a.taux_remplissage>=90?'var(--c-green)':'var(--c-orange)'}},a.taux_remplissage+'%'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-purple)'}},a.etp),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-green)'}},a.produits+'k\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-red)'}},a.charges+'k\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',fontWeight:700,color:pos?'var(--c-green)':'var(--c-red)'}},(pos?'+':'')+a.resultat+'k\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:11,padding:'8px',color:pos?'var(--c-green)':'var(--c-red)'}},marge+'%')
+            );
+          })
+        )
+      )
+    ),
+
+    /* Hypoth\u00E8ses et structure */
+    React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Structure produits',sub:'R\u00E9partition \u00E0 maturit\u00E9'}),
+        React.createElement('div',{className:'space-y-2'},
+          exp.produits_detail.map(function(p,i){
+            var colors=['var(--c-green)','var(--c-gold)','var(--c-orange)','var(--c-muted)'];
+            return React.createElement('div',{key:i,className:'flex items-center justify-between p-2'},
+              React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},p.n),
+              React.createElement('div',{className:'flex items-center gap-2'},
+                React.createElement('div',{style:{width:50,height:4,background:'var(--c-surface2)',borderRadius:2,overflow:'hidden'}},
+                  React.createElement('div',{style:{width:p.pct+'%',height:'100%',background:colors[i],borderRadius:2}})
+                ),
+                React.createElement('span',{className:'font-mono text-xs',style:{color:colors[i],width:28,textAlign:'right'}},p.pct+'%')
+              )
+            );
+          })
+        )
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Structure charges',sub:'R\u00E9partition \u00E0 maturit\u00E9'}),
+        React.createElement('div',{className:'space-y-2'},
+          exp.charges_detail.map(function(c,i){
+            var colors=['var(--c-gold)','var(--c-orange)','var(--c-blue)','var(--c-cyan)','var(--c-muted)'];
+            return React.createElement('div',{key:i,className:'flex items-center justify-between p-2'},
+              React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},c.n),
+              React.createElement('div',{className:'flex items-center gap-2'},
+                React.createElement('div',{style:{width:50,height:4,background:'var(--c-surface2)',borderRadius:2,overflow:'hidden'}},
+                  React.createElement('div',{style:{width:c.pct+'%',height:'100%',background:colors[i],borderRadius:2}})
+                ),
+                React.createElement('span',{className:'font-mono text-xs',style:{color:colors[i],width:28,textAlign:'right'}},c.pct+'%')
+              )
+            );
+          })
+        )
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Hypoth\u00E8ses cl\u00E9s',sub:'Param\u00E8tres du mod\u00E8le'}),
+        React.createElement('div',{className:'space-y-2'},
+          exp.hypotheses.map(function(h,i){
+            return React.createElement('div',{key:i,className:'flex items-start gap-2 p-2',style:{borderBottom:'1px solid rgba(30,39,56,.2)'}},
+              React.createElement('span',{style:{color:'var(--c-gold)',fontSize:10,marginTop:2}},'\u25B8'),
+              React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)',lineHeight:1.5}},h)
+            );
+          })
+        )
+      )
+    )
+  );
+};
+
+/* ================================================================
    APP SHELL
 ================================================================ */
 
@@ -1570,6 +1952,7 @@ var App = function(){
     {id:'tresorerie',label:'Tr\u00E9sorerie'},
     {id:'budget',label:'Budget'},
     {id:'reglementaire',label:'Conv. SAS'},
+    {id:'projets',label:'Projets',accent:true},
     {id:'carte',label:'Carte'},
     {id:'consolidee',label:'Consolid\u00E9'},
     {id:'news',label:'News'+(newsCount>0?' ('+newsCount+')':''),alert:newsCount>0},
@@ -1579,7 +1962,7 @@ var App = function(){
     React.createElement('header',{style:{position:'sticky',top:0,zIndex:50,borderBottom:'1px solid var(--c-border)',background:'var(--c-header-bg)',backdropFilter:'blur(16px)'}},
       React.createElement('div',{style:{padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:64}},
         React.createElement('div',{style:{display:'flex',alignItems:'center',gap:14}},
-          React.createElement('div',{style:{width:38,height:38,background:'linear-gradient(135deg,#c9a96e,#8a6a3e)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}},'\u{1F339}'),
+          React.createElement('div',{style:{width:38,height:38,background:'linear-gradient(135deg,#E20613,#9b0410)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}},'\u{1F339}'),
           React.createElement('div',null,
             React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontWeight:700,fontSize:15,color:'var(--c-gold)',letterSpacing:'0.05em'}},'ELISABETH'),
             React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:10,color:'var(--c-muted)',letterSpacing:'0.12em',textTransform:'uppercase'}},'Contr\u00F4le de Gestion \u00B7 Dashboard')
@@ -1590,7 +1973,7 @@ var App = function(){
             return React.createElement('button',{key:v.id,onClick:function(){setView(v.id);},
               style:{padding:'6px 14px',fontSize:11,borderRadius:8,cursor:'pointer',border:'none',
                 background:view===v.id?'var(--c-gold)':'transparent',
-                color:view===v.id?'#0a0c10':v.alert?'var(--c-red)':'var(--c-muted)',
+                color:view===v.id?'#ffffff':v.alert?'var(--c-red)':v.accent?'var(--c-green)':'var(--c-muted)',
                 fontFamily:'DM Sans,sans-serif',fontWeight:view===v.id?700:500,transition:'all .2s'}},v.label);
           })
         ),
@@ -1621,7 +2004,7 @@ var App = function(){
         }),
         React.createElement('button',{onClick:function(){setView('consolidee');},
           style:{marginLeft:'auto',padding:'4px 14px',fontSize:11,borderRadius:20,border:'1px solid '+(view==='consolidee'?'var(--c-gold)':'var(--c-border)'),
-            background:view==='consolidee'?'rgba(201,169,110,.2)':'transparent',
+            background:view==='consolidee'?'rgba(226,6,19,.2)':'transparent',
             color:view==='consolidee'?'var(--c-gold)':'var(--c-muted)',fontFamily:'DM Mono,monospace',cursor:'pointer',flexShrink:0}},
           '\u229E Toutes entit\u00E9s'
         )
@@ -1634,6 +2017,7 @@ var App = function(){
       view==='tresorerie'&&React.createElement(VueTresorerie,{entity:entity}),
       view==='budget'&&React.createElement(VueBudget,{entity:entity}),
       view==='reglementaire'&&React.createElement(VueReglementaire,null),
+      view==='projets'&&React.createElement(VueProjets,null),
       view==='carte'&&React.createElement(VueCarte,{entity:entity,theme:theme}),
       view==='consolidee'&&React.createElement(VueConsolidee,null),
       view==='news'&&React.createElement(VueNews,{entityFilter:entity})
