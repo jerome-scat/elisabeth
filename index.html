@@ -83,13 +83,13 @@ const ENTITES = [
 ];
 
 const KPI_DATA = {
-  groupe:{ca:42.6,ebitda:8.3,resultat:4.1,effectifs:1957,taux_exec:96.3,ecart_budget:-0.4,subventions:18.2,benef_servis:12400},
-  anne:{ca:11.8,ebitda:2.1,resultat:1.0,effectifs:420,taux_exec:98.2,ecart_budget:+0.13,subventions:6.2,benef_servis:3800},
-  claire:{ca:7.4,ebitda:1.3,resultat:0.6,effectifs:280,taux_exec:95.5,ecart_budget:-0.05,subventions:3.8,benef_servis:2100},
-  marie:{ca:12.1,ebitda:2.6,resultat:1.2,effectifs:520,taux_exec:94.8,ecart_budget:-0.31,subventions:4.9,benef_servis:4200},
-  yolande:{ca:5.8,ebitda:1.1,resultat:0.5,effectifs:390,taux_exec:96.8,ecart_budget:+0.02,subventions:2.8,benef_servis:1900},
-  inclusion:{ca:1.3,ebitda:0.3,resultat:0.3,effectifs:167,taux_exec:99.1,ecart_budget:+0.02,subventions:0.5,benef_servis:400},
-  apollonia:{ca:4.2,ebitda:0.9,resultat:0.5,effectifs:180,taux_exec:97.1,ecart_budget:+0.1,subventions:0,benef_servis:0},
+  groupe:{produits:42.6,ebe:8.3,excedent:4.1,effectifs:1957,taux_exec:96.3,ecart_budget:-0.4,fin_public:18.2,benef:12400},
+  anne:{produits:11.8,ebe:2.1,excedent:1.0,effectifs:420,taux_exec:98.2,ecart_budget:+0.13,fin_public:6.2,benef:3800},
+  claire:{produits:7.4,ebe:1.3,excedent:0.6,effectifs:280,taux_exec:95.5,ecart_budget:-0.05,fin_public:3.8,benef:2100},
+  marie:{produits:12.1,ebe:2.6,excedent:1.2,effectifs:520,taux_exec:94.8,ecart_budget:-0.31,fin_public:4.9,benef:4200},
+  yolande:{produits:5.8,ebe:1.1,excedent:0.5,effectifs:390,taux_exec:96.8,ecart_budget:+0.02,fin_public:2.8,benef:1900},
+  inclusion:{produits:1.3,ebe:0.3,excedent:0.3,effectifs:167,taux_exec:99.1,ecart_budget:+0.02,fin_public:0.5,benef:400},
+  apollonia:{produits:4.2,ebe:0.9,excedent:0.5,effectifs:180,taux_exec:97.1,ecart_budget:+0.1,fin_public:0,benef:0},
 };
 
 const MONTHLY_DATA = {
@@ -121,9 +121,9 @@ const MONTHLY_DATA = {
 ['apollonia','claire','yolande','inclusion'].forEach(function(id){
   MONTHLY_DATA[id]=MONTHLY_DATA.groupe.map(function(d){return {
     m:d.m,
-    budget:Math.round(d.budget*KPI_DATA[id].ca/KPI_DATA.groupe.ca),
-    reel:d.reel?Math.round(d.reel*KPI_DATA[id].ca/KPI_DATA.groupe.ca):null,
-    n1:Math.round(d.n1*KPI_DATA[id].ca/KPI_DATA.groupe.ca)
+    budget:Math.round(d.budget*KPI_DATA[id].produits/KPI_DATA.groupe.produits),
+    reel:d.reel?Math.round(d.reel*KPI_DATA[id].produits/KPI_DATA.groupe.produits):null,
+    n1:Math.round(d.n1*KPI_DATA[id].produits/KPI_DATA.groupe.produits)
   };});
 });
 
@@ -149,7 +149,7 @@ const ECARTS_DATA = {
 };
 ['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
   var base=ECARTS_DATA.groupe.filter(function(d){return d.ent===id||d.ent==='groupe';});
-  ECARTS_DATA[id]=base.length?base:[{centre:'Budget op\u00E9rationnel',budget:Math.round(KPI_DATA[id].ca*1000),reel:Math.round(KPI_DATA[id].ca*1000*(KPI_DATA[id].taux_exec/100)),ent:id}];
+  ECARTS_DATA[id]=base.length?base:[{centre:'Budget op\u00E9rationnel',budget:Math.round(KPI_DATA[id].produits*1000),reel:Math.round(KPI_DATA[id].produits*1000*(KPI_DATA[id].taux_exec/100)),ent:id}];
 });
 
 const PL_DATA = {
@@ -172,7 +172,7 @@ const PL_DATA = {
   }
 };
 ['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
-  var r=KPI_DATA[id].ca/KPI_DATA.groupe.ca;
+  var r=KPI_DATA[id].produits/KPI_DATA.groupe.produits;
   PL_DATA[id]={
     produits:PL_DATA.groupe.produits.map(function(p){return {n:p.n,budget:Math.round(p.budget*r),reel:Math.round(p.reel*r),n1:Math.round(p.n1*r)};}),
     charges:PL_DATA.groupe.charges.map(function(c){return {n:c.n,budget:Math.round(c.budget*r),reel:Math.round(c.reel*r),n1:Math.round(c.n1*r)};})
@@ -196,9 +196,128 @@ const TREASURY_DATA = {
   ]
 };
 ['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
-  var r=KPI_DATA[id].ca/KPI_DATA.groupe.ca;
+  var r=KPI_DATA[id].produits/KPI_DATA.groupe.produits;
   TREASURY_DATA[id]=TREASURY_DATA.groupe.map(function(d){return {m:d.m,enc:Math.round(d.enc*r),dec:Math.round(d.dec*r),solde:Math.round(d.solde*r)};});
 });
+
+const FINANCEMENT = {
+  groupe:[
+    {source:'Subventions \u00C9tat (MFSVA)',montant:12.4,pct:29.1,color:'#c9a96e'},
+    {source:'Assurance d\u00E9pendance (CNS)',montant:5.8,pct:13.6,color:'#6e9ec9'},
+    {source:'Ch\u00E8ques-service accueil (CSA)',montant:8.2,pct:19.2,color:'#52c97a'},
+    {source:'Participations familles',montant:9.4,pct:22.1,color:'#e8a45a'},
+    {source:'Produits conventionn\u00E9s',montant:4.6,pct:10.8,color:'#a78bfa'},
+    {source:'Dons, legs & autres',montant:2.2,pct:5.2,color:'#38bdf8'},
+  ],
+  anne:[
+    {source:'Subventions \u00C9tat (MFSVA)',montant:3.2,pct:27.1,color:'#c9a96e'},
+    {source:'Ch\u00E8ques-service accueil (CSA)',montant:4.8,pct:40.7,color:'#52c97a'},
+    {source:'Participations familles',montant:2.6,pct:22.0,color:'#e8a45a'},
+    {source:'Autres produits',montant:1.2,pct:10.2,color:'#38bdf8'},
+  ],
+  claire:[
+    {source:'Assurance d\u00E9pendance (CNS)',montant:3.4,pct:45.9,color:'#6e9ec9'},
+    {source:'Subventions \u00C9tat',montant:1.8,pct:24.3,color:'#c9a96e'},
+    {source:'Participations r\u00E9sidents',montant:1.6,pct:21.6,color:'#e8a45a'},
+    {source:'Autres',montant:0.6,pct:8.1,color:'#38bdf8'},
+  ],
+};
+['marie','yolande','inclusion','apollonia'].forEach(function(id){
+  var r=KPI_DATA[id].produits/KPI_DATA.groupe.produits;
+  FINANCEMENT[id]=FINANCEMENT.groupe.map(function(f){
+    return {source:f.source,montant:+(f.montant*r).toFixed(1),pct:f.pct,color:f.color};
+  });
+});
+
+const KPIS_SOCIAL = {
+  groupe:[
+    {n:'Taux d\u2019occupation moyen',v:94.2,u:'%',trend:+1.8,target:95},
+    {n:'Ratio encadrement',v:'1/7.2',u:'',trend:-0.3,target:'1/7'},
+    {n:'Co\u00FBt/journ\u00E9e-b\u00E9n\u00E9ficiaire',v:62.8,u:'\u20AC',trend:+3.1,target:60},
+    {n:'Taux absent\u00E9isme',v:6.8,u:'%',trend:-0.4,target:5},
+    {n:'Heures supp./mois',v:2840,u:'h',trend:-120,target:2500},
+    {n:'Taux rotation personnel',v:13.2,u:'%',trend:-1.1,target:10},
+  ],
+  anne:[
+    {n:'Taux remplissage cr\u00E8ches',v:97.1,u:'%',trend:+2.2,target:95},
+    {n:'Ratio encadrement enfants',v:'1/8',u:'',trend:0,target:'1/8'},
+    {n:'Co\u00FBt/enfant/jour',v:48.2,u:'\u20AC',trend:+1.9,target:45},
+    {n:'Taux absent\u00E9isme',v:6.2,u:'%',trend:-0.5,target:5},
+    {n:'Heures supp./mois',v:340,u:'h',trend:-40,target:280},
+    {n:'Taux rotation',v:12.4,u:'%',trend:-0.8,target:10},
+  ],
+  claire:[
+    {n:'Taux occupation EHPAD',v:92.8,u:'%',trend:+0.5,target:95},
+    {n:'Ratio encadrement seniors',v:'1/5',u:'',trend:0,target:'1/4.5'},
+    {n:'Co\u00FBt/r\u00E9sident/jour',v:89.4,u:'\u20AC',trend:+3.1,target:85},
+    {n:'Taux absent\u00E9isme',v:7.8,u:'%',trend:-0.3,target:5},
+    {n:'Heures supp./mois',v:520,u:'h',trend:+30,target:400},
+    {n:'Taux rotation',v:15.2,u:'%',trend:-0.6,target:10},
+  ],
+  marie:[
+    {n:'Taux inscription',v:98.5,u:'%',trend:+1.2,target:100},
+    {n:'Ratio enseignants/\u00E9l\u00E8ves',v:'1/12',u:'',trend:0,target:'1/10'},
+    {n:'Co\u00FBt/\u00E9l\u00E8ve/an',v:8.4,u:'k\u20AC',trend:+0.5,target:8},
+    {n:'Taux absent\u00E9isme',v:4.5,u:'%',trend:-0.2,target:4},
+    {n:'Heures supp./mois',v:180,u:'h',trend:-20,target:150},
+    {n:'Taux rotation',v:8.8,u:'%',trend:-1.2,target:8},
+  ],
+  yolande:[
+    {n:'Taux occupation ateliers',v:91.5,u:'%',trend:+1.0,target:93},
+    {n:'Ratio encadrement',v:'1/4',u:'',trend:0,target:'1/3.5'},
+    {n:'Co\u00FBt/b\u00E9n\u00E9ficiaire/jour',v:74.6,u:'\u20AC',trend:+2.8,target:70},
+    {n:'Taux absent\u00E9isme',v:7.2,u:'%',trend:-0.6,target:5},
+    {n:'Heures supp./mois',v:410,u:'h',trend:-50,target:350},
+    {n:'Taux rotation',v:14.1,u:'%',trend:-0.9,target:10},
+  ],
+  inclusion:[
+    {n:'Taux occupation boutique',v:88.0,u:'%',trend:+3.5,target:90},
+    {n:'Ratio encadrement',v:'1/6',u:'',trend:0,target:'1/5'},
+    {n:'Co\u00FBt/b\u00E9n\u00E9ficiaire/jour',v:55.2,u:'\u20AC',trend:+1.4,target:50},
+    {n:'Taux absent\u00E9isme',v:5.1,u:'%',trend:-0.8,target:5},
+    {n:'Heures supp./mois',v:85,u:'h',trend:-15,target:70},
+    {n:'Taux rotation',v:9.5,u:'%',trend:-1.5,target:8},
+  ],
+  apollonia:[
+    {n:'Taux utilisation SI',v:87.3,u:'%',trend:+4.2,target:90},
+    {n:'D\u00E9lai cl\u00F4ture mensuelle',v:8,u:'jours',trend:-2,target:5},
+    {n:'Nb rapports/mois',v:24,u:'',trend:+3,target:20},
+    {n:'Taux absent\u00E9isme',v:4.2,u:'%',trend:-0.3,target:4},
+    {n:'Heures supp./mois',v:120,u:'h',trend:-30,target:100},
+    {n:'Taux rotation',v:6.5,u:'%',trend:-0.5,target:6},
+  ],
+};
+
+const GRILLE_SAS = [
+  {code:'C1',intitule:'Agent d\u2019ex\u00E9cution',indice:100,salaire:2570,effectifs:245,pct:12.5},
+  {code:'C2',intitule:'Agent qualifi\u00E9',indice:130,salaire:3341,effectifs:412,pct:21.1},
+  {code:'C3',intitule:'Agent hautement qualifi\u00E9',indice:155,salaire:3983,effectifs:385,pct:19.7},
+  {code:'C4',intitule:'Technicien',indice:180,salaire:4626,effectifs:348,pct:17.8},
+  {code:'C5',intitule:'Technicien sup\u00E9rieur',indice:220,salaire:5654,effectifs:267,pct:13.6},
+  {code:'C6',intitule:'Cadre (CDG)',indice:260,salaire:6682,effectifs:178,pct:9.1},
+  {code:'C7',intitule:'Cadre sup\u00E9rieur',indice:310,salaire:7967,effectifs:89,pct:4.5},
+  {code:'C8',intitule:'Direction',indice:370,salaire:9509,effectifs:33,pct:1.7},
+];
+const SAS_INFO = {biennale:2.0,indice:944.43,prochaine:'T2 2025 (estim\u00E9)',impact_tranche:'+2.1M\u20AC masse salariale',masse:22800};
+
+const PLAN_PLURIANNUEL = [
+  {annee:2023,produits:39.6,charges:36.2,excedent:3.4,effectifs:1868,invest:2.8,benef:11200},
+  {annee:2024,produits:42.6,charges:38.5,excedent:4.1,effectifs:1957,invest:3.2,benef:12400},
+  {annee:2025,produits:45.1,charges:40.8,excedent:4.3,effectifs:2050,invest:4.8,benef:13100},
+  {annee:2026,produits:47.8,charges:43.2,excedent:4.6,effectifs:2150,invest:5.2,benef:13800},
+  {annee:2027,produits:50.2,charges:45.4,excedent:4.8,effectifs:2240,invest:3.6,benef:14500},
+  {annee:2028,produits:52.8,charges:47.6,excedent:5.2,effectifs:2320,invest:2.8,benef:15200},
+];
+
+const VEILLE_REGLEMENTAIRE = [
+  {date:'F\u00E9v 2025',titre:'Revalorisation indice co\u00FBt de la vie +2.5%',impact:'+1.1M\u20AC masse salariale annuelle',type:'Conv. SAS',risque:'\u00E9lev\u00E9',color:'#e85a5a'},
+  {date:'Mar 2025',titre:'Nouveau ratio encadrement cr\u00E8ches 1/6 (MFSVA)',impact:'+45 ETP n\u00E9cessaires, +2.4M\u20AC/an',type:'MFSVA',risque:'\u00E9lev\u00E9',color:'#e85a5a'},
+  {date:'Avr 2025',titre:'Revalorisation CSA ch\u00E8ques-service +3.2%',impact:'+260k\u20AC produits annuels',type:'CSA',risque:'favorable',color:'#52c97a'},
+  {date:'Jun 2025',titre:'R\u00E9forme assurance d\u00E9pendance \u2014 hausse bar\u00E8mes',impact:'+380k\u20AC pour p\u00F4le Seniors',type:'CNS',risque:'favorable',color:'#52c97a'},
+  {date:'Sep 2025',titre:'Biennales automatiques \u2014 progression \u00E9chelons',impact:'+420k\u20AC masse salariale',type:'Conv. SAS',risque:'moyen',color:'#e8a45a'},
+  {date:'Jan 2026',titre:'CSRD \u2014 reporting extra-financier obligatoire',impact:'Co\u00FBt estim\u00E9 150k\u20AC mise en conformit\u00E9',type:'EU/RSE',risque:'moyen',color:'#e8a45a'},
+  {date:'Jan 2026',titre:'Plan comptable normalis\u00E9 secteur social',impact:'Migration SI estim\u00E9e 6 mois',type:'Comptabilit\u00E9',risque:'moyen',color:'#e8a45a'},
+];
 
 const INDICATORS = {
   groupe:[
@@ -225,56 +344,56 @@ const INDICATORS = {
 });
 
 const INSTITUTIONS = [
-  {name:'Cr\u00E8che A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.991,entity:'anne',tel:'+352 99 80 81'},
-  {name:'Cr\u00E8che Beim Musekshaus',loc:'Bissen',lat:49.787,lng:6.067,entity:'anne',tel:'+352 83 55 21'},
-  {name:'Cr\u00E8che Bim Bam',loc:'Schieren',lat:49.829,lng:6.091,entity:'anne',tel:'+352 81 91 50'},
-  {name:'Cr\u00E8che Cocon',loc:'Weiswampach',lat:50.139,lng:6.076,entity:'anne',tel:'+352 99 85 30'},
-  {name:'Cr\u00E8che Dappeshaus',loc:'Bettendorf',lat:49.838,lng:6.220,entity:'anne',tel:'+352 80 31 21'},
-  {name:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',lat:49.600,lng:6.122,entity:'anne',tel:'+352 26 44 11'},
-  {name:'Cr\u00E8che Loukl\u00EBppelcher',loc:'Reuler',lat:50.067,lng:6.033,entity:'anne',tel:'+352 99 74 61'},
-  {name:'Cr\u00E8che Margr\u00E9itchen',loc:'Bissen',lat:49.788,lng:6.068,entity:'anne',tel:'+352 83 55 22'},
-  {name:'Cr\u00E8che St\u00E4renhaus',loc:'Bettembourg',lat:49.518,lng:6.103,entity:'anne',tel:'+352 51 99 73'},
-  {name:'Garderie Butzenhaff',loc:'Cruchten',lat:49.783,lng:6.117,entity:'anne',tel:'+352 83 00 72'},
-  {name:'Internat Priv\u00E9 Ste Elisabeth',loc:'Troisvierges',lat:50.122,lng:5.990,entity:'anne',tel:'+352 99 80 80'},
-  {name:'Jugendhaus Mutfert',loc:'Moutfort',lat:49.587,lng:6.257,entity:'anne',tel:'+352 26 35 01'},
-  {name:'Maison de Jeunes Duelem',loc:'Dahlheim',lat:49.557,lng:6.257,entity:'anne',tel:'+352 26 35 02'},
-  {name:'Jugendhaus Nidderaanwen',loc:'Niederanven',lat:49.650,lng:6.267,entity:'anne',tel:'+352 26 34 01'},
-  {name:'Jugendtreff Norden',loc:'Troisvierges',lat:50.120,lng:5.992,entity:'anne',tel:'+352 99 80 82'},
-  {name:'Kannerland Foyer de Jour',loc:'Luxembourg',lat:49.605,lng:6.125,entity:'anne',tel:'+352 26 44 12'},
-  {name:'Maison Relais A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.993,entity:'anne',tel:'+352 99 80 83'},
-  {name:'Maison Relais Bous',loc:'Bous',lat:49.527,lng:6.317,entity:'anne',tel:'+352 26 70 41'},
-  {name:'Maison Relais Conter',loc:'Contern',lat:49.565,lng:6.227,entity:'anne',tel:'+352 26 35 03'},
-  {name:'Maison Relais Dappeshaus',loc:'Bettendorf',lat:49.837,lng:6.221,entity:'anne',tel:'+352 80 31 22'},
-  {name:'Maison Relais Fr\u00E9iseng',loc:'Frisange',lat:49.508,lng:6.187,entity:'anne',tel:'+352 23 66 81'},
-  {name:'Maison Relais Kuarreg\u00E4rtchen',loc:'Weiswampach',lat:50.140,lng:6.077,entity:'anne',tel:'+352 99 85 31'},
-  {name:'Maison Relais Munneref',loc:'Mondorf-les-Bains',lat:49.505,lng:6.282,entity:'anne',tel:'+352 23 66 82'},
-  {name:'Maison Relais Noumer',loc:'Nommern',lat:49.793,lng:6.153,entity:'anne',tel:'+352 87 81 01'},
-  {name:'Maison Relais International School',loc:'Reuler',lat:50.068,lng:6.034,entity:'anne',tel:'+352 99 74 62'},
-  {name:'Maison Relais Rousennascht',loc:'Schieren',lat:49.830,lng:6.092,entity:'anne',tel:'+352 81 91 51'},
-  {name:'Maison Relais Schoulkauz',loc:'Wilwerwiltz',lat:49.983,lng:5.950,entity:'anne',tel:'+352 95 81 41'},
-  {name:'Maison Relais Un der Atert',loc:'Bissen',lat:49.786,lng:6.066,entity:'anne',tel:'+352 83 55 23'},
-  {name:'SEA An de Wolleken',loc:'Dalheim',lat:49.556,lng:6.258,entity:'anne',tel:'+352 26 35 04'},
-  {name:'SEA Bei de Kaweechelcher',loc:'Aspelt',lat:49.503,lng:6.217,entity:'anne',tel:'+352 23 66 83'},
-  {name:'SEA Kannerstuff',loc:'Eschdorf',lat:49.892,lng:5.933,entity:'anne',tel:'+352 89 93 01'},
-  {name:'SEA Piccolini',loc:'Colmarberg',lat:49.802,lng:6.058,entity:'anne',tel:'+352 83 55 24'},
-  {name:'Spillk\u00EBscht Mutfert',loc:'Moutfort',lat:49.586,lng:6.258,entity:'anne',tel:'+352 26 35 05'},
-  {name:'SEA Am Kiischtennascht',loc:'Trintange',lat:49.567,lng:6.270,entity:'anne',tel:'+352 26 35 06'},
-  {name:'SEA An der Loup\u00EBscht',loc:'Junglinster',lat:49.712,lng:6.250,entity:'anne',tel:'+352 78 87 01'},
-  {name:'Club Aktiv Plus deForum',loc:'Bettembourg',lat:49.519,lng:6.104,entity:'claire',tel:'+352 51 99 74'},
-  {name:'Foyer Ste Elisabeth',loc:'Bettembourg',lat:49.517,lng:6.102,entity:'claire',tel:'+352 51 99 75'},
-  {name:'Haaptmann\'s Schlass',loc:'Berbourg',lat:49.717,lng:6.367,entity:'claire',tel:'+352 71 02 01'},
-  {name:'Ste Elisabeth Am Park',loc:'Luxembourg',lat:49.610,lng:6.128,entity:'claire',tel:'+352 26 44 13'},
-  {name:'Sacr\u00E9-Coeur',loc:'Diekirch',lat:49.868,lng:6.158,entity:'claire',tel:'+352 80 31 23'},
-  {name:'\u00C9cole Priv\u00E9e Marie-Consolatrice',loc:'Esch-sur-Alzette',lat:49.495,lng:5.982,entity:'marie',tel:'+352 55 01 11'},
-  {name:'Institut St Joseph',loc:'Betzdorf',lat:49.683,lng:6.350,entity:'yolande',tel:'+352 71 02 02'},
-  {name:'Am Klouschter',loc:'Mondorf-les-Bains',lat:49.506,lng:6.283,entity:'yolande',tel:'+352 23 66 84'},
-  {name:'De Seefenatelier',loc:'Betzdorf',lat:49.684,lng:6.351,entity:'yolande',tel:'+352 71 02 03'},
-  {name:'Evergreen',loc:'Betzdorf',lat:49.685,lng:6.349,entity:'yolande',tel:'+352 71 02 04'},
-  {name:'P\u00E4iperleksgaart',loc:'Grevenmacher',lat:49.677,lng:6.442,entity:'yolande',tel:'+352 75 01 01'},
-  {name:'De Kichenatelier',loc:'Mondorf-les-Bains',lat:49.507,lng:6.284,entity:'yolande',tel:'+352 23 66 85'},
-  {name:'Klouschterbrout',loc:'Mondorf-les-Bains',lat:49.504,lng:6.281,entity:'yolande',tel:'+352 23 66 86'},
-  {name:'Duerfbuttek "beim Lis"',loc:'Roodt-sur-Syre',lat:49.667,lng:6.367,entity:'inclusion',tel:'+352 71 02 05'},
-  {name:'Si\u00E8ge & Administration',loc:'Luxembourg',lat:49.612,lng:6.132,entity:'apollonia',tel:'+352 26 44 10'},
+  {name:'Cr\u00E8che A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.991,entity:'anne',tel:'+352 99 80 81',budget:415,eff:24},
+  {name:'Cr\u00E8che Beim Musekshaus',loc:'Bissen',lat:49.787,lng:6.067,entity:'anne',tel:'+352 83 55 21',budget:448,eff:26},
+  {name:'Cr\u00E8che Bim Bam',loc:'Schieren',lat:49.829,lng:6.091,entity:'anne',tel:'+352 81 91 50',budget:375,eff:22},
+  {name:'Cr\u00E8che Cocon',loc:'Weiswampach',lat:50.139,lng:6.076,entity:'anne',tel:'+352 99 85 30',budget:392,eff:23},
+  {name:'Cr\u00E8che Dappeshaus',loc:'Bettendorf',lat:49.838,lng:6.220,entity:'anne',tel:'+352 80 31 21',budget:428,eff:25},
+  {name:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',lat:49.600,lng:6.122,entity:'anne',tel:'+352 26 44 11',budget:528,eff:29},
+  {name:'Cr\u00E8che Loukl\u00EBppelcher',loc:'Reuler',lat:50.067,lng:6.033,entity:'anne',tel:'+352 99 74 61',budget:358,eff:21},
+  {name:'Cr\u00E8che Margr\u00E9itchen',loc:'Bissen',lat:49.788,lng:6.068,entity:'anne',tel:'+352 83 55 22',budget:442,eff:26},
+  {name:'Cr\u00E8che St\u00E4renhaus',loc:'Bettembourg',lat:49.518,lng:6.103,entity:'anne',tel:'+352 51 99 73',budget:505,eff:28},
+  {name:'Garderie Butzenhaff',loc:'Cruchten',lat:49.783,lng:6.117,entity:'anne',tel:'+352 83 00 72',budget:185,eff:9},
+  {name:'Internat Priv\u00E9 Ste Elisabeth',loc:'Troisvierges',lat:50.122,lng:5.990,entity:'anne',tel:'+352 99 80 80',budget:485,eff:26},
+  {name:'Jugendhaus Mutfert',loc:'Moutfort',lat:49.587,lng:6.257,entity:'anne',tel:'+352 26 35 01',budget:325,eff:18},
+  {name:'Maison de Jeunes Duelem',loc:'Dahlheim',lat:49.557,lng:6.257,entity:'anne',tel:'+352 26 35 02',budget:245,eff:14},
+  {name:'Jugendhaus Nidderaanwen',loc:'Niederanven',lat:49.650,lng:6.267,entity:'anne',tel:'+352 26 34 01',budget:348,eff:19},
+  {name:'Jugendtreff Norden',loc:'Troisvierges',lat:50.120,lng:5.992,entity:'anne',tel:'+352 99 80 82',budget:218,eff:12},
+  {name:'Kannerland Foyer de Jour',loc:'Luxembourg',lat:49.605,lng:6.125,entity:'anne',tel:'+352 26 44 12',budget:335,eff:15},
+  {name:'Maison Relais A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.993,entity:'anne',tel:'+352 99 80 83',budget:518,eff:30},
+  {name:'Maison Relais Bous',loc:'Bous',lat:49.527,lng:6.317,entity:'anne',tel:'+352 26 70 41',budget:455,eff:27},
+  {name:'Maison Relais Conter',loc:'Contern',lat:49.565,lng:6.227,entity:'anne',tel:'+352 26 35 03',budget:672,eff:36},
+  {name:'Maison Relais Dappeshaus',loc:'Bettendorf',lat:49.837,lng:6.221,entity:'anne',tel:'+352 80 31 22',budget:478,eff:28},
+  {name:'Maison Relais Fr\u00E9iseng',loc:'Frisange',lat:49.508,lng:6.187,entity:'anne',tel:'+352 23 66 81',budget:545,eff:32},
+  {name:'Maison Relais Kuarreg\u00E4rtchen',loc:'Weiswampach',lat:50.140,lng:6.077,entity:'anne',tel:'+352 99 85 31',budget:412,eff:24},
+  {name:'Maison Relais Munneref',loc:'Mondorf-les-Bains',lat:49.505,lng:6.282,entity:'anne',tel:'+352 23 66 82',budget:618,eff:34},
+  {name:'Maison Relais Noumer',loc:'Nommern',lat:49.793,lng:6.153,entity:'anne',tel:'+352 87 81 01',budget:398,eff:23},
+  {name:'Maison Relais International School',loc:'Reuler',lat:50.068,lng:6.034,entity:'anne',tel:'+352 99 74 62',budget:665,eff:37},
+  {name:'Maison Relais Rousennascht',loc:'Schieren',lat:49.830,lng:6.092,entity:'anne',tel:'+352 81 91 51',budget:505,eff:30},
+  {name:'Maison Relais Schoulkauz',loc:'Wilwerwiltz',lat:49.983,lng:5.950,entity:'anne',tel:'+352 95 81 41',budget:442,eff:26},
+  {name:'Maison Relais Un der Atert',loc:'Bissen',lat:49.786,lng:6.066,entity:'anne',tel:'+352 83 55 23',budget:525,eff:30},
+  {name:'SEA An de Wolleken',loc:'Dalheim',lat:49.556,lng:6.258,entity:'anne',tel:'+352 26 35 04',budget:418,eff:25},
+  {name:'SEA Bei de Kaweechelcher',loc:'Aspelt',lat:49.503,lng:6.217,entity:'anne',tel:'+352 23 66 83',budget:355,eff:20},
+  {name:'SEA Kannerstuff',loc:'Eschdorf',lat:49.892,lng:5.933,entity:'anne',tel:'+352 89 93 01',budget:502,eff:28},
+  {name:'SEA Piccolini',loc:'Colmarberg',lat:49.802,lng:6.058,entity:'anne',tel:'+352 83 55 24',budget:378,eff:22},
+  {name:'Spillk\u00EBscht Mutfert',loc:'Moutfort',lat:49.586,lng:6.258,entity:'anne',tel:'+352 26 35 05',budget:395,eff:23},
+  {name:'SEA Am Kiischtennascht',loc:'Trintange',lat:49.567,lng:6.270,entity:'anne',tel:'+352 26 35 06',budget:445,eff:26},
+  {name:'SEA An der Loup\u00EBscht',loc:'Junglinster',lat:49.712,lng:6.250,entity:'anne',tel:'+352 78 87 01',budget:572,eff:31},
+  {name:'Club Aktiv Plus deForum',loc:'Bettembourg',lat:49.519,lng:6.104,entity:'claire',tel:'+352 51 99 74',budget:1150,eff:48},
+  {name:'Foyer Ste Elisabeth',loc:'Bettembourg',lat:49.517,lng:6.102,entity:'claire',tel:'+352 51 99 75',budget:3780,eff:153},
+  {name:'Haaptmann\'s Schlass',loc:'Berbourg',lat:49.717,lng:6.367,entity:'claire',tel:'+352 71 02 01',budget:2880,eff:117},
+  {name:'Ste Elisabeth Am Park',loc:'Luxembourg',lat:49.610,lng:6.128,entity:'claire',tel:'+352 26 44 13',budget:3500,eff:138},
+  {name:'Sacr\u00E9-Coeur',loc:'Diekirch',lat:49.868,lng:6.158,entity:'claire',tel:'+352 80 31 23',budget:2700,eff:106},
+  {name:'\u00C9cole Priv\u00E9e Marie-Consolatrice',loc:'Esch-sur-Alzette',lat:49.495,lng:5.982,entity:'marie',tel:'+352 55 01 11',budget:3290,eff:85},
+  {name:'Institut St Joseph',loc:'Betzdorf',lat:49.683,lng:6.350,entity:'yolande',tel:'+352 71 02 02',budget:1660,eff:86},
+  {name:'Am Klouschter',loc:'Mondorf-les-Bains',lat:49.506,lng:6.283,entity:'yolande',tel:'+352 23 66 84',budget:1170,eff:55},
+  {name:'De Seefenatelier',loc:'Betzdorf',lat:49.684,lng:6.351,entity:'yolande',tel:'+352 71 02 03',budget:435,eff:25},
+  {name:'Evergreen',loc:'Betzdorf',lat:49.685,lng:6.349,entity:'yolande',tel:'+352 71 02 04',budget:358,eff:20},
+  {name:'P\u00E4iperleksgaart',loc:'Grevenmacher',lat:49.677,lng:6.442,entity:'yolande',tel:'+352 75 01 01',budget:485,eff:30},
+  {name:'De Kichenatelier',loc:'Mondorf-les-Bains',lat:49.507,lng:6.284,entity:'yolande',tel:'+352 23 66 85',budget:342,eff:19},
+  {name:'Klouschterbrout',loc:'Mondorf-les-Bains',lat:49.504,lng:6.281,entity:'yolande',tel:'+352 23 66 86',budget:395,eff:23},
+  {name:'Duerfbuttek "beim Lis"',loc:'Roodt-sur-Syre',lat:49.667,lng:6.367,entity:'inclusion',tel:'+352 71 02 05',budget:185,eff:12},
+  {name:'Si\u00E8ge & Administration',loc:'Luxembourg',lat:49.612,lng:6.132,entity:'apollonia',tel:'+352 26 44 10',budget:5000,eff:182},
 ];
 
 const NEWS = [
@@ -437,16 +556,16 @@ var VueSynthese = function(props){
     React.createElement('div',null,
       React.createElement(SectionTitle,{title:'Indicateurs cl\u00E9s',sub:'Exercice 2024 \u2014 '+ent.label}),
       React.createElement('div',{className:'grid grid-cols-4 gap-4'},
-        React.createElement(KPICard,{label:"Chiffre d'affaires",value:kpi.ca,unit:'M\u20AC',delta:7.2,deltaUnit:'%',color:ent.color}),
-        React.createElement(KPICard,{label:'EBITDA',value:kpi.ebitda,unit:'M\u20AC',delta:+(kpi.ebitda/kpi.ca*100).toFixed(1),deltaUnit:'% marge',color:'var(--c-blue)'}),
-        React.createElement(KPICard,{label:'R\u00E9sultat net',value:kpi.resultat,unit:'M\u20AC',delta:12.4,deltaUnit:'%',color:'var(--c-green)'}),
-        React.createElement(KPICard,{label:'Effectifs',value:kpi.effectifs,unit:'ETP',delta:89,deltaUnit:' recr.',color:'var(--c-purple)'})
+        React.createElement(KPICard,{label:'Produits totaux',value:kpi.produits,unit:'M\u20AC',delta:7.2,deltaUnit:'%',color:ent.color}),
+        React.createElement(KPICard,{label:'Exc\u00E9dent brut (EBE)',value:kpi.ebe,unit:'M\u20AC',delta:+(kpi.ebe/kpi.produits*100).toFixed(1),deltaUnit:'% taux',color:'var(--c-blue)'}),
+        React.createElement(KPICard,{label:'Exc\u00E9dent d\u2019exercice',value:kpi.excedent,unit:'M\u20AC',delta:12.4,deltaUnit:'%',color:'var(--c-green)'}),
+        React.createElement(KPICard,{label:'Effectifs (Conv. SAS)',value:kpi.effectifs,unit:'ETP',delta:89,deltaUnit:' recr.',color:'var(--c-purple)'})
       ),
       React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-4'},
         React.createElement(KPICard,{label:"Taux d'ex\u00E9cution",value:kpi.taux_exec,unit:'%',delta:+(kpi.taux_exec-95).toFixed(1),deltaUnit:' pts',color:ent.color}),
         React.createElement(KPICard,{label:'\u00C9cart budget',value:Math.abs(kpi.ecart_budget),unit:'M\u20AC',delta:kpi.ecart_budget<0?-1:1,deltaUnit:kpi.ecart_budget<0?' d\u00E9f.':' fav.',color:kpi.ecart_budget<0?'var(--c-red)':'var(--c-green)'}),
-        React.createElement(KPICard,{label:'Subventions',value:kpi.subventions,unit:'M\u20AC',delta:3.2,deltaUnit:'%',color:'var(--c-cyan)'}),
-        React.createElement(KPICard,{label:'B\u00E9n\u00E9ficiaires',value:kpi.benef_servis,unit:'pers.',delta:340,deltaUnit:'',color:'var(--c-orange)'})
+        React.createElement(KPICard,{label:'Financement public',value:kpi.fin_public,unit:'M\u20AC',delta:3.2,deltaUnit:'%',color:'var(--c-cyan)'}),
+        React.createElement(KPICard,{label:'B\u00E9n\u00E9ficiaires servis',value:kpi.benef,unit:'pers.',delta:340,deltaUnit:'',color:'var(--c-orange)'})
       )
     ),
     React.createElement('div',{className:'grid grid-cols-3 gap-4'},
@@ -511,6 +630,28 @@ var VueSynthese = function(props){
             );
           })
         )
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'Sources de financement',sub:'R\u00E9partition des produits par origine \u2014 '+ent.label}),
+      React.createElement('div',{style:{height:32,borderRadius:8,overflow:'hidden',display:'flex',marginBottom:16}},
+        (FINANCEMENT[entity]||FINANCEMENT.groupe).map(function(f,i){
+          return React.createElement('div',{key:i,style:{width:f.pct+'%',height:'100%',background:f.color,transition:'width .6s',position:'relative'},title:f.source+': '+f.montant+'M\u20AC ('+f.pct+'%)'},null);
+        })
+      ),
+      React.createElement('div',{className:'grid grid-cols-3 gap-3'},
+        (FINANCEMENT[entity]||FINANCEMENT.groupe).map(function(f,i){
+          return React.createElement('div',{key:i,className:'flex items-center gap-3 p-3 rounded-lg',style:{background:'var(--c-surface2)'}},
+            React.createElement('div',{style:{width:10,height:10,borderRadius:2,background:f.color,flexShrink:0}}),
+            React.createElement('div',{className:'flex-1'},
+              React.createElement('div',{className:'text-xs',style:{color:'var(--c-text)'}},f.source),
+              React.createElement('div',{className:'flex items-center gap-2 mt-1'},
+                React.createElement('span',{className:'font-mono text-sm font-bold',style:{color:f.color}},f.montant+'M\u20AC'),
+                React.createElement('span',{className:'font-mono text-xs',style:{color:'var(--c-muted)'}},f.pct+'%')
+              )
+            )
+          );
+        })
       )
     )
   );
@@ -591,7 +732,7 @@ var VuePL = function(props){
             )
           ),
           React.createElement('tr',null,
-            React.createElement('td',{style:{padding:'10px',fontSize:13,fontWeight:600,color:'var(--c-text)'}},'Marge nette (%)'),
+            React.createElement('td',{style:{padding:'10px',fontSize:13,fontWeight:600,color:'var(--c-text)'}},'Taux d\u2019exc\u00E9dent (%)'),
             [margeB/totalP('budget')*100,margeR/totalP('reel')*100,margeN/totalP('n1')*100].map(function(v,j){
               return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'10px',color:v>10?'var(--c-green)':'var(--c-orange)',fontWeight:600}},v.toFixed(1)+'%');
             }),
@@ -610,9 +751,9 @@ var VuePL = function(props){
 var VueAnalytique = function(props){
   var entity=props.entity;
   var ent=ENTITES.find(function(e){return e.id===entity;});
-  var indicators=INDICATORS[entity]||INDICATORS.groupe;
+  var kpis=KPIS_SOCIAL[entity]||KPIS_SOCIAL.groupe;
   var monthly=MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
-  var indColors=['#52c97a','#e8a45a','#6e9ec9','#c9a96e'];
+  var kpiColors=['#52c97a','#6e9ec9','#e8a45a','#e85a5a','#a78bfa','#c9a96e'];
 
   var areaData=monthly.map(function(d){
     return {m:d.m,
@@ -624,18 +765,31 @@ var VueAnalytique = function(props){
 
   return React.createElement('div',{className:'space-y-6 slide-up'},
     React.createElement('div',null,
-      React.createElement(SectionTitle,{title:'Indicateurs op\u00E9rationnels',sub:'Performance d\u00E9taill\u00E9e \u2014 '+ent.label}),
-      React.createElement('div',{className:'grid grid-cols-2 gap-4'},
-        indicators.map(function(ind,i){
-          var vals=monthly.map(function(d){return d.reel;});
-          return React.createElement('div',{key:i,className:'rounded-xl p-4 flex items-center gap-4',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
-            React.createElement('div',{style:{flexShrink:0}},
-              React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-1',style:{color:'var(--c-muted)'}},ind.n),
-              React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'var(--c-text)'}},ind.v+ind.u),
-              React.createElement(Delta,{v:ind.trend,suffix:ind.u==='%'||ind.u==='/100'?' pts':' '+ind.u})
+      React.createElement(SectionTitle,{title:'KPIs op\u00E9rationnels secteur social',sub:'Performance vs objectifs \u2014 '+ent.label}),
+      React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+        kpis.map(function(kpi,i){
+          var isLowerBetter=kpi.n.indexOf('absent')>=0||kpi.n.indexOf('rotation')>=0||kpi.n.indexOf('supp')>=0||kpi.n.indexOf('Co\u00FBt')>=0||kpi.n.indexOf('D\u00E9lai')>=0;
+          var numVal=typeof kpi.v==='string'?parseFloat(kpi.v.split('/')[1]||kpi.v):kpi.v;
+          var numTarget=typeof kpi.target==='string'?parseFloat(kpi.target.split('/')[1]||kpi.target):kpi.target;
+          var pctOfTarget=typeof kpi.v==='string'?85:isLowerBetter?Math.min(100,numTarget/numVal*100):Math.min(100,numVal/numTarget*100);
+          var onTrack=pctOfTarget>=90;
+          var color=kpiColors[i%kpiColors.length];
+          return React.createElement('div',{key:i,className:'card-hover rounded-xl p-5 relative overflow-hidden',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+            React.createElement('div',{style:{position:'absolute',bottom:0,left:0,right:0,height:'2px',background:color}}),
+            React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-2',style:{color:'var(--c-muted)'}},kpi.n),
+            React.createElement('div',{className:'flex items-end gap-3 mb-3'},
+              React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:28,fontWeight:700,color:'var(--c-text)'}},kpi.v+(kpi.u?' '+kpi.u:'')),
+              React.createElement(Delta,{v:kpi.trend,suffix:kpi.u==='%'?' pts':kpi.u?' '+kpi.u:''})
             ),
-            React.createElement('div',{style:{flex:1,display:'flex',justifyContent:'flex-end'}},
-              React.createElement(Sparkline,{values:vals.map(function(v){return v?v*(0.9+i*0.05):null;}),color:indColors[i]})
+            React.createElement('div',{className:'flex items-center gap-2 mb-2'},
+              React.createElement('div',{style:{flex:1,height:6,background:'var(--c-surface2)',borderRadius:3,overflow:'hidden'}},
+                React.createElement('div',{style:{width:pctOfTarget+'%',height:'100%',background:onTrack?'var(--c-green)':'var(--c-orange)',borderRadius:3,transition:'width 1s'}})
+              ),
+              React.createElement('span',{className:'font-mono text-xs',style:{color:onTrack?'var(--c-green)':'var(--c-orange)'}},Math.round(pctOfTarget)+'%')
+            ),
+            React.createElement('div',{className:'flex justify-between text-xs',style:{color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},
+              React.createElement('span',null,'Obj: '+kpi.target+(kpi.u?' '+kpi.u:'')),
+              React.createElement('span',{style:{color:onTrack?'var(--c-green)':'var(--c-orange)'}},onTrack?'\u2713 En ligne':'\u26A0 \u00C0 suivre')
             )
           );
         })
@@ -826,16 +980,54 @@ var VueBudget = function(props){
       makeSlider('Inflation',inflation,setInflation,0,5,0.1,'%','#e8a45a')
     ),
     React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-2'},
-      React.createElement(KPICard,{label:'CA projet\u00E9 2025',value:projCA,unit:'k\u20AC',delta:+((projCA/baseCA-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-gold)'}),
+      React.createElement(KPICard,{label:'Produits projet\u00E9s 2025',value:projCA,unit:'k\u20AC',delta:+((projCA/baseCA-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-gold)'}),
       React.createElement(KPICard,{label:'Masse salariale 2025',value:projMasse,unit:'k\u20AC',delta:+((projMasse/baseMasse-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-purple)'}),
-      React.createElement(KPICard,{label:'R\u00E9sultat net projet\u00E9',value:projResult,unit:'k\u20AC',delta:projResult>0?1:-1,deltaUnit:projResult>0?' exc\u00E9dent':' d\u00E9ficit',color:projResult>0?'var(--c-green)':'var(--c-red)'}),
-      React.createElement(KPICard,{label:'Marge nette',value:parseFloat(projMarge),unit:'%',delta:parseFloat(projMarge)>5?1:-1,deltaUnit:parseFloat(projMarge)>5?' saine':' attention',color:parseFloat(projMarge)>5?'var(--c-green)':'var(--c-orange)'})
+      React.createElement(KPICard,{label:'Exc\u00E9dent projet\u00E9',value:projResult,unit:'k\u20AC',delta:projResult>0?1:-1,deltaUnit:projResult>0?' exc\u00E9dent':' d\u00E9ficit',color:projResult>0?'var(--c-green)':'var(--c-red)'}),
+      React.createElement(KPICard,{label:'Taux d\u2019exc\u00E9dent',value:parseFloat(projMarge),unit:'%',delta:parseFloat(projMarge)>5?1:-1,deltaUnit:parseFloat(projMarge)>5?' sain':' attention',color:parseFloat(projMarge)>5?'var(--c-green)':'var(--c-orange)'})
     ),
     React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
-      React.createElement(SectionTitle,{title:'Synth\u00E8se de la projection',sub:'Impact des variables sur le budget 2025'}),
+      React.createElement(SectionTitle,{title:'Plan pluriannuel 2023\u20142028',sub:'Projection strat\u00E9gique \u2014 Groupe Elisabeth'}),
+      React.createElement(ResponsiveContainer,{width:'100%',height:220},
+        React.createElement(ComposedChart,{data:PLAN_PLURIANNUEL,margin:{top:5,right:20,bottom:0,left:0}},
+          React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+          React.createElement(XAxis,{dataKey:'annee',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+          React.createElement(Bar,{dataKey:'produits',name:'Produits M\u20AC',fill:'#c9a96e',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Bar,{dataKey:'charges',name:'Charges M\u20AC',fill:'#6e9ec9',fillOpacity:0.5,radius:[3,3,0,0]}),
+          React.createElement(Line,{dataKey:'excedent',name:'Exc\u00E9dent M\u20AC',stroke:'#52c97a',strokeWidth:2.5,dot:{r:4,fill:'#52c97a'},type:'monotone'})
+        )
+      ),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse',marginTop:16}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Ann\u00E9e','Produits','Charges','Exc\u00E9dent','Effectifs','Invest.','B\u00E9n\u00E9f.'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Ann\u00E9e'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 8px 8px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          PLAN_PLURIANNUEL.map(function(p,i){
+            var isCurrent=p.annee===2024;
+            var isFuture=p.annee>2024;
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',opacity:isFuture?0.7:1,background:isCurrent?'rgba(201,169,110,.06)':'transparent'}},
+              React.createElement('td',{style:{padding:'8px',fontSize:12,fontWeight:isCurrent?700:400,color:isCurrent?'var(--c-gold)':'var(--c-text)'}},p.annee+(isCurrent?' \u25C0':'')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-gold)'}},p.produits+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-blue)'}},p.charges+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-green)',fontWeight:600}},p.excedent+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-text)'}},p.effectifs.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-purple)'}},p.invest+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px',color:'var(--c-orange)'}},p.benef.toLocaleString('fr'))
+            );
+          })
+        )
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'Simulation budg\u00E9taire N+1',sub:'Impact des variables sur le budget 2025'}),
       React.createElement('div',{className:'space-y-3 mt-3'},
-        [{label:'Chiffre d\'affaires',base:baseCA,proj:projCA,color:'var(--c-gold)'},
-         {label:'Masse salariale',base:baseMasse,proj:projMasse,color:'var(--c-purple)'},
+        [{label:'Produits totaux',base:baseCA,proj:projCA,color:'var(--c-gold)'},
+         {label:'Masse salariale (Conv. SAS)',base:baseMasse,proj:projMasse,color:'var(--c-purple)'},
          {label:'Charges fonctionnement',base:baseChargesFonct,proj:projFonct,color:'var(--c-orange)'},
          {label:'R\u00E9sultat net',base:baseCA-baseMasse-baseChargesFonct,proj:projResult,color:projResult>0?'var(--c-green)':'var(--c-red)'}
         ].map(function(item,i){
@@ -887,16 +1079,22 @@ var VueCarte = function(props){
     mapInstance.current=map;
     tileRef.current=tile;
 
+    var maxBudget=Math.max.apply(null,INSTITUTIONS.map(function(inst){return inst.budget||100;}));
     filtered.forEach(function(inst){
       var ent=ENTITES.find(function(e){return e.id===inst.entity;});
       if(!ent) return;
+      var sz=Math.max(18,Math.min(44,18+26*(inst.budget||200)/maxBudget));
       var icon=L.divIcon({
         className:'',
-        html:'<div style="width:26px;height:26px;border-radius:50%;background:'+ent.color+';display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 8px rgba(0,0,0,.3)">'+ent.icon+'</div>',
-        iconSize:[26,26],iconAnchor:[13,13]
+        html:'<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+ent.color+';display:flex;align-items:center;justify-content:center;font-size:'+Math.round(sz*0.45)+'px;border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:0.85">'+ent.icon+'</div>',
+        iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
       });
       var marker=L.marker([inst.lat,inst.lng],{icon:icon}).addTo(map);
-      marker.bindPopup('<div style="font-family:DM Sans,sans-serif"><strong style="font-size:13px;color:'+ent.color+'">'+inst.name+'</strong><br/><span style="font-size:11px;opacity:.7">'+inst.loc+'</span><br/><span style="font-size:11px;opacity:.7">'+inst.tel+'</span><br/><span style="display:inline-block;margin-top:4px;padding:2px 8px;border-radius:12px;font-size:10px;background:'+ent.color+'22;color:'+ent.color+'">'+ent.label.split('\u2014')[0].trim()+'</span></div>');
+      var popupHtml='<div style="font-family:DM Sans,sans-serif"><strong style="font-size:13px;color:'+ent.color+'">'+inst.name+'</strong><br/><span style="font-size:11px;opacity:.7">'+inst.loc+'</span><br/><span style="font-size:11px;opacity:.7">'+inst.tel+'</span>';
+      if(inst.budget) popupHtml+='<br/><span style="font-size:11px;font-family:DM Mono,monospace;color:'+ent.color+';font-weight:600">Budget: '+inst.budget+'k\u20AC</span>';
+      if(inst.eff) popupHtml+=' <span style="font-size:11px;font-family:DM Mono,monospace;opacity:.7">\u00B7 '+inst.eff+' ETP</span>';
+      popupHtml+='<br/><span style="display:inline-block;margin-top:4px;padding:2px 8px;border-radius:12px;font-size:10px;background:'+ent.color+'22;color:'+ent.color+'">'+ent.label.split('\u2014')[0].trim()+'</span></div>';
+      marker.bindPopup(popupHtml);
       markersRef.current.push(marker);
     });
 
@@ -941,10 +1139,10 @@ var VueCarte = function(props){
 
 var VueConsolidee = function(){
   var handleExport = function(){
-    var rows=[['Entit\u00E9','CA M\u20AC','EBITDA M\u20AC','Marge %','Effectifs','Tx Ex\u00E9c. %','Subventions M\u20AC','Statut']];
+    var rows=[['Entit\u00E9','Produits M\u20AC','EBE M\u20AC','Taux exc. %','Effectifs','Tx Ex\u00E9c. %','Fin. public M\u20AC','Statut']];
     ENTITES.filter(function(e){return e.id!=='groupe';}).forEach(function(e){
       var k=KPI_DATA[e.id];
-      rows.push([e.label,k.ca,k.ebitda,(k.ebitda/k.ca*100).toFixed(1),k.effectifs,k.taux_exec,k.subventions,k.ecart_budget>=0?'Favorable':'D\u00E9ficitaire']);
+      rows.push([e.label,k.produits,k.ebe,(k.ebe/k.produits*100).toFixed(1),k.effectifs,k.taux_exec,k.fin_public,k.ecart_budget >= 0?'Favorable':'D\u00E9ficitaire']);
     });
     rows.push(['GROUPE TOTAL',42.6,8.3,'19.5',1957,96.3,18.2,'D\u00E9f. 0.4M\u20AC']);
     exportXLSX(rows,'consolide_groupe');
@@ -960,7 +1158,7 @@ var VueConsolidee = function(){
       React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
         React.createElement('thead',null,
           React.createElement('tr',null,
-            ['Entit\u00E9','CA','EBITDA','Marge','Effectifs','Tx Ex\u00E9c.','Subventions','Statut'].map(function(h){
+            ['Entit\u00E9','Produits','EBE','Taux exc.','Effectifs','Tx Ex\u00E9c.','Fin. public','Statut'].map(function(h){
               return React.createElement('th',{key:h,style:{textAlign:h==='Entit\u00E9'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 12px',borderBottom:'1px solid var(--c-border)'}},h);
             })
           )
@@ -968,8 +1166,8 @@ var VueConsolidee = function(){
         React.createElement('tbody',null,
           ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
             var k=KPI_DATA[e.id];
-            var marge=(k.ebitda/k.ca*100).toFixed(1);
-            var ok=k.ecart_budget>=0;
+            var marge=(k.ebe/k.produits*100).toFixed(1);
+            var ok=k.ecart_budget >= 0;
             return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.5)'}},
               React.createElement('td',{style:{padding:'12px 10px'}},
                 React.createElement('div',{className:'flex items-center gap-2'},
@@ -980,14 +1178,14 @@ var VueConsolidee = function(){
                   )
                 )
               ),
-              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-text)',fontWeight:600}},k.ca+'M\u20AC'),
-              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:e.color,fontWeight:600}},k.ebitda+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-text)',fontWeight:600}},k.produits+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:e.color,fontWeight:600}},k.ebe+'M\u20AC'),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},marge+'%'),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},k.effectifs),
               React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px'}},
                 React.createElement('span',{style:{color:k.taux_exec>=97?'var(--c-green)':k.taux_exec>=94?'var(--c-orange)':'var(--c-red)'}},k.taux_exec+'%')
               ),
-              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-cyan)'}},k.subventions?k.subventions+'M\u20AC':'\u2014'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-cyan)'}},k.fin_public?k.fin_public+'M\u20AC':'\u2014'),
               React.createElement('td',{style:{textAlign:'right',padding:'12px 10px'}},
                 React.createElement('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
                   background:ok?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
@@ -1014,17 +1212,17 @@ var VueConsolidee = function(){
     ),
     React.createElement('div',{className:'grid grid-cols-2 gap-4'},
       React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
-        React.createElement(SectionTitle,{title:'CA par entit\u00E9',sub:'En M\u20AC \u2014 exercice 2024'}),
+        React.createElement(SectionTitle,{title:'Produits par entit\u00E9',sub:'En M\u20AC \u2014 exercice 2024'}),
         React.createElement(ResponsiveContainer,{width:'100%',height:200},
           React.createElement(BarChart,{data:ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e){
             var lbl=e.label.split('\u2014');
-            return {name:e.icon+' '+(lbl[1]?lbl[1].trim():lbl[0].trim()),ca:KPI_DATA[e.id].ca,color:e.color};
+            return {name:e.icon+' '+(lbl[1]?lbl[1].trim():lbl[0].trim()),produits:KPI_DATA[e.id].produits,color:e.color};
           }),margin:{top:5,right:5,bottom:5,left:0}},
             React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
             React.createElement(XAxis,{dataKey:'name',tick:{fill:'var(--c-muted)',fontSize:9,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
             React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:9,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
             React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
-            React.createElement(Bar,{dataKey:'ca',name:'CA M\u20AC',radius:[4,4,0,0]},
+            React.createElement(Bar,{dataKey:'produits',name:'Produits M\u20AC',radius:[4,4,0,0]},
               ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
                 return React.createElement(Cell,{key:i,fill:e.color,fillOpacity:0.8});
               })
@@ -1108,6 +1306,85 @@ var VueNews = function(props){
 };
 
 /* ================================================================
+   TAB 9: REGLEMENTAIRE (Convention SAS + Veille)
+================================================================ */
+
+var VueReglementaire = function(){
+  var risqueCount={};
+  VEILLE_REGLEMENTAIRE.forEach(function(v){risqueCount[v.risque]=(risqueCount[v.risque]||0)+1;});
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement(SectionTitle,{title:'Convention collective SAS',sub:'Grille salariale \u2014 Secteur d\u2019aide et de soins \u2014 Indice '+SAS_INFO.indice}),
+    React.createElement('div',{className:'grid grid-cols-4 gap-4 mb-4'},
+      React.createElement(KPICard,{label:'Masse salariale totale',value:SAS_INFO.masse,unit:'k\u20AC',delta:2.5,deltaUnit:'% vs N-1',color:'var(--c-gold)'}),
+      React.createElement(KPICard,{label:'Biennale automatique',value:SAS_INFO.biennale,unit:'%',delta:0,deltaUnit:'',color:'var(--c-blue)'}),
+      React.createElement(KPICard,{label:'Prochaine tranche indiciaire',value:0,unit:'',delta:1,deltaUnit:' '+SAS_INFO.prochaine,color:'var(--c-orange)'}),
+      React.createElement(KPICard,{label:'Impact tranche',value:0,unit:'',delta:1,deltaUnit:' '+SAS_INFO.impact_tranche,color:'var(--c-red)'})
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-4',style:{color:'var(--c-gold)'}},'Grille salariale Convention SAS'),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Code','Intitul\u00E9','Indice','Salaire brut \u20AC','Effectifs','% Total'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Intitul\u00E9'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 12px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          GRILLE_SAS.map(function(g,i){
+            var isHighlight=g.code==='C6'||g.code==='C7';
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.3)',background:isHighlight?'rgba(201,169,110,.06)':'transparent'}},
+              React.createElement('td',{style:{padding:'10px',fontFamily:'DM Mono,monospace',fontSize:13,fontWeight:isHighlight?700:400,color:isHighlight?'var(--c-gold)':'var(--c-text)'}},g.code+(isHighlight?' \u2190':'')),
+              React.createElement('td',{style:{padding:'10px',fontSize:13,color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isHighlight?600:400}},g.intitule),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'var(--c-muted)'}},g.indice),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'10px',color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:600}},g.salaire.toLocaleString('fr')+'\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'var(--c-text)'}},g.effectifs),
+              React.createElement('td',{style:{textAlign:'right',padding:'10px'}},
+                React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:6}},
+                  React.createElement('div',{style:{width:60,height:5,background:'var(--c-surface2)',borderRadius:3,overflow:'hidden'}},
+                    React.createElement('div',{style:{width:g.pct/25*100+'%',height:'100%',background:isHighlight?'var(--c-gold)':'var(--c-blue)',borderRadius:3}})
+                  ),
+                  React.createElement('span',{className:'font-mono text-xs',style:{color:'var(--c-muted)',width:36,textAlign:'right'}},g.pct+'%')
+                )
+              )
+            );
+          })
+        )
+      )
+    ),
+    React.createElement(SectionTitle,{title:'Veille r\u00E9glementaire',sub:'Impacts budg\u00E9taires des \u00E9volutions l\u00E9gislatives et conventionnelles'}),
+    React.createElement('div',{className:'grid grid-cols-3 gap-3 mb-4'},
+      ['\u00E9lev\u00E9','moyen','favorable'].map(function(r){
+        var colors={'\u00E9lev\u00E9':'var(--c-red)','moyen':'var(--c-orange)','favorable':'var(--c-green)'};
+        var labels={'\u00E9lev\u00E9':'Risque \u00E9lev\u00E9','moyen':'Risque moyen','favorable':'Favorable'};
+        return React.createElement('div',{key:r,className:'rounded-lg p-3 text-center',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+          React.createElement('div',{className:'font-mono text-2xl font-bold',style:{color:colors[r]}},risqueCount[r]||0),
+          React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},labels[r])
+        );
+      })
+    ),
+    React.createElement('div',{className:'space-y-3'},
+      VEILLE_REGLEMENTAIRE.map(function(v,i){
+        return React.createElement('div',{key:i,className:'card-hover rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderLeft:'3px solid '+v.color}},
+          React.createElement('div',{className:'flex items-start justify-between gap-4'},
+            React.createElement('div',{className:'flex-1'},
+              React.createElement('div',{className:'flex items-center gap-3 mb-2'},
+                React.createElement('span',{style:{padding:'2px 10px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',background:v.color+'22',color:v.color,fontWeight:600}},v.type),
+                React.createElement('span',{style:{padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',background:v.color+'15',color:v.color}},v.risque)
+              ),
+              React.createElement('div',{style:{fontSize:14,fontWeight:600,color:'var(--c-text)',marginBottom:4}},v.titre),
+              React.createElement('div',{style:{fontSize:12,fontFamily:'DM Mono,monospace',color:v.color,fontWeight:500}},'\u21B3 '+v.impact)
+            ),
+            React.createElement('div',{style:{fontSize:11,color:'var(--c-muted)',fontFamily:'DM Mono,monospace',flexShrink:0}},v.date)
+          )
+        );
+      })
+    )
+  );
+};
+
+/* ================================================================
    APP SHELL
 ================================================================ */
 
@@ -1134,10 +1411,11 @@ var App = function(){
 
   var views=[
     {id:'synthese',label:'Synth\u00E8se'},
-    {id:'pl',label:'P&L'},
+    {id:'pl',label:'R\u00E9sultat'},
     {id:'analytique',label:'Analytique'},
     {id:'tresorerie',label:'Tr\u00E9sorerie'},
     {id:'budget',label:'Budget'},
+    {id:'reglementaire',label:'Conv. SAS'},
     {id:'carte',label:'Carte'},
     {id:'consolidee',label:'Consolid\u00E9'},
     {id:'news',label:'News'+(newsCount>0?' ('+newsCount+')':''),alert:newsCount>0},
@@ -1201,14 +1479,15 @@ var App = function(){
       view==='analytique'&&React.createElement(VueAnalytique,{entity:entity}),
       view==='tresorerie'&&React.createElement(VueTresorerie,{entity:entity}),
       view==='budget'&&React.createElement(VueBudget,{entity:entity}),
+      view==='reglementaire'&&React.createElement(VueReglementaire,null),
       view==='carte'&&React.createElement(VueCarte,{entity:entity,theme:theme}),
       view==='consolidee'&&React.createElement(VueConsolidee,null),
       view==='news'&&React.createElement(VueNews,{entityFilter:entity})
     ),
     React.createElement('footer',{style:{borderTop:'1px solid var(--c-border)',padding:'16px 32px',display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:20}},
-      React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:11,color:'var(--c-muted)'}},'Elisabeth \u2014 Groupe social historique Luxembourg \u00B7 Depuis 1672 \u00B7 Convention SAS'),
+      React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:11,color:'var(--c-muted)'}},'Elisabeth \u2014 Groupe social historique Luxembourg \u00B7 Depuis 1672 \u00B7 Convention SAS \u00B7 C6/C7'),
       React.createElement('div',{style:{display:'flex',gap:12}},
-        ['SAP \u00B7 Sage 100','Excel \u00B7 VBA','Multi-entit\u00E9s','LU/DE/FR'].map(function(t){
+        ['Conv. SAS \u00B7 MFSVA','SAP \u00B7 Sage 100','Excel \u00B7 VBA','Multi-entit\u00E9s','LU/DE/FR'].map(function(t){
           return React.createElement('span',{key:t,style:{padding:'3px 10px',border:'1px solid var(--c-border)',borderRadius:4,fontSize:10,fontFamily:'DM Mono,monospace',color:'var(--c-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}},t);
         })
       )
