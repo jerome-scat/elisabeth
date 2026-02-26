@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,753 +10,1213 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/recharts@2.5.0/umd/Recharts.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script>
-tailwind.config={theme:{extend:{colors:{
-  bg:'#0a0c10',surface:'#111318',surface2:'#161b24',border:'#1e2738',
-  gold:'#c9a96e',gold2:'#8a6a3e',blue:'#6e9ec9',
-  green:'#52c97a',red:'#e85a5a',orange:'#e8a45a',
-  muted:'#6b7491',text:'#e8eaf0'
-},fontFamily:{display:['Playfair Display','serif'],mono:['DM Mono','monospace'],body:['DM Sans','sans-serif']}}}}
+tailwind.config={theme:{extend:{fontFamily:{display:['Playfair Display','serif'],mono:['DM Mono','monospace'],body:['DM Sans','sans-serif']}}}}
 </script>
 <style>
+:root, [data-theme="dark"] {
+  --c-bg: #0a0c10; --c-surface: #111318; --c-surface2: #161b24;
+  --c-border: #1e2738; --c-text: #e8eaf0; --c-muted: #6b7491;
+  --c-gold: #c9a96e; --c-gold2: #8a6a3e;
+  --c-blue: #6e9ec9; --c-green: #52c97a; --c-red: #e85a5a;
+  --c-orange: #e8a45a; --c-purple: #a78bfa; --c-cyan: #38bdf8;
+  --c-header-bg: rgba(10,12,16,.92);
+}
+[data-theme="light"] {
+  --c-bg: #f4f5f7; --c-surface: #ffffff; --c-surface2: #f8f9fb;
+  --c-border: #e2e5ea; --c-text: #1a1d2e; --c-muted: #7c8194;
+  --c-gold: #b08d3e; --c-gold2: #8a6a3e;
+  --c-blue: #2563eb; --c-green: #16a34a; --c-red: #dc2626;
+  --c-orange: #d97706; --c-purple: #7c3aed; --c-cyan: #0284c7;
+  --c-header-bg: rgba(244,245,247,.92);
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:#0a0c10;color:#e8eaf0;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--c-bg);color:var(--c-text);overflow-x:hidden;transition:background-color .3s,color .3s}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(201,169,110,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:#0a0c10}
-::-webkit-scrollbar-thumb{background:#1e2738;border-radius:3px}
+::-webkit-scrollbar-track{background:var(--c-bg)}
+::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:3px}
 .fade-in{animation:fadeIn .5s ease both}
 .slide-up{animation:slideUp .5s ease both}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .card-hover{transition:border-color .2s,transform .2s}
-.card-hover:hover{border-color:#c9a96e!important;transform:translateY(-1px)}
-.tab-active{background:#c9a96e!important;color:#0a0c10!important;font-weight:700!important}
+.card-hover:hover{border-color:var(--c-gold)!important;transform:translateY(-1px)}
 .entity-chip{cursor:pointer;transition:all .15s}
-.entity-chip.active{background:#c9a96e;color:#0a0c10;font-weight:600}
-.entity-chip:hover:not(.active){background:#1e2738}
+.entity-chip:hover:not(.active){background:var(--c-surface2)}
 .news-card{transition:border-color .2s}
-.news-card:hover{border-color:#c9a96e}
+.news-card:hover{border-color:var(--c-gold)}
 .progress-bar{transition:width 1s cubic-bezier(.34,1.56,.64,1)}
 .glow-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
-.bar-anim{animation:growUp .8s cubic-bezier(.34,1.56,.64,1) both}
-@keyframes growUp{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+.leaflet-container{background:var(--c-bg)!important;border-radius:12px}
+.leaflet-popup-content-wrapper{background:var(--c-surface)!important;color:var(--c-text)!important;border:1px solid var(--c-border)!important;border-radius:8px!important;box-shadow:0 4px 20px rgba(0,0,0,.3)!important}
+.leaflet-popup-tip{background:var(--c-surface)!important}
+.leaflet-popup-content{font-family:'DM Sans',sans-serif!important;font-size:12px!important;margin:8px 12px!important}
+.leaflet-control-zoom a{background:var(--c-surface)!important;color:var(--c-text)!important;border-color:var(--c-border)!important}
+.xbtn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-green);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.xbtn:hover{border-color:var(--c-green);background:rgba(82,201,122,.08)}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect,useRef,useMemo,useCallback}=React;
-const {ResponsiveContainer,ComposedChart,Bar,Line,Area,AreaChart,XAxis,YAxis,CartesianGrid,Tooltip,Legend,PieChart,Pie,Cell,BarChart,LineChart}=Recharts;
+const {ResponsiveContainer,ComposedChart,Bar,Line,Area,AreaChart,XAxis,YAxis,CartesianGrid,Tooltip,Legend:RLegend,PieChart,Pie,Cell,BarChart,LineChart}=Recharts;
 
-/* ============================================================
-   DATA LAYER — Groupe Elisabeth Luxembourg
-============================================================ */
+/* ================================================================
+   DATA
+================================================================ */
 
 const ENTITES = [
-  {id:'groupe',label:'Groupe Elisabeth',color:'#c9a96e',icon:'🌹',type:'global'},
-  {id:'apollonia',label:'Apollonia SA (DG)',color:'#6e9ec9',icon:'🏛️',type:'holding'},
-  {id:'anne',label:'Anne asbl — Enfance',color:'#52c97a',icon:'🧒',type:'ops'},
-  {id:'claire',label:'Claire asbl — Jeunesse',color:'#e8a45a',icon:'🎓',type:'ops'},
-  {id:'marie',label:'Marie asbl — Seniors',color:'#a78bfa',icon:'🌸',type:'ops'},
-  {id:'yolande',label:'Yolande asbl — Handicap',color:'#e85a5a',icon:'♿',type:'ops'},
-  {id:'inclusion',label:'e4inclusion — Inclusion',color:'#38bdf8',icon:'🤝',type:'ops'},
+  {id:'groupe',label:'Groupe Elisabeth',color:'#c9a96e',icon:'\u{1F339}',type:'global'},
+  {id:'anne',label:'Anne asbl \u2014 Enfance & Jeunesse',color:'#52c97a',icon:'\u{1F9D2}',type:'ops'},
+  {id:'claire',label:'Claire asbl \u2014 Seniors',color:'#e8a45a',icon:'\u{1F338}',type:'ops'},
+  {id:'marie',label:'Marie asbl \u2014 \u00C9ducation',color:'#a78bfa',icon:'\u{1F393}',type:'ops'},
+  {id:'yolande',label:'Yolande asbl \u2014 Handicap',color:'#e85a5a',icon:'\u265F',type:'ops'},
+  {id:'inclusion',label:'e4inclusion \u2014 Inclusion',color:'#38bdf8',icon:'\u{1F91D}',type:'ops'},
+  {id:'apollonia',label:'Apollonia SA \u2014 Direction',color:'#6e9ec9',icon:'\u{1F3DB}\uFE0F',type:'holding'},
 ];
 
-// KPIs consolidés par entité
 const KPI_DATA = {
-  groupe: {ca:42.6,ebitda:8.3,resultat:4.1,effectifs:1957,taux_exec:96.3,ecart_budget:-0.4,subventions:18.2,benef_servis:12400},
-  apollonia: {ca:4.2,ebitda:0.9,resultat:0.5,effectifs:180,taux_exec:97.1,ecart_budget:+0.1,subventions:0,benef_servis:0},
-  anne: {ca:11.8,ebitda:2.1,resultat:1.0,effectifs:420,taux_exec:98.2,ecart_budget:+0.13,subventions:6.2,benef_servis:3800},
-  claire: {ca:7.4,ebitda:1.3,resultat:0.6,effectifs:280,taux_exec:95.5,ecart_budget:-0.05,subventions:3.8,benef_servis:2100},
-  marie: {ca:12.1,ebitda:2.6,resultat:1.2,effectifs:520,taux_exec:94.8,ecart_budget:-0.31,subventions:4.9,benef_servis:4200},
-  yolande: {ca:5.8,ebitda:1.1,resultat:0.5,effectifs:390,taux_exec:96.8,ecart_budget:+0.02,subventions:2.8,benef_servis:1900},
-  inclusion: {ca:1.3,ebitda:0.3,resultat:0.3,effectifs:167,taux_exec:99.1,ecart_budget:+0.02,subventions:0.5,benef_servis:400},
+  groupe:{ca:42.6,ebitda:8.3,resultat:4.1,effectifs:1957,taux_exec:96.3,ecart_budget:-0.4,subventions:18.2,benef_servis:12400},
+  anne:{ca:11.8,ebitda:2.1,resultat:1.0,effectifs:420,taux_exec:98.2,ecart_budget:+0.13,subventions:6.2,benef_servis:3800},
+  claire:{ca:7.4,ebitda:1.3,resultat:0.6,effectifs:280,taux_exec:95.5,ecart_budget:-0.05,subventions:3.8,benef_servis:2100},
+  marie:{ca:12.1,ebitda:2.6,resultat:1.2,effectifs:520,taux_exec:94.8,ecart_budget:-0.31,subventions:4.9,benef_servis:4200},
+  yolande:{ca:5.8,ebitda:1.1,resultat:0.5,effectifs:390,taux_exec:96.8,ecart_budget:+0.02,subventions:2.8,benef_servis:1900},
+  inclusion:{ca:1.3,ebitda:0.3,resultat:0.3,effectifs:167,taux_exec:99.1,ecart_budget:+0.02,subventions:0.5,benef_servis:400},
+  apollonia:{ca:4.2,ebitda:0.9,resultat:0.5,effectifs:180,taux_exec:97.1,ecart_budget:+0.1,subventions:0,benef_servis:0},
 };
 
-// Budget vs Réel mensuel
 const MONTHLY_DATA = {
-  groupe: [
-    {m:'Jan',budget:3200,reel:3100,n1:2950},{m:'Fév',budget:3200,reel:3280,n1:3050},
+  groupe:[
+    {m:'Jan',budget:3200,reel:3100,n1:2950},{m:'F\u00E9v',budget:3200,reel:3280,n1:3050},
     {m:'Mar',budget:3400,reel:3350,n1:3200},{m:'Avr',budget:3400,reel:3500,n1:3280},
     {m:'Mai',budget:3600,reel:3600,n1:3400},{m:'Jun',budget:3600,reel:3550,n1:3480},
-    {m:'Jul',budget:3400,reel:3380,n1:3100},{m:'Aoû',budget:3200,reel:3100,n1:2980},
+    {m:'Jul',budget:3400,reel:3380,n1:3100},{m:'Ao\u00FB',budget:3200,reel:3100,n1:2980},
     {m:'Sep',budget:3600,reel:3620,n1:3400},{m:'Oct',budget:3600,reel:3680,n1:3520},
-    {m:'Nov',budget:3800,reel:3820,n1:3600},{m:'Déc',budget:4000,reel:null,n1:3780},
+    {m:'Nov',budget:3800,reel:3820,n1:3600},{m:'D\u00E9c',budget:4000,reel:null,n1:3780},
   ],
-  anne: [
-    {m:'Jan',budget:890,reel:865,n1:820},{m:'Fév',budget:890,reel:910,n1:840},
+  anne:[
+    {m:'Jan',budget:890,reel:865,n1:820},{m:'F\u00E9v',budget:890,reel:910,n1:840},
     {m:'Mar',budget:950,reel:935,n1:890},{m:'Avr',budget:950,reel:980,n1:910},
     {m:'Mai',budget:1000,reel:995,n1:950},{m:'Jun',budget:1000,reel:990,n1:960},
-    {m:'Jul',budget:950,reel:940,n1:860},{m:'Aoû',budget:880,reel:870,n1:830},
+    {m:'Jul',budget:950,reel:940,n1:860},{m:'Ao\u00FB',budget:880,reel:870,n1:830},
     {m:'Sep',budget:1000,reel:1005,n1:940},{m:'Oct',budget:1000,reel:1020,n1:960},
-    {m:'Nov',budget:1060,reel:1065,n1:1000},{m:'Déc',budget:1110,reel:null,n1:1050},
+    {m:'Nov',budget:1060,reel:1065,n1:1000},{m:'D\u00E9c',budget:1110,reel:null,n1:1050},
   ],
-  marie: [
-    {m:'Jan',budget:930,reel:980,n1:890},{m:'Fév',budget:930,reel:975,n1:895},
+  marie:[
+    {m:'Jan',budget:930,reel:980,n1:890},{m:'F\u00E9v',budget:930,reel:975,n1:895},
     {m:'Mar',budget:1010,reel:1060,n1:960},{m:'Avr',budget:1010,reel:1055,n1:970},
     {m:'Mai',budget:1080,reel:1090,n1:1020},{m:'Jun',budget:1080,reel:1085,n1:1030},
-    {m:'Jul',budget:1000,reel:1010,n1:940},{m:'Aoû',budget:950,reel:970,n1:900},
+    {m:'Jul',budget:1000,reel:1010,n1:940},{m:'Ao\u00FB',budget:950,reel:970,n1:900},
     {m:'Sep',budget:1080,reel:1095,n1:1040},{m:'Oct',budget:1080,reel:1100,n1:1050},
-    {m:'Nov',budget:1150,reel:1160,n1:1100},{m:'Déc',budget:1210,reel:null,n1:1140},
+    {m:'Nov',budget:1150,reel:1160,n1:1100},{m:'D\u00E9c',budget:1210,reel:null,n1:1140},
   ],
 };
-// Fallback pour entités sans données spécifiques
-['apollonia','claire','yolande','inclusion'].forEach(id=>{
-  MONTHLY_DATA[id] = MONTHLY_DATA.groupe.map(d=>({
-    ...d,
-    budget: Math.round(d.budget * KPI_DATA[id].ca/KPI_DATA.groupe.ca),
-    reel: d.reel ? Math.round(d.reel * KPI_DATA[id].ca/KPI_DATA.groupe.ca) : null,
-    n1: Math.round(d.n1 * KPI_DATA[id].ca/KPI_DATA.groupe.ca)
-  }));
+['apollonia','claire','yolande','inclusion'].forEach(function(id){
+  MONTHLY_DATA[id]=MONTHLY_DATA.groupe.map(function(d){return {
+    m:d.m,
+    budget:Math.round(d.budget*KPI_DATA[id].ca/KPI_DATA.groupe.ca),
+    reel:d.reel?Math.round(d.reel*KPI_DATA[id].ca/KPI_DATA.groupe.ca):null,
+    n1:Math.round(d.n1*KPI_DATA[id].ca/KPI_DATA.groupe.ca)
+  };});
 });
 
-// Répartition charges
 const CHARGES_DATA = {
-  groupe: [{n:'RH',v:52,c:'#c9a96e'},{n:'Immob.',v:18,c:'#6e9ec9'},{n:'Fonctionnement',v:15,c:'#52c97a'},{n:'Autres',v:15,c:'#e8a45a'}],
-  anne: [{n:'RH',v:58,c:'#c9a96e'},{n:'Immob.',v:14,c:'#6e9ec9'},{n:'Fonctionnement',v:16,c:'#52c97a'},{n:'Autres',v:12,c:'#e8a45a'}],
-  marie: [{n:'RH',v:65,c:'#c9a96e'},{n:'Immob.',v:12,c:'#6e9ec9'},{n:'Fonctionnement',v:13,c:'#52c97a'},{n:'Autres',v:10,c:'#e8a45a'}],
-  claire: [{n:'RH',v:55,c:'#c9a96e'},{n:'Immob.',v:15,c:'#6e9ec9'},{n:'Fonctionnement',v:18,c:'#52c97a'},{n:'Autres',v:12,c:'#e8a45a'}],
-  yolande: [{n:'RH',v:60,c:'#c9a96e'},{n:'Immob.',v:16,c:'#6e9ec9'},{n:'Fonctionnement',v:14,c:'#52c97a'},{n:'Autres',v:10,c:'#e8a45a'}],
-  inclusion: [{n:'RH',v:48,c:'#c9a96e'},{n:'Immob.',v:20,c:'#6e9ec9'},{n:'Fonctionnement',v:18,c:'#52c97a'},{n:'Autres',v:14,c:'#e8a45a'}],
-  apollonia: [{n:'RH',v:42,c:'#c9a96e'},{n:'IT & Infra',v:25,c:'#6e9ec9'},{n:'Fonctionnement',v:20,c:'#52c97a'},{n:'Autres',v:13,c:'#e8a45a'}],
+  groupe:[{n:'RH',v:52,c:'var(--c-gold)'},{n:'Immob.',v:18,c:'var(--c-blue)'},{n:'Fonctionnement',v:15,c:'var(--c-green)'},{n:'Autres',v:15,c:'var(--c-orange)'}],
+  anne:[{n:'RH',v:58,c:'var(--c-gold)'},{n:'Immob.',v:14,c:'var(--c-blue)'},{n:'Fonctionnement',v:16,c:'var(--c-green)'},{n:'Autres',v:12,c:'var(--c-orange)'}],
+  marie:[{n:'RH',v:65,c:'var(--c-gold)'},{n:'Immob.',v:12,c:'var(--c-blue)'},{n:'Fonctionnement',v:13,c:'var(--c-green)'},{n:'Autres',v:10,c:'var(--c-orange)'}],
+  claire:[{n:'RH',v:55,c:'var(--c-gold)'},{n:'Immob.',v:15,c:'var(--c-blue)'},{n:'Fonctionnement',v:18,c:'var(--c-green)'},{n:'Autres',v:12,c:'var(--c-orange)'}],
+  yolande:[{n:'RH',v:60,c:'var(--c-gold)'},{n:'Immob.',v:16,c:'var(--c-blue)'},{n:'Fonctionnement',v:14,c:'var(--c-green)'},{n:'Autres',v:10,c:'var(--c-orange)'}],
+  inclusion:[{n:'RH',v:48,c:'var(--c-gold)'},{n:'Immob.',v:20,c:'var(--c-blue)'},{n:'Fonctionnement',v:18,c:'var(--c-green)'},{n:'Autres',v:14,c:'var(--c-orange)'}],
+  apollonia:[{n:'RH',v:42,c:'var(--c-gold)'},{n:'IT & Infra',v:25,c:'var(--c-blue)'},{n:'Fonctionnement',v:20,c:'var(--c-green)'},{n:'Autres',v:13,c:'var(--c-orange)'}],
 };
 
-// Écarts budgétaires par centre
 const ECARTS_DATA = {
-  groupe: [
-    {centre:'Crèches & Petite enfance',budget:6240,reel:6108,ent:'anne'},
-    {centre:'Services Seniors',budget:8900,reel:9210,ent:'marie'},
+  groupe:[
+    {centre:'Cr\u00E8ches & Petite enfance',budget:6240,reel:6108,ent:'anne'},
+    {centre:'Services Seniors',budget:8900,reel:9210,ent:'claire'},
     {centre:'Handicap & Inclusion',budget:5600,reel:5580,ent:'yolande'},
-    {centre:'Jeunesse & Formation',budget:3200,reel:3195,ent:'claire'},
+    {centre:'\u00C9ducation & Formation',budget:3200,reel:3195,ent:'marie'},
     {centre:'Administration centrale',budget:2800,reel:2960,ent:'apollonia'},
     {centre:'Immobilier & Maintenance',budget:7500,reel:7248,ent:'groupe'},
   ],
 };
-// Ecarts par entité individuelle
-['anne','claire','marie','yolande','inclusion','apollonia'].forEach(id=>{
-  const base = ECARTS_DATA.groupe.filter(d=>d.ent===id||d.ent==='groupe');
-  ECARTS_DATA[id] = base.length ? base : [{centre:'Budget opérationnel',budget:Math.round(KPI_DATA[id].ca*1000),reel:Math.round(KPI_DATA[id].ca*1000*(KPI_DATA[id].taux_exec/100)),ent:id}];
+['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
+  var base=ECARTS_DATA.groupe.filter(function(d){return d.ent===id||d.ent==='groupe';});
+  ECARTS_DATA[id]=base.length?base:[{centre:'Budget op\u00E9rationnel',budget:Math.round(KPI_DATA[id].ca*1000),reel:Math.round(KPI_DATA[id].ca*1000*(KPI_DATA[id].taux_exec/100)),ent:id}];
 });
 
-// News
-const NEWS = [
-  {id:1,date:'26 déc. 2024',titre:'Budget N+1 validé en CA',tag:'Finance',tag_color:'#c9a96e',entite:'groupe',texte:'Le Conseil d\'administration a validé le budget 2025 avec une hausse de 6.2% des moyens alloués aux services Seniors suite à l\'augmentation des besoins.',urgent:false},
-  {id:2,date:'18 déc. 2024',titre:'Dépassement Services Seniors : plan d\'action',tag:'Alerte',tag_color:'#e85a5a',entite:'marie',texte:'Surcoût RH de 310k€ sur Q3-Q4 lié à 18 recrutements d\'urgence. Plan de maîtrise approuvé : gel de postes non-soignants en T1 2025.',urgent:true},
-  {id:3,date:'12 déc. 2024',titre:'Subvention MSSANTE 420k€ confirmée',tag:'Bonne nouvelle',tag_color:'#52c97a',entite:'anne',texte:'Le dossier de financement pour l\'extension du centre de Bettembourg a été accepté. Travaux prévus Q2-Q3 2025.',urgent:false},
-  {id:4,date:'05 déc. 2024',titre:'Rénovation énergétique — 14 sites labellisés',tag:'RSE',tag_color:'#38bdf8',entite:'groupe',texte:'14 institutions obtiennent le label Clef Verte après le programme de rénovation énergétique. Économie estimée 82k€/an.',urgent:false},
-  {id:5,date:'28 nov. 2024',titre:'Trésorerie : ligne stand-by activée',tag:'Finance',tag_color:'#c9a96e',entite:'apollonia',texte:'Décalage de paiement de subventions étatiques de 2.1M€ prévu en janvier. La ligne de crédit stand-by de 3M€ a été pré-activée à titre préventif.',urgent:false},
-  {id:6,date:'20 nov. 2024',titre:'1 957 ETP — nouveau record',tag:'RH',tag_color:'#a78bfa',entite:'groupe',texte:'Le groupe franchit le seuil des 1 950 collaborateurs avec 89 recrutements nets en 2024, renforçant la capacité d\'accueil de +340 bénéficiaires.',urgent:false},
-  {id:7,date:'10 nov. 2024',titre:'Digitalisation : SAP déployé chez Yolande',tag:'IT',tag_color:'#e8a45a',entite:'yolande',texte:'Le déploiement SAP est finalisé pour Yolande asbl. Le reporting temps-réel est désormais opérationnel pour les 3 structures Handicap.',urgent:false},
-  {id:8,date:'02 nov. 2024',titre:'Audit interne Q3 : résultats positifs',tag:'Audit',tag_color:'#6e9ec9',entite:'apollonia',texte:'L\'audit interne trimestriel confirme la conformité des processus comptables dans 91% des contrôles. 4 points d\'amélioration identifiés en cours de traitement.',urgent:false},
-];
+const PL_DATA = {
+  groupe:{
+    produits:[
+      {n:'Subventions \u00C9tat',budget:19200,reel:18200,n1:17100},
+      {n:'Participations usagers',budget:8800,reel:9400,n1:8200},
+      {n:'Produits conventionn\u00E9s',budget:12000,reel:12100,n1:11500},
+      {n:'Autres produits',budget:3200,reel:2900,n1:2800},
+    ],
+    charges:[
+      {n:'Frais de personnel',budget:23400,reel:22800,n1:21200},
+      {n:'Alimentation & fournitures',budget:3200,reel:3100,n1:2900},
+      {n:'Services ext\u00E9rieurs',budget:2800,reel:2950,n1:2600},
+      {n:'Entretien & maintenance',budget:2400,reel:2300,n1:2200},
+      {n:'Loyers & charges locatives',budget:1800,reel:1800,n1:1700},
+      {n:'Dotations amortissements',budget:3600,reel:3600,n1:3400},
+      {n:'Charges financi\u00E8res',budget:1400,reel:1350,n1:1300},
+    ],
+  }
+};
+['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
+  var r=KPI_DATA[id].ca/KPI_DATA.groupe.ca;
+  PL_DATA[id]={
+    produits:PL_DATA.groupe.produits.map(function(p){return {n:p.n,budget:Math.round(p.budget*r),reel:Math.round(p.reel*r),n1:Math.round(p.n1*r)};}),
+    charges:PL_DATA.groupe.charges.map(function(c){return {n:c.n,budget:Math.round(c.budget*r),reel:Math.round(c.reel*r),n1:Math.round(c.n1*r)};})
+  };
+});
 
-// Indicateurs de performance par entité
+const TREASURY_DATA = {
+  groupe:[
+    {m:'Jan',enc:4800,dec:3600,solde:1200},
+    {m:'F\u00E9v',enc:2400,dec:3500,solde:100},
+    {m:'Mar',enc:3200,dec:3400,solde:-100},
+    {m:'Avr',enc:6200,dec:3600,solde:2500},
+    {m:'Mai',enc:2600,dec:3500,solde:-400},
+    {m:'Jun',enc:3400,dec:3700,solde:-700},
+    {m:'Jul',enc:6800,dec:3300,solde:2800},
+    {m:'Ao\u00FB',enc:2200,dec:3100,solde:-1600},
+    {m:'Sep',enc:3600,dec:3500,solde:-1500},
+    {m:'Oct',enc:7200,dec:3600,solde:2100},
+    {m:'Nov',enc:3000,dec:3800,solde:-900},
+    {m:'D\u00E9c',enc:3800,dec:4200,solde:-1300},
+  ]
+};
+['anne','claire','marie','yolande','inclusion','apollonia'].forEach(function(id){
+  var r=KPI_DATA[id].ca/KPI_DATA.groupe.ca;
+  TREASURY_DATA[id]=TREASURY_DATA.groupe.map(function(d){return {m:d.m,enc:Math.round(d.enc*r),dec:Math.round(d.dec*r),solde:Math.round(d.solde*r)};});
+});
+
 const INDICATORS = {
-  groupe: [
-    {n:'Taux occupation moyen',v:94.2,u:'%',trend:+1.8,color:'#52c97a'},
-    {n:'Coût moyen/bénéficiaire',v:3.44,u:'k€/an',trend:+2.1,color:'#e8a45a'},
-    {n:'Ratio charges/CA',v:80.7,u:'%',trend:-0.4,color:'#6e9ec9'},
-    {n:'Subventions/CA',v:42.7,u:'%',trend:+0.5,color:'#c9a96e'},
+  groupe:[
+    {n:'Taux occupation moyen',v:94.2,u:'%',trend:+1.8,color:'var(--c-green)'},
+    {n:'Co\u00FBt moyen/b\u00E9n\u00E9ficiaire',v:3.44,u:'k\u20AC/an',trend:+2.1,color:'var(--c-orange)'},
+    {n:'Ratio charges/CA',v:80.7,u:'%',trend:-0.4,color:'var(--c-blue)'},
+    {n:'Subventions/CA',v:42.7,u:'%',trend:+0.5,color:'var(--c-gold)'},
   ],
-  anne: [
-    {n:'Taux remplissage crèches',v:97.1,u:'%',trend:+2.2,color:'#52c97a'},
-    {n:'Coût/enfant/jour',v:48.2,u:'€',trend:+1.9,color:'#e8a45a'},
-    {n:'Heures gratuité/enfant',v:23.4,u:'h/sem',trend:+0.3,color:'#6e9ec9'},
-    {n:'Nb institutions actives',v:31,u:'sites',trend:+2,color:'#c9a96e'},
+  anne:[
+    {n:'Taux remplissage cr\u00E8ches',v:97.1,u:'%',trend:+2.2,color:'var(--c-green)'},
+    {n:'Co\u00FBt/enfant/jour',v:48.2,u:'\u20AC',trend:+1.9,color:'var(--c-orange)'},
+    {n:'Heures gratuit\u00E9/enfant',v:23.4,u:'h/sem',trend:+0.3,color:'var(--c-blue)'},
+    {n:'Nb institutions actives',v:31,u:'sites',trend:+2,color:'var(--c-gold)'},
   ],
-  marie: [
-    {n:'Taux occupation EHPAD',v:92.8,u:'%',trend:+0.5,color:'#52c97a'},
-    {n:'Coût/résident/jour',v:89.4,u:'€',trend:+3.1,color:'#e8a45a'},
-    {n:'Nb résidents accueillis',v:1840,u:'pers.',trend:+42,color:'#6e9ec9'},
-    {n:'Score qualité interne',v:87.3,u:'/100',trend:+1.4,color:'#c9a96e'},
+  marie:[
+    {n:'Taux occupation \u00E9tablissements',v:92.8,u:'%',trend:+0.5,color:'var(--c-green)'},
+    {n:'Co\u00FBt/r\u00E9sident/jour',v:89.4,u:'\u20AC',trend:+3.1,color:'var(--c-orange)'},
+    {n:'Nb \u00E9l\u00E8ves accueillis',v:1840,u:'pers.',trend:+42,color:'var(--c-blue)'},
+    {n:'Score qualit\u00E9 interne',v:87.3,u:'/100',trend:+1.4,color:'var(--c-gold)'},
   ],
 };
-['claire','yolande','inclusion','apollonia'].forEach(id=>{
-  INDICATORS[id]=INDICATORS.groupe.map(d=>({...d,v:+(d.v*(0.9+Math.random()*0.2)).toFixed(1)}));
+['claire','yolande','inclusion','apollonia'].forEach(function(id){
+  INDICATORS[id]=INDICATORS.groupe.map(function(d){return Object.assign({},d,{v:+(d.v*(0.9+Math.random()*0.2)).toFixed(1)});});
 });
 
-/* ============================================================
-   COMPONENTS
-============================================================ */
+const INSTITUTIONS = [
+  {name:'Cr\u00E8che A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.991,entity:'anne',tel:'+352 99 80 81'},
+  {name:'Cr\u00E8che Beim Musekshaus',loc:'Bissen',lat:49.787,lng:6.067,entity:'anne',tel:'+352 83 55 21'},
+  {name:'Cr\u00E8che Bim Bam',loc:'Schieren',lat:49.829,lng:6.091,entity:'anne',tel:'+352 81 91 50'},
+  {name:'Cr\u00E8che Cocon',loc:'Weiswampach',lat:50.139,lng:6.076,entity:'anne',tel:'+352 99 85 30'},
+  {name:'Cr\u00E8che Dappeshaus',loc:'Bettendorf',lat:49.838,lng:6.220,entity:'anne',tel:'+352 80 31 21'},
+  {name:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',lat:49.600,lng:6.122,entity:'anne',tel:'+352 26 44 11'},
+  {name:'Cr\u00E8che Loukl\u00EBppelcher',loc:'Reuler',lat:50.067,lng:6.033,entity:'anne',tel:'+352 99 74 61'},
+  {name:'Cr\u00E8che Margr\u00E9itchen',loc:'Bissen',lat:49.788,lng:6.068,entity:'anne',tel:'+352 83 55 22'},
+  {name:'Cr\u00E8che St\u00E4renhaus',loc:'Bettembourg',lat:49.518,lng:6.103,entity:'anne',tel:'+352 51 99 73'},
+  {name:'Garderie Butzenhaff',loc:'Cruchten',lat:49.783,lng:6.117,entity:'anne',tel:'+352 83 00 72'},
+  {name:'Internat Priv\u00E9 Ste Elisabeth',loc:'Troisvierges',lat:50.122,lng:5.990,entity:'anne',tel:'+352 99 80 80'},
+  {name:'Jugendhaus Mutfert',loc:'Moutfort',lat:49.587,lng:6.257,entity:'anne',tel:'+352 26 35 01'},
+  {name:'Maison de Jeunes Duelem',loc:'Dahlheim',lat:49.557,lng:6.257,entity:'anne',tel:'+352 26 35 02'},
+  {name:'Jugendhaus Nidderaanwen',loc:'Niederanven',lat:49.650,lng:6.267,entity:'anne',tel:'+352 26 34 01'},
+  {name:'Jugendtreff Norden',loc:'Troisvierges',lat:50.120,lng:5.992,entity:'anne',tel:'+352 99 80 82'},
+  {name:'Kannerland Foyer de Jour',loc:'Luxembourg',lat:49.605,lng:6.125,entity:'anne',tel:'+352 26 44 12'},
+  {name:'Maison Relais A Schmatts',loc:'Troisvierges',lat:50.121,lng:5.993,entity:'anne',tel:'+352 99 80 83'},
+  {name:'Maison Relais Bous',loc:'Bous',lat:49.527,lng:6.317,entity:'anne',tel:'+352 26 70 41'},
+  {name:'Maison Relais Conter',loc:'Contern',lat:49.565,lng:6.227,entity:'anne',tel:'+352 26 35 03'},
+  {name:'Maison Relais Dappeshaus',loc:'Bettendorf',lat:49.837,lng:6.221,entity:'anne',tel:'+352 80 31 22'},
+  {name:'Maison Relais Fr\u00E9iseng',loc:'Frisange',lat:49.508,lng:6.187,entity:'anne',tel:'+352 23 66 81'},
+  {name:'Maison Relais Kuarreg\u00E4rtchen',loc:'Weiswampach',lat:50.140,lng:6.077,entity:'anne',tel:'+352 99 85 31'},
+  {name:'Maison Relais Munneref',loc:'Mondorf-les-Bains',lat:49.505,lng:6.282,entity:'anne',tel:'+352 23 66 82'},
+  {name:'Maison Relais Noumer',loc:'Nommern',lat:49.793,lng:6.153,entity:'anne',tel:'+352 87 81 01'},
+  {name:'Maison Relais International School',loc:'Reuler',lat:50.068,lng:6.034,entity:'anne',tel:'+352 99 74 62'},
+  {name:'Maison Relais Rousennascht',loc:'Schieren',lat:49.830,lng:6.092,entity:'anne',tel:'+352 81 91 51'},
+  {name:'Maison Relais Schoulkauz',loc:'Wilwerwiltz',lat:49.983,lng:5.950,entity:'anne',tel:'+352 95 81 41'},
+  {name:'Maison Relais Un der Atert',loc:'Bissen',lat:49.786,lng:6.066,entity:'anne',tel:'+352 83 55 23'},
+  {name:'SEA An de Wolleken',loc:'Dalheim',lat:49.556,lng:6.258,entity:'anne',tel:'+352 26 35 04'},
+  {name:'SEA Bei de Kaweechelcher',loc:'Aspelt',lat:49.503,lng:6.217,entity:'anne',tel:'+352 23 66 83'},
+  {name:'SEA Kannerstuff',loc:'Eschdorf',lat:49.892,lng:5.933,entity:'anne',tel:'+352 89 93 01'},
+  {name:'SEA Piccolini',loc:'Colmarberg',lat:49.802,lng:6.058,entity:'anne',tel:'+352 83 55 24'},
+  {name:'Spillk\u00EBscht Mutfert',loc:'Moutfort',lat:49.586,lng:6.258,entity:'anne',tel:'+352 26 35 05'},
+  {name:'SEA Am Kiischtennascht',loc:'Trintange',lat:49.567,lng:6.270,entity:'anne',tel:'+352 26 35 06'},
+  {name:'SEA An der Loup\u00EBscht',loc:'Junglinster',lat:49.712,lng:6.250,entity:'anne',tel:'+352 78 87 01'},
+  {name:'Club Aktiv Plus deForum',loc:'Bettembourg',lat:49.519,lng:6.104,entity:'claire',tel:'+352 51 99 74'},
+  {name:'Foyer Ste Elisabeth',loc:'Bettembourg',lat:49.517,lng:6.102,entity:'claire',tel:'+352 51 99 75'},
+  {name:'Haaptmann\'s Schlass',loc:'Berbourg',lat:49.717,lng:6.367,entity:'claire',tel:'+352 71 02 01'},
+  {name:'Ste Elisabeth Am Park',loc:'Luxembourg',lat:49.610,lng:6.128,entity:'claire',tel:'+352 26 44 13'},
+  {name:'Sacr\u00E9-Coeur',loc:'Diekirch',lat:49.868,lng:6.158,entity:'claire',tel:'+352 80 31 23'},
+  {name:'\u00C9cole Priv\u00E9e Marie-Consolatrice',loc:'Esch-sur-Alzette',lat:49.495,lng:5.982,entity:'marie',tel:'+352 55 01 11'},
+  {name:'Institut St Joseph',loc:'Betzdorf',lat:49.683,lng:6.350,entity:'yolande',tel:'+352 71 02 02'},
+  {name:'Am Klouschter',loc:'Mondorf-les-Bains',lat:49.506,lng:6.283,entity:'yolande',tel:'+352 23 66 84'},
+  {name:'De Seefenatelier',loc:'Betzdorf',lat:49.684,lng:6.351,entity:'yolande',tel:'+352 71 02 03'},
+  {name:'Evergreen',loc:'Betzdorf',lat:49.685,lng:6.349,entity:'yolande',tel:'+352 71 02 04'},
+  {name:'P\u00E4iperleksgaart',loc:'Grevenmacher',lat:49.677,lng:6.442,entity:'yolande',tel:'+352 75 01 01'},
+  {name:'De Kichenatelier',loc:'Mondorf-les-Bains',lat:49.507,lng:6.284,entity:'yolande',tel:'+352 23 66 85'},
+  {name:'Klouschterbrout',loc:'Mondorf-les-Bains',lat:49.504,lng:6.281,entity:'yolande',tel:'+352 23 66 86'},
+  {name:'Duerfbuttek "beim Lis"',loc:'Roodt-sur-Syre',lat:49.667,lng:6.367,entity:'inclusion',tel:'+352 71 02 05'},
+  {name:'Si\u00E8ge & Administration',loc:'Luxembourg',lat:49.612,lng:6.132,entity:'apollonia',tel:'+352 26 44 10'},
+];
 
-const fmt = (v,u='M€') => {
-  if(u==='M€') return `${v.toFixed(1)}M€`;
-  if(u==='k€') return `${Math.round(v)}k€`;
-  if(u==='%') return `${v.toFixed(1)}%`;
+const NEWS = [
+  {id:1,date:'26 d\u00E9c. 2024',titre:'Budget N+1 valid\u00E9 en CA',tag:'Finance',tag_color:'#c9a96e',entite:'groupe',texte:'Le Conseil d\'administration a valid\u00E9 le budget 2025 avec une hausse de 6.2% des moyens allou\u00E9s aux services Seniors suite \u00E0 l\'augmentation des besoins.',urgent:false},
+  {id:2,date:'18 d\u00E9c. 2024',titre:'D\u00E9passement Services Seniors : plan d\'action',tag:'Alerte',tag_color:'#e85a5a',entite:'claire',texte:'Surco\u00FBt RH de 310k\u20AC sur Q3-Q4 li\u00E9 \u00E0 18 recrutements d\'urgence. Plan de ma\u00EEtrise approuv\u00E9 : gel de postes non-soignants en T1 2025.',urgent:true},
+  {id:3,date:'12 d\u00E9c. 2024',titre:'Subvention MSSANTE 420k\u20AC confirm\u00E9e',tag:'Bonne nouvelle',tag_color:'#52c97a',entite:'anne',texte:'Le dossier de financement pour l\'extension du centre de Bettembourg a \u00E9t\u00E9 accept\u00E9. Travaux pr\u00E9vus Q2-Q3 2025.',urgent:false},
+  {id:4,date:'05 d\u00E9c. 2024',titre:'R\u00E9novation \u00E9nerg\u00E9tique \u2014 14 sites labellis\u00E9s',tag:'RSE',tag_color:'#38bdf8',entite:'groupe',texte:'14 institutions obtiennent le label Clef Verte apr\u00E8s le programme de r\u00E9novation \u00E9nerg\u00E9tique. \u00C9conomie estim\u00E9e 82k\u20AC/an.',urgent:false},
+  {id:5,date:'28 nov. 2024',titre:'Tr\u00E9sorerie : ligne stand-by activ\u00E9e',tag:'Finance',tag_color:'#c9a96e',entite:'apollonia',texte:'D\u00E9calage de paiement de subventions \u00E9tatiques de 2.1M\u20AC pr\u00E9vu en janvier. La ligne de cr\u00E9dit stand-by de 3M\u20AC a \u00E9t\u00E9 pr\u00E9-activ\u00E9e \u00E0 titre pr\u00E9ventif.',urgent:false},
+  {id:6,date:'20 nov. 2024',titre:'1 957 ETP \u2014 nouveau record',tag:'RH',tag_color:'#a78bfa',entite:'groupe',texte:'Le groupe franchit le seuil des 1 950 collaborateurs avec 89 recrutements nets en 2024, renfor\u00E7ant la capacit\u00E9 d\'accueil de +340 b\u00E9n\u00E9ficiaires.',urgent:false},
+  {id:7,date:'10 nov. 2024',titre:'Digitalisation : SAP d\u00E9ploy\u00E9 chez Yolande',tag:'IT',tag_color:'#e8a45a',entite:'yolande',texte:'Le d\u00E9ploiement SAP est finalis\u00E9 pour Yolande asbl. Le reporting temps-r\u00E9el est d\u00E9sormais op\u00E9rationnel pour les 3 structures Handicap.',urgent:false},
+  {id:8,date:'02 nov. 2024',titre:'Audit interne Q3 : r\u00E9sultats positifs',tag:'Audit',tag_color:'#6e9ec9',entite:'apollonia',texte:'L\'audit interne trimestriel confirme la conformit\u00E9 des processus comptables dans 91% des contr\u00F4les. 4 points d\'am\u00E9lioration identifi\u00E9s en cours de traitement.',urgent:false},
+];
+
+/* ================================================================
+   HELPERS
+================================================================ */
+
+var fmt = function(v,u){
+  u=u||'M\u20AC';
+  if(u==='M\u20AC') return v.toFixed(1)+'M\u20AC';
+  if(u==='k\u20AC') return Math.round(v).toLocaleString('fr')+'k\u20AC';
+  if(u==='%') return v.toFixed(1)+'%';
   if(u==='ETP') return v.toLocaleString('fr');
+  if(u==='pers.') return v.toLocaleString('fr');
   return v;
 };
 
-const Delta = ({v,suffix=''}) => {
-  const pos = v>0;
-  const zero = v===0;
-  return (
-    <span className={`inline-flex items-center gap-1 text-xs font-mono px-2 py-0.5 rounded`}
-      style={{background:zero?'rgba(107,116,145,.15)':pos?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
-              color:zero?'#6b7491':pos?'#52c97a':'#e85a5a'}}>
-      {zero?'◆':pos?'▲':'▼'} {pos?'+':''}{v}{suffix}
-    </span>
+var exportXLSX = function(rows, name){
+  if(typeof XLSX==='undefined') return;
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Data');
+  XLSX.writeFile(wb,(name||'export')+'.xlsx');
+};
+
+/* ================================================================
+   SHARED COMPONENTS
+================================================================ */
+
+var Delta = function(props){
+  var v=props.v, suffix=props.suffix||'';
+  var pos=v>0, zero=v===0;
+  return React.createElement('span',{
+    className:'inline-flex items-center gap-1 text-xs font-mono px-2 py-0.5 rounded',
+    style:{background:zero?'rgba(107,116,145,.15)':pos?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+           color:zero?'var(--c-muted)':pos?'var(--c-green)':'var(--c-red)'}
+  },(zero?'\u25C6':pos?'\u25B2':'\u25BC')+' '+(pos?'+':'')+v+suffix);
+};
+
+var KPICard = function(props){
+  var ref=useRef(null);
+  return React.createElement('div',{
+    className:'card-hover rounded-xl p-5 relative overflow-hidden',
+    style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'},
+    ref:ref
+  },
+    React.createElement('div',{style:{position:'absolute',bottom:0,left:0,right:0,height:'2px',background:props.color||'var(--c-gold)'}},null),
+    React.createElement('div',{className:'text-xs uppercase tracking-widest mb-2 font-mono',style:{color:'var(--c-muted)'}},props.label),
+    React.createElement('div',{className:'text-3xl mb-2',style:{fontFamily:'Playfair Display,serif',fontWeight:700,color:'var(--c-text)'}},fmt(props.value,props.unit)),
+    props.delta!==undefined && React.createElement(Delta,{v:props.delta,suffix:props.deltaUnit||''})
   );
 };
 
-const KPICard = ({label,value,unit,delta,deltaUnit,color}) => (
-  <div className="card-hover rounded-xl p-5 relative overflow-hidden" style={{background:'#111318',border:'1px solid #1e2738'}}>
-    <div style={{position:'absolute',bottom:0,left:0,right:0,height:'2px',background:color||'#c9a96e',transform:'scaleX(0)',transformOrigin:'left',transition:'transform .6s'}}
-      onMouseEnter={e=>e.currentTarget.style.transform='scaleX(1)'}
-      onMouseLeave={e=>e.currentTarget.style.transform='scaleX(0)'}/>
-    <div className="text-xs uppercase tracking-widest mb-2 font-mono" style={{color:'#6b7491'}}>{label}</div>
-    <div className="text-3xl mb-2" style={{fontFamily:'Playfair Display,serif',fontWeight:700,color:'#e8eaf0'}}>
-      {fmt(value,unit)}
-    </div>
-    {delta!==undefined && <Delta v={delta} suffix={deltaUnit||''}/>}
-  </div>
-);
-
-const SectionTitle = ({title,sub}) => (
-  <div className="mb-4">
-    <div className="flex items-center gap-3 mb-1">
-      <div className="text-xs font-mono uppercase tracking-widest" style={{color:'#c9a96e'}}>{title}</div>
-      <div style={{flex:1,height:'1px',background:'#1e2738'}}/>
-    </div>
-    {sub && <div className="text-xs" style={{color:'#6b7491'}}>{sub}</div>}
-  </div>
-);
-
-const CustomTooltip = ({active,payload,label}) => {
-  if(!active||!payload) return null;
-  return (
-    <div className="rounded-lg p-3 text-xs" style={{background:'#161b24',border:'1px solid #1e2738',color:'#e8eaf0',fontFamily:'DM Mono,monospace'}}>
-      <div className="font-bold mb-1" style={{color:'#c9a96e'}}>{label}</div>
-      {payload.map((p,i)=><div key={i} style={{color:p.color}}>{p.name}: {Math.round(p.value)}k€</div>)}
-    </div>
+var SectionTitle = function(props){
+  return React.createElement('div',{className:'mb-4'},
+    React.createElement('div',{className:'flex items-center gap-3 mb-1'},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest',style:{color:'var(--c-gold)'}},props.title),
+      React.createElement('div',{style:{flex:1,height:'1px',background:'var(--c-border)'}})
+    ),
+    props.sub && React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},props.sub)
   );
 };
 
-// Donut Chart simple SVG
-const DonutChart = ({data,size=110}) => {
-  const total = data.reduce((s,d)=>s+d.v,0);
-  let cum = 0;
-  const r=42, cx=55, cy=55, cir=2*Math.PI*r;
-  const slices = data.map(d=>{
-    const pct=d.v/total;
-    const dash=pct*cir, offset=-cum*cir;
+var XBtn = function(props){
+  return React.createElement('button',{className:'xbtn',onClick:props.onClick},
+    '\u{1F4E5}',
+    ' Export .xlsx'
+  );
+};
+
+var CustomTooltip = function(props){
+  if(!props.active||!props.payload) return null;
+  return React.createElement('div',{
+    className:'rounded-lg p-3 text-xs',
+    style:{background:'var(--c-surface2)',border:'1px solid var(--c-border)',color:'var(--c-text)',fontFamily:'DM Mono,monospace'}
+  },
+    React.createElement('div',{className:'font-bold mb-1',style:{color:'var(--c-gold)'}},props.label),
+    props.payload.map(function(p,i){
+      return React.createElement('div',{key:i,style:{color:p.color}},p.name+': '+Math.round(p.value)+'k\u20AC');
+    })
+  );
+};
+
+var DonutChart = function(props){
+  var data=props.data, size=props.size||110;
+  var colors=['#c9a96e','#6e9ec9','#52c97a','#e8a45a','#a78bfa'];
+  var total=data.reduce(function(s,d){return s+d.v;},0);
+  var cum=0, r=42, cx=55, cy=55, cir=2*Math.PI*r;
+  var slices=data.map(function(d,idx){
+    var pct=d.v/total;
+    var dash=pct*cir, offset=-cum*cir;
     cum+=pct;
-    return {...d,dash,offset};
+    return Object.assign({},d,{dash:dash,offset:offset,fc:colors[idx%colors.length]});
   });
-  return (
-    <svg width={size} height={size} viewBox="0 0 110 110">
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#161b24" strokeWidth="16"/>
-      {slices.map((s,i)=>(
-        <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.c} strokeWidth="16"
-          strokeDasharray={`${s.dash} ${cir-s.dash}`}
-          strokeDashoffset={-s.offset+cir*0.25}
-          transform={`rotate(-90 ${cx} ${cy})`}
-          style={{transition:'stroke-dasharray .6s'}}/>
-      ))}
-      <text x={cx} y={cy-4} textAnchor="middle" fill="#e8eaf0" fontSize="11" fontFamily="Playfair Display,serif" fontWeight="700">
-        {data.reduce((s,d)=>s+d.v,0)}%
-      </text>
-      <text x={cx} y={cy+8} textAnchor="middle" fill="#6b7491" fontSize="7" fontFamily="DM Mono,monospace">total</text>
-    </svg>
+  return React.createElement('svg',{width:size,height:size,viewBox:'0 0 110 110'},
+    React.createElement('circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--c-surface2)',strokeWidth:16}),
+    slices.map(function(s,i){
+      return React.createElement('circle',{key:i,cx:cx,cy:cy,r:r,fill:'none',stroke:s.fc,strokeWidth:16,
+        strokeDasharray:s.dash+' '+(cir-s.dash),
+        strokeDashoffset:-s.offset+cir*0.25,
+        transform:'rotate(-90 '+cx+' '+cy+')',
+        style:{transition:'stroke-dasharray .6s'}});
+    }),
+    React.createElement('text',{x:cx,y:cy-4,textAnchor:'middle',fill:'var(--c-text)',fontSize:11,fontFamily:'Playfair Display,serif',fontWeight:700},total+'%'),
+    React.createElement('text',{x:cx,y:cy+8,textAnchor:'middle',fill:'var(--c-muted)',fontSize:7,fontFamily:'DM Mono,monospace'},'total')
   );
 };
 
-// Sparkline SVG
-const Sparkline = ({values,color='#c9a96e',h=32}) => {
+var Sparkline = function(props){
+  var values=props.values, color=props.color||'var(--c-gold)', h=props.h||32;
   if(!values||values.length<2) return null;
-  const valid = values.filter(v=>v!=null);
-  const min=Math.min(...valid), max=Math.max(...valid), range=max-min||1;
-  const w=120;
-  const pts = values.map((v,i)=>{
-    const x=(i/(values.length-1))*w;
-    const y=v!=null ? h-(v-min)/range*(h-4)-2 : null;
-    return {x,y,v};
-  }).filter(p=>p.y!=null);
-  const d=pts.map((p,i)=>`${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
-  const fill=`${d} L${pts[pts.length-1].x},${h} L${pts[0].x},${h} Z`;
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{overflow:'visible'}}>
-      <path d={fill} fill={color} fillOpacity=".08"/>
-      <path d={d} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
+  var valid=values.filter(function(v){return v!=null;});
+  var min=Math.min.apply(null,valid), max=Math.max.apply(null,valid), range=max-min||1;
+  var w=120;
+  var pts=[];
+  values.forEach(function(v,i){
+    if(v!=null){
+      var x=(i/(values.length-1))*w;
+      var y=h-(v-min)/range*(h-4)-2;
+      pts.push({x:x,y:y});
+    }
+  });
+  var d=pts.map(function(p,i){return (i===0?'M':'L')+p.x+','+p.y;}).join(' ');
+  var fill=d+' L'+pts[pts.length-1].x+','+h+' L'+pts[0].x+','+h+' Z';
+  return React.createElement('svg',{width:w,height:h,viewBox:'0 0 '+w+' '+h,style:{overflow:'visible'}},
+    React.createElement('path',{d:fill,fill:color,fillOpacity:'.08'}),
+    React.createElement('path',{d:d,fill:'none',stroke:color,strokeWidth:'1.5',strokeLinecap:'round',strokeLinejoin:'round'})
   );
 };
 
-/* ============================================================
-   VIEWS
-============================================================ */
+/* ================================================================
+   TAB 1: SYNTHESE
+================================================================ */
 
-const VueSynthese = ({entity, kpi, monthly, charges, ecarts}) => {
-  const ent = ENTITES.find(e=>e.id===entity);
-  const sparkVals = monthly.map(d=>d.reel||d.n1);
+var VueSynthese = function(props){
+  var entity=props.entity, kpi=props.kpi, monthly=props.monthly, charges=props.charges, ecarts=props.ecarts;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+  var chargeColors=['#c9a96e','#6e9ec9','#52c97a','#e8a45a'];
 
-  return (
-    <div className="space-y-6 slide-up">
-      {/* KPIs */}
-      <div>
-        <SectionTitle title="Indicateurs clés" sub={`Exercice 2024 — ${ent.label}`}/>
-        <div className="grid grid-cols-4 gap-4">
-          <KPICard label="Chiffre d'affaires" value={kpi.ca} unit="M€" delta={7.2} deltaUnit="%" color={ent.color}/>
-          <KPICard label="EBITDA" value={kpi.ebitda} unit="M€" delta={+(kpi.ebitda/kpi.ca*100).toFixed(1)} deltaUnit="% marge" color="#6e9ec9"/>
-          <KPICard label="Résultat net" value={kpi.resultat} unit="M€" delta={12.4} deltaUnit="%" color="#52c97a"/>
-          <KPICard label="Effectifs" value={kpi.effectifs} unit="ETP" delta={89} deltaUnit=" recr." color="#a78bfa"/>
-        </div>
-        <div className="grid grid-cols-4 gap-4 mt-4">
-          <KPICard label="Taux d'exécution" value={kpi.taux_exec} unit="%" delta={+(kpi.taux_exec-95).toFixed(1)} deltaUnit=" pts" color={ent.color}/>
-          <KPICard label="Écart budget" value={Math.abs(kpi.ecart_budget)} unit="M€" delta={kpi.ecart_budget<0?-1:1} deltaUnit={kpi.ecart_budget<0?" déf.":" fav."} color={kpi.ecart_budget<0?'#e85a5a':'#52c97a'}/>
-          {entity!=='apollonia' && <KPICard label="Subventions" value={kpi.subventions} unit="M€" delta={3.2} deltaUnit="%" color="#38bdf8"/>}
-          {entity!=='apollonia' && <KPICard label="Bénéficiaires" value={kpi.benef_servis} unit="pers." delta={+340} deltaUnit="" color="#e8a45a"/>}
-        </div>
-      </div>
+  var handleExportEcarts = function(){
+    var rows=[['Centre de co\u00FBts','Budget','R\u00E9alis\u00E9','\u00C9cart','%']];
+    ecarts.forEach(function(e){
+      var ec=e.budget-e.reel;
+      rows.push([e.centre,e.budget,e.reel,ec,(ec/e.budget*100).toFixed(1)+'%']);
+    });
+    exportXLSX(rows,'ecarts_'+entity);
+  };
 
-      {/* Charts */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Budget vs réel */}
-        <div className="col-span-2 rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-          <SectionTitle title="Budget · Réel · N-1" sub="Évolution mensuelle en k€"/>
-          <ResponsiveContainer width="100%" height={200}>
-            <ComposedChart data={monthly} margin={{top:5,right:5,bottom:0,left:0}}>
-              <CartesianGrid stroke="#1e2738" strokeDasharray="3 3" vertical={false}/>
-              <XAxis dataKey="m" tick={{fill:'#6b7491',fontSize:10,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:'#6b7491',fontSize:10,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-              <Tooltip content={<CustomTooltip/>}/>
-              <Bar dataKey="budget" name="Budget" fill="#c9a96e" fillOpacity={0.25} radius={[3,3,0,0]}/>
-              <Bar dataKey="reel" name="Réalisé" fill="#c9a96e" radius={[3,3,0,0]}/>
-              <Line dataKey="n1" name="N-1" stroke="#6e9ec9" strokeWidth={1.5} dot={false} strokeDasharray="4 2"/>
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Charges */}
-        <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-          <SectionTitle title="Répartition charges" sub="Structure de coûts"/>
-          <div className="flex items-center gap-4">
-            <DonutChart data={charges}/>
-            <div className="space-y-2 flex-1">
-              {charges.map((c,i)=>(
-                <div key={i} className="flex items-center gap-2">
-                  <div style={{width:8,height:8,borderRadius:2,background:c.c,flexShrink:0}}/>
-                  <span className="text-xs flex-1" style={{color:'#e8eaf0'}}>{c.n}</span>
-                  <span className="text-xs font-mono font-bold" style={{color:c.c}}>{c.v}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Écarts */}
-      <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-        <SectionTitle title="Analyse des écarts budgétaires" sub="Décomposition par centre de coûts — k€"/>
-        <table style={{width:'100%',borderCollapse:'collapse'}}>
-          <thead>
-            <tr>
-              {['Centre de coûts','Budget','Réalisé','Écart','Statut'].map(h=>(
-                <th key={h} style={{textAlign:h==='Centre de coûts'?'left':'right',fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:'#6b7491',fontFamily:'DM Mono,monospace',padding:'0 10px 10px',borderBottom:'1px solid #1e2738'}}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ecarts.map((e,i)=>{
-              const ecart=e.budget-e.reel;
-              const pct=(ecart/e.budget*100).toFixed(1);
-              const fav=ecart>=0;
-              return (
-                <tr key={i}>
-                  <td style={{padding:'10px',fontSize:13,color:'#e8eaf0',borderBottom:'1px solid rgba(30,39,56,.5)'}}>{e.centre}</td>
-                  {[e.budget,e.reel].map((v,j)=>(
-                    <td key={j} style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'#e8eaf0',borderBottom:'1px solid rgba(30,39,56,.5)'}}>{v.toLocaleString('fr')}</td>
-                  ))}
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:fav?'#52c97a':'#e85a5a',borderBottom:'1px solid rgba(30,39,56,.5)',fontWeight:600}}>
-                    {fav?'+':'-'}{Math.abs(ecart).toLocaleString('fr')}
-                  </td>
-                  <td style={{textAlign:'right',padding:'10px',borderBottom:'1px solid rgba(30,39,56,.5)'}}>
-                    <span style={{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
-                      background:fav?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
-                      color:fav?'#52c97a':'#e85a5a'}}>
-                      {fav?'Fav.':'Déf.'} {Math.abs(pct)}%
-                    </span>
-                  </td>
-                </tr>
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement('div',null,
+      React.createElement(SectionTitle,{title:'Indicateurs cl\u00E9s',sub:'Exercice 2024 \u2014 '+ent.label}),
+      React.createElement('div',{className:'grid grid-cols-4 gap-4'},
+        React.createElement(KPICard,{label:"Chiffre d'affaires",value:kpi.ca,unit:'M\u20AC',delta:7.2,deltaUnit:'%',color:ent.color}),
+        React.createElement(KPICard,{label:'EBITDA',value:kpi.ebitda,unit:'M\u20AC',delta:+(kpi.ebitda/kpi.ca*100).toFixed(1),deltaUnit:'% marge',color:'var(--c-blue)'}),
+        React.createElement(KPICard,{label:'R\u00E9sultat net',value:kpi.resultat,unit:'M\u20AC',delta:12.4,deltaUnit:'%',color:'var(--c-green)'}),
+        React.createElement(KPICard,{label:'Effectifs',value:kpi.effectifs,unit:'ETP',delta:89,deltaUnit:' recr.',color:'var(--c-purple)'})
+      ),
+      React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-4'},
+        React.createElement(KPICard,{label:"Taux d'ex\u00E9cution",value:kpi.taux_exec,unit:'%',delta:+(kpi.taux_exec-95).toFixed(1),deltaUnit:' pts',color:ent.color}),
+        React.createElement(KPICard,{label:'\u00C9cart budget',value:Math.abs(kpi.ecart_budget),unit:'M\u20AC',delta:kpi.ecart_budget<0?-1:1,deltaUnit:kpi.ecart_budget<0?' d\u00E9f.':' fav.',color:kpi.ecart_budget<0?'var(--c-red)':'var(--c-green)'}),
+        React.createElement(KPICard,{label:'Subventions',value:kpi.subventions,unit:'M\u20AC',delta:3.2,deltaUnit:'%',color:'var(--c-cyan)'}),
+        React.createElement(KPICard,{label:'B\u00E9n\u00E9ficiaires',value:kpi.benef_servis,unit:'pers.',delta:340,deltaUnit:'',color:'var(--c-orange)'})
+      )
+    ),
+    React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+      React.createElement('div',{className:'col-span-2 rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Budget \u00B7 R\u00E9el \u00B7 N-1',sub:'\u00C9volution mensuelle en k\u20AC'}),
+        React.createElement(ResponsiveContainer,{width:'100%',height:220},
+          React.createElement(ComposedChart,{data:monthly,margin:{top:5,right:5,bottom:0,left:0}},
+            React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+            React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+            React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+            React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+            React.createElement(Bar,{dataKey:'budget',name:'Budget',fill:'var(--c-gold)',fillOpacity:0.25,radius:[3,3,0,0]}),
+            React.createElement(Bar,{dataKey:'reel',name:'R\u00E9alis\u00E9',fill:'var(--c-gold)',radius:[3,3,0,0]}),
+            React.createElement(Line,{dataKey:'n1',name:'N-1',stroke:'var(--c-blue)',strokeWidth:1.5,dot:false,strokeDasharray:'4 2'})
+          )
+        )
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'R\u00E9partition charges',sub:'Structure de co\u00FBts'}),
+        React.createElement('div',{className:'flex items-center gap-4'},
+          React.createElement(DonutChart,{data:charges}),
+          React.createElement('div',{className:'space-y-2 flex-1'},
+            charges.map(function(c,i){
+              return React.createElement('div',{key:i,className:'flex items-center gap-2'},
+                React.createElement('div',{style:{width:8,height:8,borderRadius:2,background:chargeColors[i],flexShrink:0}}),
+                React.createElement('span',{className:'text-xs flex-1',style:{color:'var(--c-text)'}},c.n),
+                React.createElement('span',{className:'text-xs font-mono font-bold',style:{color:chargeColors[i]}},c.v+'%')
               );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-const VueAnalytique = ({entity}) => {
-  const ent = ENTITES.find(e=>e.id===entity);
-  const indicators = INDICATORS[entity]||INDICATORS.groupe;
-  const monthly = MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
-
-  // Données pour graphique en aires empilées
-  const areaData = monthly.map(d=>({...d,
-    rh: d.reel ? Math.round(d.reel*(entity==='marie'?.65:entity==='anne'?.58:.52)) : null,
-    immo: d.reel ? Math.round(d.reel*(entity==='apollonia'?.25:.18)) : null,
-    fonct: d.reel ? Math.round(d.reel*.15) : null,
-  }));
-
-  return (
-    <div className="space-y-6 slide-up">
-      <div>
-        <SectionTitle title="Indicateurs opérationnels" sub={`Performance détaillée — ${ent.label}`}/>
-        <div className="grid grid-cols-2 gap-4">
-          {indicators.map((ind,i)=>{
-            const vals = monthly.map(d=>d.reel);
-            const pos=ind.trend>0;
-            return (
-              <div key={i} className="rounded-xl p-4 flex items-center gap-4" style={{background:'#111318',border:'1px solid #1e2738'}}>
-                <div style={{flexShrink:0}}>
-                  <div className="text-xs font-mono uppercase tracking-widest mb-1" style={{color:'#6b7491'}}>{ind.n}</div>
-                  <div style={{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'#e8eaf0'}}>{ind.v}{ind.u}</div>
-                  <Delta v={ind.trend} suffix={ind.u==='%'||ind.u==='/100'?' pts':`${ind.u}`}/>
-                </div>
-                <div style={{flex:1,display:'flex',justifyContent:'flex-end'}}>
-                  <Sparkline values={vals.map(v=>v?v*(0.9+i*0.05):null)} color={ind.color}/>
-                </div>
-              </div>
+            })
+          )
+        )
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'flex items-center justify-between mb-4'},
+        React.createElement(SectionTitle,{title:'Analyse des \u00E9carts budg\u00E9taires',sub:'D\u00E9composition par centre de co\u00FBts \u2014 k\u20AC'}),
+        React.createElement(XBtn,{onClick:handleExportEcarts})
+      ),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Centre de co\u00FBts','Budget','R\u00E9alis\u00E9','\u00C9cart','Statut'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Centre de co\u00FBts'?'left':'right',fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 10px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          ecarts.map(function(e,i){
+            var ecart=e.budget-e.reel;
+            var pct=(ecart/e.budget*100).toFixed(1);
+            var fav=ecart>=0;
+            return React.createElement('tr',{key:i},
+              React.createElement('td',{style:{padding:'10px',fontSize:13,color:'var(--c-text)',borderBottom:'1px solid rgba(30,39,56,.5)'}},e.centre),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'var(--c-text)',borderBottom:'1px solid rgba(30,39,56,.5)'}},e.budget.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:'var(--c-text)',borderBottom:'1px solid rgba(30,39,56,.5)'}},e.reel.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'10px',color:fav?'var(--c-green)':'var(--c-red)',borderBottom:'1px solid rgba(30,39,56,.5)',fontWeight:600}},(fav?'+':'-')+Math.abs(ecart).toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',padding:'10px',borderBottom:'1px solid rgba(30,39,56,.5)'}},
+                React.createElement('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
+                  background:fav?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+                  color:fav?'var(--c-green)':'var(--c-red)'}},(fav?'Fav.':'D\u00E9f.')+' '+Math.abs(pct)+'%')
+              )
             );
-          })}
-        </div>
-      </div>
-
-      {/* Décomposition des charges */}
-      <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-        <SectionTitle title="Décomposition des charges" sub="Évolution mensuelle par nature — k€"/>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={areaData} margin={{top:5,right:5,bottom:0,left:0}}>
-            <CartesianGrid stroke="#1e2738" strokeDasharray="3 3" vertical={false}/>
-            <XAxis dataKey="m" tick={{fill:'#6b7491',fontSize:10,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-            <YAxis tick={{fill:'#6b7491',fontSize:10,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-            <Tooltip content={<CustomTooltip/>}/>
-            <Area type="monotone" dataKey="rh" name="RH" stackId="1" stroke="#c9a96e" fill="#c9a96e" fillOpacity={0.4}/>
-            <Area type="monotone" dataKey="immo" name="Immobilier" stackId="1" stroke="#6e9ec9" fill="#6e9ec9" fillOpacity={0.4}/>
-            <Area type="monotone" dataKey="fonct" name="Fonctionnement" stackId="1" stroke="#52c97a" fill="#52c97a" fillOpacity={0.4}/>
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Taux d'exécution par mois */}
-      <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-        <SectionTitle title="Taux d'exécution budgétaire" sub="Réalisé / Budget mensuel en %"/>
-        <div className="space-y-2 mt-2">
-          {monthly.filter(d=>d.reel).map((d,i)=>{
-            const pct=Math.round(d.reel/d.budget*100);
-            const color=pct>=100?'#e85a5a':pct>=95?'#52c97a':pct>=90?'#e8a45a':'#6b7491';
-            return (
-              <div key={i} className="flex items-center gap-3">
-                <span className="font-mono text-xs w-8" style={{color:'#6b7491'}}>{d.m}</span>
-                <div style={{flex:1,height:8,background:'#161b24',borderRadius:4,overflow:'hidden'}}>
-                  <div className="progress-bar" style={{width:`${Math.min(pct,110)}%`,height:'100%',background:color,borderRadius:4}}/>
-                </div>
-                <span className="font-mono text-xs w-12 text-right" style={{color}}>{pct}%</span>
-                <span className="font-mono text-xs w-20 text-right" style={{color:'#6b7491'}}>{d.reel.toLocaleString('fr')}k€</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
+          })
+        )
+      )
+    )
   );
 };
 
-const VueConsolidee = () => {
-  const consolidatedData = ENTITES.filter(e=>e.id!=='groupe').map(e=>({
-    name: e.icon+' '+e.label.split('—')[0].trim(),
-    ca: KPI_DATA[e.id].ca,
-    ebitda: KPI_DATA[e.id].ebitda,
-    effectifs: Math.round(KPI_DATA[e.id].effectifs/10),
-    color: e.color,
-  }));
+/* ================================================================
+   TAB 2: P&L
+================================================================ */
 
-  return (
-    <div className="space-y-6 slide-up">
-      <SectionTitle title="Vue consolidée groupe" sub="Comparaison inter-entités — Exercice 2024"/>
+var VuePL = function(props){
+  var entity=props.entity;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+  var pl=PL_DATA[entity]||PL_DATA.groupe;
+  var totalP=function(key){return pl.produits.reduce(function(s,p){return s+p[key];},0);};
+  var totalC=function(key){return pl.charges.reduce(function(s,c){return s+c[key];},0);};
 
-      {/* Tableau de bord comparatif */}
-      <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-        <div className="text-xs font-mono uppercase tracking-widest mb-4" style={{color:'#6b7491'}}>Performance par entité</div>
-        <table style={{width:'100%',borderCollapse:'collapse'}}>
-          <thead>
-            <tr>
-              {['Entité','CA','EBITDA','Marge','Effectifs','Tx Exéc.','Subventions','Statut'].map(h=>(
-                <th key={h} style={{textAlign:h==='Entité'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'#6b7491',fontFamily:'DM Mono,monospace',padding:'0 10px 12px',borderBottom:'1px solid #1e2738'}}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ENTITES.filter(e=>e.id!=='groupe').map((e,i)=>{
-              const k=KPI_DATA[e.id];
-              const marge=(k.ebitda/k.ca*100).toFixed(1);
-              const ok=k.ecart_budget>=0;
-              return (
-                <tr key={i} style={{borderBottom:'1px solid rgba(30,39,56,.5)'}}>
-                  <td style={{padding:'12px 10px'}}>
-                    <div className="flex items-center gap-2">
-                      <span style={{fontSize:16}}>{e.icon}</span>
-                      <div>
-                        <div style={{fontSize:13,color:'#e8eaf0',fontWeight:500}}>{e.label.split('—')[0].trim()}</div>
-                        <div style={{fontSize:11,color:'#6b7491',fontFamily:'DM Mono,monospace'}}>{e.label.split('—')[1]?.trim()}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'#e8eaf0',fontWeight:600}}>{k.ca}M€</td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:e.color,fontWeight:600}}>{k.ebitda}M€</td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'#6b7491'}}>{marge}%</td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'#e8eaf0'}}>{k.effectifs}</td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px'}}>
-                    <span style={{color:k.taux_exec>=97?'#52c97a':k.taux_exec>=94?'#e8a45a':'#e85a5a'}}>{k.taux_exec}%</span>
-                  </td>
-                  <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'#38bdf8'}}>{k.subventions||'—'}M€</td>
-                  <td style={{textAlign:'right',padding:'12px 10px'}}>
-                    <span style={{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
-                      background:ok?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
-                      color:ok?'#52c97a':'#e85a5a'}}>
-                      {ok?'Fav.':'Déf.'} {Math.abs(k.ecart_budget).toFixed(1)}M€
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr style={{borderTop:'2px solid #1e2738'}}>
-              <td style={{padding:'12px 10px',fontWeight:700,fontSize:13,color:'#c9a96e',fontFamily:'Playfair Display,serif'}}>🌹 GROUPE TOTAL</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'#c9a96e',fontWeight:700}}>42.6M€</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'#c9a96e',fontWeight:700}}>8.3M€</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'#6b7491'}}>19.5%</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'#e8eaf0'}}>1 957</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'#52c97a',fontWeight:600}}>96.3%</td>
-              <td style={{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'#38bdf8',fontWeight:600}}>18.2M€</td>
-              <td style={{textAlign:'right',padding:'12px 10px'}}>
-                <span style={{padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',background:'rgba(232,90,90,.12)',color:'#e85a5a'}}>Déf. 0.4M€</span>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+  var handleExport = function(){
+    var rows=[['Compte de R\u00E9sultat','Budget 2024','R\u00E9alis\u00E9 2024','N-1 (2023)'],['','','',''],['PRODUITS','','','']];
+    pl.produits.forEach(function(p){rows.push([p.n,p.budget,p.reel,p.n1]);});
+    rows.push(['Total Produits',totalP('budget'),totalP('reel'),totalP('n1')]);
+    rows.push(['','','','']);
+    rows.push(['CHARGES','','','']);
+    pl.charges.forEach(function(c){rows.push([c.n,c.budget,c.reel,c.n1]);});
+    rows.push(['Total Charges',totalC('budget'),totalC('reel'),totalC('n1')]);
+    rows.push(['','','','']);
+    rows.push(['MARGE EXPLOITATION',totalP('budget')-totalC('budget'),totalP('reel')-totalC('reel'),totalP('n1')-totalC('n1')]);
+    exportXLSX(rows,'pl_'+entity);
+  };
 
-      {/* Chart comparatif CA */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-          <SectionTitle title="CA par entité" sub="En M€ — exercice 2024"/>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={ENTITES.filter(e=>e.id!=='groupe').map(e=>({name:e.icon+' '+e.label.split('—')[1]?.trim()||e.label,ca:KPI_DATA[e.id].ca,color:e.color}))} margin={{top:5,right:5,bottom:5,left:0}}>
-              <CartesianGrid stroke="#1e2738" strokeDasharray="3 3" vertical={false}/>
-              <XAxis dataKey="name" tick={{fill:'#6b7491',fontSize:9,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:'#6b7491',fontSize:9,fontFamily:'DM Mono,monospace'}} axisLine={false} tickLine={false}/>
-              <Tooltip content={<CustomTooltip/>}/>
-              <Bar dataKey="ca" name="CA M€" radius={[4,4,0,0]}>
-                {ENTITES.filter(e=>e.id!=='groupe').map((e,i)=>(
-                  <Cell key={i} fill={e.color} fillOpacity={0.8}/>
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+  var renderRow = function(item,isBold,isHighlight){
+    return React.createElement('tr',{key:item.n,style:{borderBottom:'1px solid rgba(30,39,56,.3)'}},
+      React.createElement('td',{style:{padding:'8px 10px',fontSize:isBold?13:12,color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isBold?700:400,fontFamily:isBold?'DM Sans,sans-serif':'DM Sans,sans-serif'}},item.n),
+      [item.budget,item.reel,item.n1].map(function(v,j){
+        return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isBold?700:400}},v.toLocaleString('fr'));
+      }),
+      React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:11,padding:'8px 10px',color:item.reel>=item.budget?'var(--c-green)':'var(--c-red)'}},
+        ((item.reel-item.budget)/Math.abs(item.budget)*100).toFixed(1)+'%'
+      )
+    );
+  };
 
-        <div className="rounded-xl p-5" style={{background:'#111318',border:'1px solid #1e2738'}}>
-          <SectionTitle title="Effectifs par entité" sub="ETP — exercice 2024"/>
-          <div className="space-y-3 mt-2">
-            {ENTITES.filter(e=>e.id!=='groupe').map((e,i)=>{
-              const pct=Math.round(KPI_DATA[e.id].effectifs/1957*100);
-              return (
-                <div key={i}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-xs" style={{color:'#e8eaf0'}}>{e.icon} {e.label.split('—')[0].trim()}</span>
-                    <span className="text-xs font-mono" style={{color:e.color}}>{KPI_DATA[e.id].effectifs} ETP</span>
-                  </div>
-                  <div style={{height:6,background:'#161b24',borderRadius:3,overflow:'hidden'}}>
-                    <div style={{width:`${pct}%`,height:'100%',background:e.color,borderRadius:3,transition:'width 1s'}}/>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
+  var margeB=totalP('budget')-totalC('budget');
+  var margeR=totalP('reel')-totalC('reel');
+  var margeN=totalP('n1')-totalC('n1');
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement('div',{className:'flex items-center justify-between'},
+      React.createElement(SectionTitle,{title:'Compte de R\u00E9sultat',sub:'Exercice 2024 \u2014 '+ent.label+' \u2014 k\u20AC'}),
+      React.createElement(XBtn,{onClick:handleExport})
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Poste','Budget 2024','R\u00E9alis\u00E9 2024','N-1 (2023)','\u00C9cart %'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Poste'?'left':'right',fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 12px',borderBottom:'2px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          React.createElement('tr',null,
+            React.createElement('td',{colSpan:5,style:{padding:'12px 10px 6px',fontSize:11,fontWeight:700,color:'var(--c-green)',letterSpacing:'0.1em',textTransform:'uppercase',fontFamily:'DM Mono,monospace'}},'PRODUITS')
+          ),
+          pl.produits.map(function(p){return renderRow(p,false,false);}),
+          renderRow({n:'Total Produits',budget:totalP('budget'),reel:totalP('reel'),n1:totalP('n1')},true,false),
+          React.createElement('tr',null,
+            React.createElement('td',{colSpan:5,style:{padding:'16px 10px 6px',fontSize:11,fontWeight:700,color:'var(--c-red)',letterSpacing:'0.1em',textTransform:'uppercase',fontFamily:'DM Mono,monospace'}},'CHARGES')
+          ),
+          pl.charges.map(function(c){return renderRow(c,false,false);}),
+          renderRow({n:'Total Charges',budget:totalC('budget'),reel:totalC('reel'),n1:totalC('n1')},true,false),
+          React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)'}},
+            React.createElement('td',{style:{padding:'14px 10px',fontSize:14,fontWeight:700,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'Marge d\'exploitation'),
+            [margeB,margeR,margeN].map(function(v,j){
+              return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'14px 10px',color:'var(--c-gold)',fontWeight:700}},v.toLocaleString('fr'));
+            }),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'14px 10px',color:margeR>=margeB?'var(--c-green)':'var(--c-red)',fontWeight:700}},
+              ((margeR-margeB)/Math.abs(margeB)*100).toFixed(1)+'%'
+            )
+          ),
+          React.createElement('tr',null,
+            React.createElement('td',{style:{padding:'10px',fontSize:13,fontWeight:600,color:'var(--c-text)'}},'Marge nette (%)'),
+            [margeB/totalP('budget')*100,margeR/totalP('reel')*100,margeN/totalP('n1')*100].map(function(v,j){
+              return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'10px',color:v>10?'var(--c-green)':'var(--c-orange)',fontWeight:600}},v.toFixed(1)+'%');
+            }),
+            React.createElement('td',null)
+          )
+        )
+      )
+    )
   );
 };
 
-const VueNews = ({entityFilter}) => {
-  const [search,setSearch]=useState('');
-  const [tagFilter,setTagFilter]=useState('Tous');
-  const tags=['Tous','Finance','Alerte','RH','Audit','RSE','IT','Bonne nouvelle'];
+/* ================================================================
+   TAB 3: ANALYTIQUE
+================================================================ */
 
-  const filtered = NEWS.filter(n=>{
-    const matchEnt = entityFilter==='groupe' || n.entite===entityFilter || n.entite==='groupe';
-    const matchSearch = !search || n.titre.toLowerCase().includes(search.toLowerCase()) || n.texte.toLowerCase().includes(search.toLowerCase());
-    const matchTag = tagFilter==='Tous' || n.tag===tagFilter;
-    return matchEnt && matchSearch && matchTag;
+var VueAnalytique = function(props){
+  var entity=props.entity;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+  var indicators=INDICATORS[entity]||INDICATORS.groupe;
+  var monthly=MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
+  var indColors=['#52c97a','#e8a45a','#6e9ec9','#c9a96e'];
+
+  var areaData=monthly.map(function(d){
+    return {m:d.m,
+      rh:d.reel?Math.round(d.reel*0.52):null,
+      immo:d.reel?Math.round(d.reel*0.18):null,
+      fonct:d.reel?Math.round(d.reel*0.15):null
+    };
   });
 
-  return (
-    <div className="space-y-5 slide-up">
-      <SectionTitle title="Actualités & Alertes" sub="Fil d'information contrôle de gestion"/>
-
-      {/* Filtres */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher..."
-          style={{background:'#111318',border:'1px solid #1e2738',borderRadius:8,padding:'8px 14px',color:'#e8eaf0',fontSize:13,outline:'none',fontFamily:'DM Sans,sans-serif',width:220}}/>
-        <div className="flex gap-2 flex-wrap">
-          {tags.map(t=>(
-            <button key={t} onClick={()=>setTagFilter(t)}
-              className="entity-chip text-xs px-3 py-1.5 rounded-full font-mono"
-              style={{border:'1px solid #1e2738',color:tagFilter===t?'#0a0c10':'#6b7491',
-                background:tagFilter===t?'#c9a96e':'transparent',transition:'all .15s'}}>
-              {t}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* News grid */}
-      {filtered.length===0 && (
-        <div className="text-center py-12" style={{color:'#6b7491',fontFamily:'DM Mono,monospace',fontSize:13}}>
-          Aucune actualité pour cette sélection
-        </div>
-      )}
-      <div className="space-y-3">
-        {filtered.map(n=>{
-          const ent = ENTITES.find(e=>e.id===n.entite);
-          return (
-            <div key={n.id} className="news-card rounded-xl p-5" style={{background:'#111318',border:`1px solid ${n.urgent?'rgba(232,90,90,.3)':'#1e2738'}`,background:n.urgent?'rgba(232,90,90,.04)':'#111318'}}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <span style={{padding:'2px 10px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:n.tag_color+'22',color:n.tag_color,fontWeight:600}}>{n.tag}</span>
-                    {ent && <span style={{padding:'2px 8px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'#161b24',color:ent.color}}>{ent.icon} {ent.label.split('—')[0].trim()}</span>}
-                    {n.urgent && <span style={{padding:'2px 8px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'rgba(232,90,90,.12)',color:'#e85a5a'}}>🔴 Urgent</span>}
-                  </div>
-                  <div style={{fontSize:15,fontWeight:600,color:'#e8eaf0',marginBottom:6,fontFamily:'Playfair Display,serif'}}>{n.titre}</div>
-                  <div style={{fontSize:13,color:'#6b7491',lineHeight:1.6}}>{n.texte}</div>
-                </div>
-                <div style={{fontSize:11,color:'#6b7491',fontFamily:'DM Mono,monospace',flexShrink:0,whiteSpace:'nowrap'}}>{n.date}</div>
-              </div>
-            </div>
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement('div',null,
+      React.createElement(SectionTitle,{title:'Indicateurs op\u00E9rationnels',sub:'Performance d\u00E9taill\u00E9e \u2014 '+ent.label}),
+      React.createElement('div',{className:'grid grid-cols-2 gap-4'},
+        indicators.map(function(ind,i){
+          var vals=monthly.map(function(d){return d.reel;});
+          return React.createElement('div',{key:i,className:'rounded-xl p-4 flex items-center gap-4',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+            React.createElement('div',{style:{flexShrink:0}},
+              React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-1',style:{color:'var(--c-muted)'}},ind.n),
+              React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'var(--c-text)'}},ind.v+ind.u),
+              React.createElement(Delta,{v:ind.trend,suffix:ind.u==='%'||ind.u==='/100'?' pts':' '+ind.u})
+            ),
+            React.createElement('div',{style:{flex:1,display:'flex',justifyContent:'flex-end'}},
+              React.createElement(Sparkline,{values:vals.map(function(v){return v?v*(0.9+i*0.05):null;}),color:indColors[i]})
+            )
           );
-        })}
-      </div>
-    </div>
+        })
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'D\u00E9composition des charges',sub:'\u00C9volution mensuelle par nature \u2014 k\u20AC'}),
+      React.createElement(ResponsiveContainer,{width:'100%',height:220},
+        React.createElement(AreaChart,{data:areaData,margin:{top:5,right:5,bottom:0,left:0}},
+          React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+          React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+          React.createElement(Area,{type:'monotone',dataKey:'rh',name:'RH',stackId:'1',stroke:'#c9a96e',fill:'#c9a96e',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'immo',name:'Immobilier',stackId:'1',stroke:'#6e9ec9',fill:'#6e9ec9',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'fonct',name:'Fonctionnement',stackId:'1',stroke:'#52c97a',fill:'#52c97a',fillOpacity:0.4})
+        )
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:"Taux d'ex\u00E9cution budg\u00E9taire",sub:'R\u00E9alis\u00E9 / Budget mensuel en %'}),
+      React.createElement('div',{className:'space-y-2 mt-2'},
+        monthly.filter(function(d){return d.reel;}).map(function(d,i){
+          var pct=Math.round(d.reel/d.budget*100);
+          var color=pct>=100?'var(--c-red)':pct>=95?'var(--c-green)':pct>=90?'var(--c-orange)':'var(--c-muted)';
+          return React.createElement('div',{key:i,className:'flex items-center gap-3'},
+            React.createElement('span',{className:'font-mono text-xs w-8',style:{color:'var(--c-muted)'}},d.m),
+            React.createElement('div',{style:{flex:1,height:8,background:'var(--c-surface2)',borderRadius:4,overflow:'hidden'}},
+              React.createElement('div',{className:'progress-bar',style:{width:Math.min(pct,110)+'%',height:'100%',background:color,borderRadius:4}})
+            ),
+            React.createElement('span',{className:'font-mono text-xs w-12 text-right',style:{color:color}},pct+'%'),
+            React.createElement('span',{className:'font-mono text-xs w-20 text-right',style:{color:'var(--c-muted)'}},d.reel.toLocaleString('fr')+'k\u20AC')
+          );
+        })
+      )
+    )
   );
 };
 
-/* ============================================================
+/* ================================================================
+   TAB 4: TRESORERIE
+================================================================ */
+
+var VueTresorerie = function(props){
+  var entity=props.entity;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+  var data=TREASURY_DATA[entity]||TREASURY_DATA.groupe;
+
+  var cumData=[];
+  var cum=0;
+  data.forEach(function(d){
+    cum+=d.enc-d.dec;
+    cumData.push(Object.assign({},d,{cumule:cum}));
+  });
+
+  var avgSolde=Math.round(cumData.reduce(function(s,d){return s+d.cumule;},0)/cumData.length);
+  var minSolde=Math.min.apply(null,cumData.map(function(d){return d.cumule;}));
+  var totalDec=data.reduce(function(s,d){return s+d.dec;},0);
+  var avgMonthlyDec=Math.round(totalDec/12);
+  var lastCum=cumData[cumData.length-1].cumule;
+  var couverture=(lastCum>0?(lastCum/avgMonthlyDec).toFixed(1):'0.0');
+
+  var handleExport = function(){
+    var rows=[['Mois','Encaissements','D\u00E9caissements','Solde mensuel','Solde cumul\u00E9']];
+    cumData.forEach(function(d){rows.push([d.m,d.enc,d.dec,d.enc-d.dec,d.cumule]);});
+    exportXLSX(rows,'tresorerie_'+entity);
+  };
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement(SectionTitle,{title:'Tr\u00E9sorerie',sub:'Flux de tr\u00E9sorerie mensuel \u2014 '+ent.label+' \u2014 k\u20AC'}),
+    React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+      React.createElement(KPICard,{label:'Solde moyen',value:avgSolde,unit:'k\u20AC',delta:avgSolde>0?1:-1,deltaUnit:avgSolde>0?' positif':' n\u00E9gatif',color:'var(--c-blue)'}),
+      React.createElement(KPICard,{label:'Solde minimum',value:minSolde,unit:'k\u20AC',delta:minSolde<0?-1:1,deltaUnit:' attention',color:minSolde<0?'var(--c-red)':'var(--c-green)'}),
+      React.createElement(KPICard,{label:'Couverture charges',value:parseFloat(couverture),unit:'mois',delta:parseFloat(couverture)>2?1:-1,deltaUnit:' mois',color:parseFloat(couverture)>2?'var(--c-green)':'var(--c-orange)'})
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'\u00C9volution de la tr\u00E9sorerie',sub:'Encaissements, d\u00E9caissements et solde cumul\u00E9'}),
+      React.createElement(ResponsiveContainer,{width:'100%',height:280},
+        React.createElement(ComposedChart,{data:cumData,margin:{top:5,right:20,bottom:0,left:0}},
+          React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+          React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+          React.createElement(Bar,{dataKey:'enc',name:'Encaissements',fill:'#52c97a',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Bar,{dataKey:'dec',name:'D\u00E9caissements',fill:'#e85a5a',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Line,{dataKey:'cumule',name:'Solde cumul\u00E9',stroke:'#c9a96e',strokeWidth:2.5,dot:{r:3,fill:'#c9a96e'},type:'monotone'})
+        )
+      )
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'flex items-center justify-between mb-4'},
+        React.createElement(SectionTitle,{title:'D\u00E9tail mensuel',sub:'Tableau de flux de tr\u00E9sorerie \u2014 k\u20AC'}),
+        React.createElement(XBtn,{onClick:handleExport})
+      ),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Mois','Encaissements','D\u00E9caissements','Solde net','Solde cumul\u00E9'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Mois'?'left':'right',fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 10px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          cumData.map(function(d,i){
+            var net=d.enc-d.dec;
+            return React.createElement('tr',{key:i},
+              React.createElement('td',{style:{padding:'8px 10px',fontSize:12,color:'var(--c-text)',borderBottom:'1px solid rgba(30,39,56,.3)'}},d.m),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:'var(--c-green)',borderBottom:'1px solid rgba(30,39,56,.3)'}},d.enc.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:'var(--c-red)',borderBottom:'1px solid rgba(30,39,56,.3)'}},d.dec.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:net>=0?'var(--c-green)':'var(--c-red)',fontWeight:600,borderBottom:'1px solid rgba(30,39,56,.3)'}},(net>=0?'+':'')+net.toLocaleString('fr')),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:d.cumule>=0?'var(--c-gold)':'var(--c-red)',fontWeight:700,borderBottom:'1px solid rgba(30,39,56,.3)'}},d.cumule.toLocaleString('fr'))
+            );
+          })
+        )
+      )
+    )
+  );
+};
+
+/* ================================================================
+   TAB 5: BUDGET & SIMULATION
+================================================================ */
+
+var VueBudget = function(props){
+  var entity=props.entity;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+  var kpi=KPI_DATA[entity];
+  var pl=PL_DATA[entity]||PL_DATA.groupe;
+
+  var _varEff=useState(0), varEff=_varEff[0], setVarEff=_varEff[1];
+  var _varSub=useState(0), varSub=_varSub[0], setVarSub=_varSub[1];
+  var _inflation=useState(2), inflation=_inflation[0], setInflation=_inflation[1];
+
+  var baseCA=pl.produits.reduce(function(s,p){return s+p.reel;},0);
+  var baseMasse=pl.charges[0].reel;
+  var baseChargesFonct=pl.charges.reduce(function(s,c,i){return i>0?s+c.reel:s;},0);
+  var baseSub=pl.produits[0].reel;
+
+  var projCA=Math.round(baseCA*(1+varSub/100*0.44)*(1.03));
+  var projMasse=Math.round(baseMasse*(1+varEff/100)*(1.025));
+  var projFonct=Math.round(baseChargesFonct*(1+inflation/100));
+  var projResult=projCA-projMasse-projFonct;
+  var projMarge=(projResult/projCA*100).toFixed(1);
+
+  var makeSlider=function(label,value,setter,min,max,step,unit,color){
+    return React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'flex items-center justify-between mb-3'},
+        React.createElement('span',{className:'text-sm font-medium',style:{color:'var(--c-text)'}},label),
+        React.createElement('span',{className:'font-mono text-lg font-bold',style:{color:color}},value>0?'+'+value+unit:value+unit)
+      ),
+      React.createElement('input',{type:'range',min:min,max:max,step:step,value:value,
+        onChange:function(e){setter(parseFloat(e.target.value));},
+        style:{width:'100%',accentColor:color,cursor:'pointer'}
+      }),
+      React.createElement('div',{className:'flex justify-between mt-1'},
+        React.createElement('span',{className:'text-xs font-mono',style:{color:'var(--c-muted)'}},min+unit),
+        React.createElement('span',{className:'text-xs font-mono',style:{color:'var(--c-muted)'}},max+unit)
+      )
+    );
+  };
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement(SectionTitle,{title:'Budget & Simulation N+1 (2025)',sub:'Projection budg\u00E9taire avec variables d\'ajustement \u2014 '+ent.label}),
+    React.createElement('div',{className:'rounded-xl p-5 mb-4',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-3',style:{color:'var(--c-gold)'}},'Hypoth\u00E8ses de base'),
+      React.createElement('div',{className:'grid grid-cols-4 gap-6'},
+        React.createElement('div',null,
+          React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},'CA r\u00E9alis\u00E9 2024'),
+          React.createElement('div',{className:'font-mono text-lg font-bold',style:{color:'var(--c-text)'}},baseCA.toLocaleString('fr')+'k\u20AC')
+        ),
+        React.createElement('div',null,
+          React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},'Masse salariale 2024'),
+          React.createElement('div',{className:'font-mono text-lg font-bold',style:{color:'var(--c-text)'}},baseMasse.toLocaleString('fr')+'k\u20AC')
+        ),
+        React.createElement('div',null,
+          React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},'Subventions 2024'),
+          React.createElement('div',{className:'font-mono text-lg font-bold',style:{color:'var(--c-cyan)'}},baseSub.toLocaleString('fr')+'k\u20AC')
+        ),
+        React.createElement('div',null,
+          React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)'}},'Croissance organique'),
+          React.createElement('div',{className:'font-mono text-lg font-bold',style:{color:'var(--c-green)'}},'+3.0%')
+        )
+      )
+    ),
+    React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+      makeSlider('Variation effectifs',varEff,setVarEff,-10,10,0.5,'%','#a78bfa'),
+      makeSlider('Variation subventions',varSub,setVarSub,-10,10,0.5,'%','#38bdf8'),
+      makeSlider('Inflation',inflation,setInflation,0,5,0.1,'%','#e8a45a')
+    ),
+    React.createElement('div',{className:'grid grid-cols-4 gap-4 mt-2'},
+      React.createElement(KPICard,{label:'CA projet\u00E9 2025',value:projCA,unit:'k\u20AC',delta:+((projCA/baseCA-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-gold)'}),
+      React.createElement(KPICard,{label:'Masse salariale 2025',value:projMasse,unit:'k\u20AC',delta:+((projMasse/baseMasse-1)*100).toFixed(1),deltaUnit:'%',color:'var(--c-purple)'}),
+      React.createElement(KPICard,{label:'R\u00E9sultat net projet\u00E9',value:projResult,unit:'k\u20AC',delta:projResult>0?1:-1,deltaUnit:projResult>0?' exc\u00E9dent':' d\u00E9ficit',color:projResult>0?'var(--c-green)':'var(--c-red)'}),
+      React.createElement(KPICard,{label:'Marge nette',value:parseFloat(projMarge),unit:'%',delta:parseFloat(projMarge)>5?1:-1,deltaUnit:parseFloat(projMarge)>5?' saine':' attention',color:parseFloat(projMarge)>5?'var(--c-green)':'var(--c-orange)'})
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'Synth\u00E8se de la projection',sub:'Impact des variables sur le budget 2025'}),
+      React.createElement('div',{className:'space-y-3 mt-3'},
+        [{label:'Chiffre d\'affaires',base:baseCA,proj:projCA,color:'var(--c-gold)'},
+         {label:'Masse salariale',base:baseMasse,proj:projMasse,color:'var(--c-purple)'},
+         {label:'Charges fonctionnement',base:baseChargesFonct,proj:projFonct,color:'var(--c-orange)'},
+         {label:'R\u00E9sultat net',base:baseCA-baseMasse-baseChargesFonct,proj:projResult,color:projResult>0?'var(--c-green)':'var(--c-red)'}
+        ].map(function(item,i){
+          var pctChange=((item.proj/item.base-1)*100).toFixed(1);
+          return React.createElement('div',{key:i,className:'flex items-center gap-4 p-3 rounded-lg',style:{background:'var(--c-surface2)'}},
+            React.createElement('span',{className:'text-sm flex-1',style:{color:'var(--c-text)'}},item.label),
+            React.createElement('span',{className:'font-mono text-xs',style:{color:'var(--c-muted)'}},item.base.toLocaleString('fr')+'k\u20AC'),
+            React.createElement('span',{className:'font-mono text-xs',style:{color:'var(--c-muted)'}},'\u2192'),
+            React.createElement('span',{className:'font-mono text-sm font-bold',style:{color:item.color}},item.proj.toLocaleString('fr')+'k\u20AC'),
+            React.createElement('span',{className:'font-mono text-xs px-2 py-0.5 rounded',style:{
+              background:parseFloat(pctChange)>=0?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+              color:parseFloat(pctChange)>=0?'var(--c-green)':'var(--c-red)'
+            }},(parseFloat(pctChange)>=0?'+':'')+pctChange+'%')
+          );
+        })
+      )
+    )
+  );
+};
+
+/* ================================================================
+   TAB 6: CARTE (LEAFLET MAP)
+================================================================ */
+
+var VueCarte = function(props){
+  var entity=props.entity, theme=props.theme;
+  var mapRef=useRef(null);
+  var mapInstance=useRef(null);
+  var tileRef=useRef(null);
+  var markersRef=useRef([]);
+
+  var filtered=entity==='groupe'?INSTITUTIONS:INSTITUTIONS.filter(function(inst){return inst.entity===entity;});
+  var entCounts={};
+  ENTITES.forEach(function(e){entCounts[e.id]=0;});
+  INSTITUTIONS.forEach(function(inst){if(entCounts[inst.entity]!==undefined) entCounts[inst.entity]++;});
+
+  useEffect(function(){
+    if(!mapRef.current) return;
+    if(mapInstance.current){mapInstance.current.remove();}
+
+    var darkTile='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    var lightTile='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+    var map=L.map(mapRef.current,{zoomControl:true,scrollWheelZoom:true}).setView([49.75,6.17],9);
+    var tile=L.tileLayer(theme==='dark'?darkTile:lightTile,{
+      attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18
+    }).addTo(map);
+
+    mapInstance.current=map;
+    tileRef.current=tile;
+
+    filtered.forEach(function(inst){
+      var ent=ENTITES.find(function(e){return e.id===inst.entity;});
+      if(!ent) return;
+      var icon=L.divIcon({
+        className:'',
+        html:'<div style="width:26px;height:26px;border-radius:50%;background:'+ent.color+';display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 8px rgba(0,0,0,.3)">'+ent.icon+'</div>',
+        iconSize:[26,26],iconAnchor:[13,13]
+      });
+      var marker=L.marker([inst.lat,inst.lng],{icon:icon}).addTo(map);
+      marker.bindPopup('<div style="font-family:DM Sans,sans-serif"><strong style="font-size:13px;color:'+ent.color+'">'+inst.name+'</strong><br/><span style="font-size:11px;opacity:.7">'+inst.loc+'</span><br/><span style="font-size:11px;opacity:.7">'+inst.tel+'</span><br/><span style="display:inline-block;margin-top:4px;padding:2px 8px;border-radius:12px;font-size:10px;background:'+ent.color+'22;color:'+ent.color+'">'+ent.label.split('\u2014')[0].trim()+'</span></div>');
+      markersRef.current.push(marker);
+    });
+
+    setTimeout(function(){map.invalidateSize();},200);
+
+    return function(){
+      if(mapInstance.current){mapInstance.current.remove();mapInstance.current=null;}
+      markersRef.current=[];
+    };
+  },[entity,theme]);
+
+  return React.createElement('div',{className:'space-y-4 slide-up'},
+    React.createElement(SectionTitle,{title:'Carte des institutions',sub:filtered.length+' sites affich\u00E9s sur '+INSTITUTIONS.length}),
+    React.createElement('div',{className:'grid grid-cols-7 gap-2'},
+      ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e){
+        return React.createElement('div',{key:e.id,className:'rounded-lg p-3 text-center',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+          React.createElement('div',{style:{fontSize:18}},e.icon),
+          React.createElement('div',{className:'font-mono text-lg font-bold',style:{color:e.color}},entCounts[e.id]),
+          React.createElement('div',{className:'text-xs truncate',style:{color:'var(--c-muted)'}},e.label.split('\u2014')[0].trim())
+        );
+      })
+    ),
+    React.createElement('div',{ref:mapRef,style:{height:520,borderRadius:12,border:'1px solid var(--c-border)',position:'relative',zIndex:1}}),
+    React.createElement('div',{className:'rounded-xl p-4',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-3',style:{color:'var(--c-muted)'}},'L\u00E9gende'),
+      React.createElement('div',{className:'flex flex-wrap gap-4'},
+        ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e){
+          return React.createElement('div',{key:e.id,className:'flex items-center gap-2'},
+            React.createElement('div',{style:{width:12,height:12,borderRadius:'50%',background:e.color}}),
+            React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},e.label.split('\u2014')[0].trim()),
+            React.createElement('span',{className:'text-xs font-mono',style:{color:'var(--c-muted)'}},'('+entCounts[e.id]+')')
+          );
+        })
+      )
+    )
+  );
+};
+
+/* ================================================================
+   TAB 7: CONSOLIDE
+================================================================ */
+
+var VueConsolidee = function(){
+  var handleExport = function(){
+    var rows=[['Entit\u00E9','CA M\u20AC','EBITDA M\u20AC','Marge %','Effectifs','Tx Ex\u00E9c. %','Subventions M\u20AC','Statut']];
+    ENTITES.filter(function(e){return e.id!=='groupe';}).forEach(function(e){
+      var k=KPI_DATA[e.id];
+      rows.push([e.label,k.ca,k.ebitda,(k.ebitda/k.ca*100).toFixed(1),k.effectifs,k.taux_exec,k.subventions,k.ecart_budget>=0?'Favorable':'D\u00E9ficitaire']);
+    });
+    rows.push(['GROUPE TOTAL',42.6,8.3,'19.5',1957,96.3,18.2,'D\u00E9f. 0.4M\u20AC']);
+    exportXLSX(rows,'consolide_groupe');
+  };
+
+  return React.createElement('div',{className:'space-y-6 slide-up'},
+    React.createElement('div',{className:'flex items-center justify-between'},
+      React.createElement(SectionTitle,{title:'Vue consolid\u00E9e groupe',sub:'Comparaison inter-entit\u00E9s \u2014 Exercice 2024'}),
+      React.createElement(XBtn,{onClick:handleExport})
+    ),
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-4',style:{color:'var(--c-muted)'}},'Performance par entit\u00E9'),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            ['Entit\u00E9','CA','EBITDA','Marge','Effectifs','Tx Ex\u00E9c.','Subventions','Statut'].map(function(h){
+              return React.createElement('th',{key:h,style:{textAlign:h==='Entit\u00E9'?'left':'right',fontSize:10,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 10px 12px',borderBottom:'1px solid var(--c-border)'}},h);
+            })
+          )
+        ),
+        React.createElement('tbody',null,
+          ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
+            var k=KPI_DATA[e.id];
+            var marge=(k.ebitda/k.ca*100).toFixed(1);
+            var ok=k.ecart_budget>=0;
+            return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.5)'}},
+              React.createElement('td',{style:{padding:'12px 10px'}},
+                React.createElement('div',{className:'flex items-center gap-2'},
+                  React.createElement('span',{style:{fontSize:16}},e.icon),
+                  React.createElement('div',null,
+                    React.createElement('div',{style:{fontSize:13,color:'var(--c-text)',fontWeight:500}},e.label.split('\u2014')[0].trim()),
+                    React.createElement('div',{style:{fontSize:11,color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},e.label.split('\u2014')[1]?e.label.split('\u2014')[1].trim():'')
+                  )
+                )
+              ),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-text)',fontWeight:600}},k.ca+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:e.color,fontWeight:600}},k.ebitda+'M\u20AC'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},marge+'%'),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},k.effectifs),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px'}},
+                React.createElement('span',{style:{color:k.taux_exec>=97?'var(--c-green)':k.taux_exec>=94?'var(--c-orange)':'var(--c-red)'}},k.taux_exec+'%')
+              ),
+              React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-cyan)'}},k.subventions?k.subventions+'M\u20AC':'\u2014'),
+              React.createElement('td',{style:{textAlign:'right',padding:'12px 10px'}},
+                React.createElement('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',
+                  background:ok?'rgba(82,201,122,.12)':'rgba(232,90,90,.12)',
+                  color:ok?'var(--c-green)':'var(--c-red)'}},(ok?'Fav.':'D\u00E9f.')+' '+Math.abs(k.ecart_budget).toFixed(1)+'M\u20AC')
+              )
+            );
+          })
+        ),
+        React.createElement('tfoot',null,
+          React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)'}},
+            React.createElement('td',{style:{padding:'12px 10px',fontWeight:700,fontSize:13,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'\u{1F339} GROUPE TOTAL'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'42.6M\u20AC'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'8.3M\u20AC'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},'19.5%'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},'1 957'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-green)',fontWeight:600}},'96.3%'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-cyan)',fontWeight:600}},'18.2M\u20AC'),
+            React.createElement('td',{style:{textAlign:'right',padding:'12px 10px'}},
+              React.createElement('span',{style:{padding:'2px 8px',borderRadius:20,fontSize:10,fontFamily:'DM Mono,monospace',background:'rgba(232,90,90,.12)',color:'var(--c-red)'}},'D\u00E9f. 0.4M\u20AC')
+            )
+          )
+        )
+      )
+    ),
+    React.createElement('div',{className:'grid grid-cols-2 gap-4'},
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'CA par entit\u00E9',sub:'En M\u20AC \u2014 exercice 2024'}),
+        React.createElement(ResponsiveContainer,{width:'100%',height:200},
+          React.createElement(BarChart,{data:ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e){
+            var lbl=e.label.split('\u2014');
+            return {name:e.icon+' '+(lbl[1]?lbl[1].trim():lbl[0].trim()),ca:KPI_DATA[e.id].ca,color:e.color};
+          }),margin:{top:5,right:5,bottom:5,left:0}},
+            React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+            React.createElement(XAxis,{dataKey:'name',tick:{fill:'var(--c-muted)',fontSize:9,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+            React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:9,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+            React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+            React.createElement(Bar,{dataKey:'ca',name:'CA M\u20AC',radius:[4,4,0,0]},
+              ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
+                return React.createElement(Cell,{key:i,fill:e.color,fillOpacity:0.8});
+              })
+            )
+          )
+        )
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Effectifs par entit\u00E9',sub:'ETP \u2014 exercice 2024'}),
+        React.createElement('div',{className:'space-y-3 mt-2'},
+          ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
+            var pct=Math.round(KPI_DATA[e.id].effectifs/1957*100);
+            return React.createElement('div',{key:i},
+              React.createElement('div',{className:'flex justify-between mb-1'},
+                React.createElement('span',{className:'text-xs',style:{color:'var(--c-text)'}},e.icon+' '+e.label.split('\u2014')[0].trim()),
+                React.createElement('span',{className:'text-xs font-mono',style:{color:e.color}},KPI_DATA[e.id].effectifs+' ETP')
+              ),
+              React.createElement('div',{style:{height:6,background:'var(--c-surface2)',borderRadius:3,overflow:'hidden'}},
+                React.createElement('div',{style:{width:pct+'%',height:'100%',background:e.color,borderRadius:3,transition:'width 1s'}})
+              )
+            );
+          })
+        )
+      )
+    )
+  );
+};
+
+/* ================================================================
+   TAB 8: NEWS
+================================================================ */
+
+var VueNews = function(props){
+  var entityFilter=props.entityFilter;
+  var _search=useState(''), search=_search[0], setSearch=_search[1];
+  var _tagFilter=useState('Tous'), tagFilter=_tagFilter[0], setTagFilter=_tagFilter[1];
+  var tags=['Tous','Finance','Alerte','RH','Audit','RSE','IT','Bonne nouvelle'];
+
+  var filtered=NEWS.filter(function(n){
+    var matchEnt=entityFilter==='groupe'||n.entite===entityFilter||n.entite==='groupe';
+    var matchSearch=!search||n.titre.toLowerCase().indexOf(search.toLowerCase())>=0||n.texte.toLowerCase().indexOf(search.toLowerCase())>=0;
+    var matchTag=tagFilter==='Tous'||n.tag===tagFilter;
+    return matchEnt&&matchSearch&&matchTag;
+  });
+
+  return React.createElement('div',{className:'space-y-5 slide-up'},
+    React.createElement(SectionTitle,{title:'Actualit\u00E9s & Alertes',sub:'Fil d\'information contr\u00F4le de gestion'}),
+    React.createElement('div',{className:'flex items-center gap-3 flex-wrap'},
+      React.createElement('input',{value:search,onChange:function(e){setSearch(e.target.value);},placeholder:'Rechercher...',
+        style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderRadius:8,padding:'8px 14px',color:'var(--c-text)',fontSize:13,outline:'none',fontFamily:'DM Sans,sans-serif',width:220}}),
+      React.createElement('div',{className:'flex gap-2 flex-wrap'},
+        tags.map(function(t){
+          return React.createElement('button',{key:t,onClick:function(){setTagFilter(t);},
+            className:'text-xs px-3 py-1.5 rounded-full font-mono',
+            style:{border:'1px solid var(--c-border)',color:tagFilter===t?'var(--c-bg)':'var(--c-muted)',
+              background:tagFilter===t?'var(--c-gold)':'transparent',cursor:'pointer',transition:'all .15s'}},t);
+        })
+      )
+    ),
+    filtered.length===0 && React.createElement('div',{className:'text-center py-12',style:{color:'var(--c-muted)',fontFamily:'DM Mono,monospace',fontSize:13}},'Aucune actualit\u00E9 pour cette s\u00E9lection'),
+    React.createElement('div',{className:'space-y-3'},
+      filtered.map(function(n){
+        var ent=ENTITES.find(function(e){return e.id===n.entite;});
+        return React.createElement('div',{key:n.id,className:'news-card rounded-xl p-5',style:{background:n.urgent?'rgba(232,90,90,.04)':'var(--c-surface)',border:'1px solid '+(n.urgent?'rgba(232,90,90,.3)':'var(--c-border)')}},
+          React.createElement('div',{className:'flex items-start justify-between gap-4'},
+            React.createElement('div',{className:'flex-1'},
+              React.createElement('div',{className:'flex items-center gap-3 mb-2 flex-wrap'},
+                React.createElement('span',{style:{padding:'2px 10px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:n.tag_color+'22',color:n.tag_color,fontWeight:600}},n.tag),
+                ent&&React.createElement('span',{style:{padding:'2px 8px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'var(--c-surface2)',color:ent.color}},ent.icon+' '+ent.label.split('\u2014')[0].trim()),
+                n.urgent&&React.createElement('span',{style:{padding:'2px 8px',borderRadius:20,fontSize:11,fontFamily:'DM Mono,monospace',background:'rgba(232,90,90,.12)',color:'var(--c-red)'}},'Urgent')
+              ),
+              React.createElement('div',{style:{fontSize:15,fontWeight:600,color:'var(--c-text)',marginBottom:6,fontFamily:'Playfair Display,serif'}},n.titre),
+              React.createElement('div',{style:{fontSize:13,color:'var(--c-muted)',lineHeight:1.6}},n.texte)
+            ),
+            React.createElement('div',{style:{fontSize:11,color:'var(--c-muted)',fontFamily:'DM Mono,monospace',flexShrink:0,whiteSpace:'nowrap'}},n.date)
+          )
+        );
+      })
+    )
+  );
+};
+
+/* ================================================================
    APP SHELL
-============================================================ */
+================================================================ */
 
-const App = () => {
-  const [entity,setEntity]=useState('groupe');
-  const [view,setView]=useState('synthese');
-  const [newsCount]=useState(NEWS.filter(n=>n.urgent).length);
+var App = function(){
+  var _entity=useState('groupe'), entity=_entity[0], setEntity=_entity[1];
+  var _view=useState('synthese'), view=_view[0], setView=_view[1];
+  var _theme=useState(function(){
+    try{return localStorage.getItem('elisabeth-theme')||'dark';}catch(e){return 'dark';}
+  }), theme=_theme[0], setTheme=_theme[1];
 
-  const kpi = KPI_DATA[entity];
-  const monthly = MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
-  const charges = CHARGES_DATA[entity]||CHARGES_DATA.groupe;
-  const ecarts = ECARTS_DATA[entity]||ECARTS_DATA.groupe;
-  const ent = ENTITES.find(e=>e.id===entity);
+  useEffect(function(){
+    document.documentElement.setAttribute('data-theme',theme);
+    try{localStorage.setItem('elisabeth-theme',theme);}catch(e){}
+  },[theme]);
 
-  const views = [
-    {id:'synthese',label:'Synthèse'},
+  var toggleTheme=function(){setTheme(function(t){return t==='dark'?'light':'dark';});};
+
+  var newsCount=NEWS.filter(function(n){return n.urgent;}).length;
+  var kpi=KPI_DATA[entity];
+  var monthly=MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
+  var charges=CHARGES_DATA[entity]||CHARGES_DATA.groupe;
+  var ecarts=ECARTS_DATA[entity]||ECARTS_DATA.groupe;
+  var ent=ENTITES.find(function(e){return e.id===entity;});
+
+  var views=[
+    {id:'synthese',label:'Synth\u00E8se'},
+    {id:'pl',label:'P&L'},
     {id:'analytique',label:'Analytique'},
-    {id:'consolidee',label:'Consolidé'},
-    {id:'news',label:`News${newsCount>0?` (${newsCount})`:''}`,alert:newsCount>0},
+    {id:'tresorerie',label:'Tr\u00E9sorerie'},
+    {id:'budget',label:'Budget'},
+    {id:'carte',label:'Carte'},
+    {id:'consolidee',label:'Consolid\u00E9'},
+    {id:'news',label:'News'+(newsCount>0?' ('+newsCount+')':''),alert:newsCount>0},
   ];
 
-  return (
-    <div style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      {/* Header */}
-      <header style={{position:'sticky',top:0,zIndex:50,borderBottom:'1px solid #1e2738',background:'rgba(10,12,16,.92)',backdropFilter:'blur(16px)'}}>
-        <div style={{padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:64}}>
-          {/* Logo */}
-          <div style={{display:'flex',alignItems:'center',gap:14}}>
-            <div style={{width:38,height:38,background:'linear-gradient(135deg,#c9a96e,#8a6a3e)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}}>🌹</div>
-            <div>
-              <div style={{fontFamily:'Playfair Display,serif',fontWeight:700,fontSize:15,color:'#c9a96e',letterSpacing:'0.05em'}}>ELISABETH</div>
-              <div style={{fontFamily:'DM Mono,monospace',fontSize:10,color:'#6b7491',letterSpacing:'0.12em',textTransform:'uppercase'}}>Contrôle de Gestion · Dashboard</div>
-            </div>
-          </div>
-
-          {/* Nav */}
-          <div style={{display:'flex',gap:2,background:'#111318',border:'1px solid #1e2738',borderRadius:10,padding:3}}>
-            {views.map(v=>(
-              <button key={v.id} onClick={()=>setView(v.id)}
-                style={{padding:'6px 16px',fontSize:12,fontWeight:500,borderRadius:8,cursor:'pointer',border:'none',
-                  background:view===v.id?'#c9a96e':'transparent',
-                  color:view===v.id?'#0a0c10':v.alert?'#e85a5a':'#6b7491',
-                  fontFamily:'DM Sans,sans-serif',fontWeight:view===v.id?700:500,transition:'all .2s'}}>
-                {v.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Meta */}
-          <div style={{display:'flex',alignItems:'center',gap:12}}>
-            <div style={{display:'flex',alignItems:'center',gap:6}}>
-              <div className="glow-dot" style={{background:'#52c97a'}}/>
-              <span style={{fontFamily:'DM Mono,monospace',fontSize:11,color:'#6b7491'}}>Données 2024</span>
-            </div>
-            <div style={{background:'#111318',border:'1px solid #1e2738',borderRadius:6,padding:'5px 12px',fontFamily:'DM Mono,monospace',fontSize:11,color:'#c9a96e'}}>
-              Clôture Q4
-            </div>
-          </div>
-        </div>
-
-        {/* Entity filter bar */}
-        <div style={{padding:'8px 32px',borderTop:'1px solid #1e2738',display:'flex',alignItems:'center',gap:8,overflowX:'auto'}}>
-          <span style={{fontFamily:'DM Mono,monospace',fontSize:10,color:'#6b7491',letterSpacing:'0.1em',textTransform:'uppercase',flexShrink:0}}>Entité :</span>
-          {ENTITES.map(e=>(
-            <button key={e.id} onClick={()=>{setEntity(e.id); if(view==='consolidee')setView('synthese');}}
-              className="entity-chip"
-              style={{padding:'4px 12px',fontSize:11,borderRadius:20,border:`1px solid ${entity===e.id?e.color:'#1e2738'}`,
-                background:entity===e.id?e.color+'22':'transparent',
-                color:entity===e.id?e.color:'#6b7491',
-                fontFamily:'DM Mono,monospace',flexShrink:0,whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:5}}>
-              <span>{e.icon}</span>
-              <span>{e.label.split('—')[0].trim()}</span>
-            </button>
-          ))}
-          {/* Bouton vue consolidée */}
-          <button onClick={()=>setView('consolidee')}
-            style={{marginLeft:'auto',padding:'4px 14px',fontSize:11,borderRadius:20,border:`1px solid ${view==='consolidee'?'#c9a96e':'#1e2738'}`,
-              background:view==='consolidee'?'rgba(201,169,110,.2)':'transparent',
-              color:view==='consolidee'?'#c9a96e':'#6b7491',fontFamily:'DM Mono,monospace',cursor:'pointer',flexShrink:0}}>
-            ⊞ Toutes entités
-          </button>
-        </div>
-      </header>
-
-      {/* Main */}
-      <main style={{padding:'28px 32px',maxWidth:1400,margin:'0 auto'}}>
-        {view==='synthese' && <VueSynthese entity={entity} kpi={kpi} monthly={monthly} charges={charges} ecarts={ecarts}/>}
-        {view==='analytique' && <VueAnalytique entity={entity}/>}
-        {view==='consolidee' && <VueConsolidee/>}
-        {view==='news' && <VueNews entityFilter={entity}/>}
-      </main>
-
-      {/* Footer */}
-      <footer style={{borderTop:'1px solid #1e2738',padding:'16px 32px',display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:20}}>
-        <div style={{fontFamily:'DM Mono,monospace',fontSize:11,color:'#6b7491'}}>
-          Elisabeth — Groupe social historique Luxembourg · Depuis 1672 · Contrôle de gestion consolidé 2024
-        </div>
-        <div style={{display:'flex',gap:12}}>
-          {['SAP · Sage 100','Power BI','Excel · VBA','Multi-entités'].map(t=>(
-            <span key={t} style={{padding:'3px 10px',border:'1px solid #1e2738',borderRadius:4,fontSize:10,fontFamily:'DM Mono,monospace',color:'#6b7491',textTransform:'uppercase',letterSpacing:'0.06em'}}>{t}</span>
-          ))}
-        </div>
-      </footer>
-    </div>
+  return React.createElement('div',{style:{minHeight:'100vh',position:'relative',zIndex:1}},
+    React.createElement('header',{style:{position:'sticky',top:0,zIndex:50,borderBottom:'1px solid var(--c-border)',background:'var(--c-header-bg)',backdropFilter:'blur(16px)'}},
+      React.createElement('div',{style:{padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:64}},
+        React.createElement('div',{style:{display:'flex',alignItems:'center',gap:14}},
+          React.createElement('div',{style:{width:38,height:38,background:'linear-gradient(135deg,#c9a96e,#8a6a3e)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}},'\u{1F339}'),
+          React.createElement('div',null,
+            React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontWeight:700,fontSize:15,color:'var(--c-gold)',letterSpacing:'0.05em'}},'ELISABETH'),
+            React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:10,color:'var(--c-muted)',letterSpacing:'0.12em',textTransform:'uppercase'}},'Contr\u00F4le de Gestion \u00B7 Dashboard')
+          )
+        ),
+        React.createElement('div',{style:{display:'flex',gap:2,background:'var(--c-surface)',border:'1px solid var(--c-border)',borderRadius:10,padding:3}},
+          views.map(function(v){
+            return React.createElement('button',{key:v.id,onClick:function(){setView(v.id);},
+              style:{padding:'6px 14px',fontSize:11,borderRadius:8,cursor:'pointer',border:'none',
+                background:view===v.id?'var(--c-gold)':'transparent',
+                color:view===v.id?'#0a0c10':v.alert?'var(--c-red)':'var(--c-muted)',
+                fontFamily:'DM Sans,sans-serif',fontWeight:view===v.id?700:500,transition:'all .2s'}},v.label);
+          })
+        ),
+        React.createElement('div',{style:{display:'flex',alignItems:'center',gap:12}},
+          React.createElement('button',{onClick:toggleTheme,style:{
+            width:34,height:34,borderRadius:8,border:'1px solid var(--c-border)',background:'var(--c-surface)',
+            cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s'
+          }},theme==='dark'?'\u2600\uFE0F':'\u{1F319}'),
+          React.createElement('div',{style:{display:'flex',alignItems:'center',gap:6}},
+            React.createElement('div',{className:'glow-dot',style:{background:'var(--c-green)'}}),
+            React.createElement('span',{style:{fontFamily:'DM Mono,monospace',fontSize:11,color:'var(--c-muted)'}},'Donn\u00E9es 2024')
+          ),
+          React.createElement('div',{style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderRadius:6,padding:'5px 12px',fontFamily:'DM Mono,monospace',fontSize:11,color:'var(--c-gold)'}},'Cl\u00F4ture Q4')
+        )
+      ),
+      React.createElement('div',{style:{padding:'8px 32px',borderTop:'1px solid var(--c-border)',display:'flex',alignItems:'center',gap:8,overflowX:'auto'}},
+        React.createElement('span',{style:{fontFamily:'DM Mono,monospace',fontSize:10,color:'var(--c-muted)',letterSpacing:'0.1em',textTransform:'uppercase',flexShrink:0}},'Entit\u00E9 :'),
+        ENTITES.map(function(e){
+          return React.createElement('button',{key:e.id,onClick:function(){setEntity(e.id);if(view==='consolidee')setView('synthese');},
+            className:'entity-chip',
+            style:{padding:'4px 12px',fontSize:11,borderRadius:20,border:'1px solid '+(entity===e.id?e.color:'var(--c-border)'),
+              background:entity===e.id?e.color+'22':'transparent',
+              color:entity===e.id?e.color:'var(--c-muted)',
+              fontFamily:'DM Mono,monospace',flexShrink:0,whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:5,cursor:'pointer'}},
+            React.createElement('span',null,e.icon),
+            React.createElement('span',null,e.label.split('\u2014')[0].trim())
+          );
+        }),
+        React.createElement('button',{onClick:function(){setView('consolidee');},
+          style:{marginLeft:'auto',padding:'4px 14px',fontSize:11,borderRadius:20,border:'1px solid '+(view==='consolidee'?'var(--c-gold)':'var(--c-border)'),
+            background:view==='consolidee'?'rgba(201,169,110,.2)':'transparent',
+            color:view==='consolidee'?'var(--c-gold)':'var(--c-muted)',fontFamily:'DM Mono,monospace',cursor:'pointer',flexShrink:0}},
+          '\u229E Toutes entit\u00E9s'
+        )
+      )
+    ),
+    React.createElement('main',{style:{padding:'28px 32px',maxWidth:1440,margin:'0 auto'}},
+      view==='synthese'&&React.createElement(VueSynthese,{entity:entity,kpi:kpi,monthly:monthly,charges:charges,ecarts:ecarts}),
+      view==='pl'&&React.createElement(VuePL,{entity:entity}),
+      view==='analytique'&&React.createElement(VueAnalytique,{entity:entity}),
+      view==='tresorerie'&&React.createElement(VueTresorerie,{entity:entity}),
+      view==='budget'&&React.createElement(VueBudget,{entity:entity}),
+      view==='carte'&&React.createElement(VueCarte,{entity:entity,theme:theme}),
+      view==='consolidee'&&React.createElement(VueConsolidee,null),
+      view==='news'&&React.createElement(VueNews,{entityFilter:entity})
+    ),
+    React.createElement('footer',{style:{borderTop:'1px solid var(--c-border)',padding:'16px 32px',display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:20}},
+      React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:11,color:'var(--c-muted)'}},'Elisabeth \u2014 Groupe social historique Luxembourg \u00B7 Depuis 1672 \u00B7 Convention SAS'),
+      React.createElement('div',{style:{display:'flex',gap:12}},
+        ['SAP \u00B7 Sage 100','Excel \u00B7 VBA','Multi-entit\u00E9s','LU/DE/FR'].map(function(t){
+          return React.createElement('span',{key:t,style:{padding:'3px 10px',border:'1px solid var(--c-border)',borderRadius:4,fontSize:10,fontFamily:'DM Mono,monospace',color:'var(--c-muted)',textTransform:'uppercase',letterSpacing:'0.06em'}},t);
+        })
+      )
+    )
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
 </script>
 </body>
 </html>
