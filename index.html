@@ -667,25 +667,67 @@ var VuePL = function(props){
   var entity=props.entity;
   var ent=ENTITES.find(function(e){return e.id===entity;});
   var pl=PL_DATA[entity]||PL_DATA.groupe;
+  var monthly=MONTHLY_DATA[entity]||MONTHLY_DATA.groupe;
   var totalP=function(key){return pl.produits.reduce(function(s,p){return s+p[key];},0);};
   var totalC=function(key){return pl.charges.reduce(function(s,c){return s+c[key];},0);};
+  var ratioCharges=totalC('reel')/totalP('reel');
+
+  var _plView=useState('mensuel'), plView=_plView[0], setPlView=_plView[1];
+
+  /* Derive monthly P&L from MONTHLY_DATA (produits) + charge ratio */
+  var monthlyPL=monthly.map(function(d){
+    var pBudget=d.budget, pReel=d.reel, pN1=d.n1;
+    var cBudget=Math.round(pBudget*ratioCharges*(0.97+Math.random()*0.06));
+    var cReel=pReel?Math.round(pReel*ratioCharges*(0.97+Math.random()*0.06)):null;
+    var cN1=Math.round(pN1*ratioCharges*(0.97+Math.random()*0.06));
+    return {m:d.m,pBudget:pBudget,pReel:pReel,pN1:pN1,cBudget:cBudget,cReel:cReel,cN1:cN1};
+  });
+  /* Stable charge values (avoid re-random on render) — use useMemo */
+  var stableMonthlyPL=useMemo(function(){
+    var rc=totalC('reel')/totalP('reel');
+    var weights=[0.98,1.01,0.99,1.02,1.00,1.03,0.97,0.96,1.01,1.02,1.04,1.05];
+    return monthly.map(function(d,i){
+      var w=weights[i%weights.length];
+      var pB=d.budget, pR=d.reel, pN=d.n1;
+      var cB=Math.round(pB*rc*weights[(i+3)%12]);
+      var cR=pR?Math.round(pR*rc*w):null;
+      var cN=Math.round(pN*rc*weights[(i+6)%12]);
+      return {m:d.m,pBudget:pB,pReel:pR,pN1:pN,cBudget:cB,cReel:cR,cN1:cN};
+    });
+  },[entity]);
+
+  /* YTD cumulative */
+  var ytdData=[];
+  var cumPB=0,cumPR=0,cumPN=0,cumCB=0,cumCR=0,cumCN=0;
+  stableMonthlyPL.forEach(function(d){
+    cumPB+=d.pBudget; cumPN+=d.pN1; cumCB+=d.cBudget; cumCN+=d.cN1;
+    if(d.pReel!==null){cumPR+=d.pReel; cumCR+=d.cReel;}
+    ytdData.push({m:d.m,pBudget:cumPB,pReel:d.pReel!==null?cumPR:null,pN1:cumPN,cBudget:cumCB,cReel:d.pReel!==null?cumCR:null,cN1:cumCN,
+      excBudget:cumPB-cumCB,excReel:d.pReel!==null?cumPR-cumCR:null,excN1:cumPN-cumCN});
+  });
+
+  /* Chart data for monthly view */
+  var chartData=stableMonthlyPL.map(function(d){
+    return {m:d.m,Produits:d.pReel,Charges:d.cReel,'Exc\u00E9dent':d.pReel&&d.cReel?d.pReel-d.cReel:null,'Budget Prod.':d.pBudget,'N-1 Prod.':d.pN1};
+  });
 
   var handleExport = function(){
-    var rows=[['Compte de R\u00E9sultat','Budget 2025','R\u00E9alis\u00E9 2025','N-1 (2024)'],['','','',''],['PRODUITS','','','']];
-    pl.produits.forEach(function(p){rows.push([p.n,p.budget,p.reel,p.n1]);});
-    rows.push(['Total Produits',totalP('budget'),totalP('reel'),totalP('n1')]);
-    rows.push(['','','','']);
-    rows.push(['CHARGES','','','']);
-    pl.charges.forEach(function(c){rows.push([c.n,c.budget,c.reel,c.n1]);});
-    rows.push(['Total Charges',totalC('budget'),totalC('reel'),totalC('n1')]);
-    rows.push(['','','','']);
-    rows.push(['MARGE EXPLOITATION',totalP('budget')-totalC('budget'),totalP('reel')-totalC('reel'),totalP('n1')-totalC('n1')]);
-    exportXLSX(rows,'pl_'+entity);
+    var rows=[['Mois','Produits Budget','Produits R\u00E9alis\u00E9','Produits N-1','Charges Budget','Charges R\u00E9alis\u00E9','Charges N-1','Exc\u00E9dent Budget','Exc\u00E9dent R\u00E9alis\u00E9']];
+    stableMonthlyPL.forEach(function(d){
+      rows.push([d.m,d.pBudget,d.pReel||'',d.pN1,d.cBudget,d.cReel||'',d.cN1,d.pBudget-d.cBudget,d.pReel?d.pReel-d.cReel:'']);
+    });
+    rows.push(['','','','','','','','','']);
+    rows.push(['TOTAL ANNUEL',totalP('budget'),totalP('reel'),totalP('n1'),totalC('budget'),totalC('reel'),totalC('n1'),totalP('budget')-totalC('budget'),totalP('reel')-totalC('reel')]);
+    exportXLSX(rows,'resultat_mensuel_'+entity);
   };
+
+  var margeB=totalP('budget')-totalC('budget');
+  var margeR=totalP('reel')-totalC('reel');
+  var margeN=totalP('n1')-totalC('n1');
 
   var renderRow = function(item,isBold,isHighlight){
     return React.createElement('tr',{key:item.n,style:{borderBottom:'1px solid rgba(30,39,56,.3)'}},
-      React.createElement('td',{style:{padding:'8px 10px',fontSize:isBold?13:12,color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isBold?700:400,fontFamily:isBold?'DM Sans,sans-serif':'DM Sans,sans-serif'}},item.n),
+      React.createElement('td',{style:{padding:'8px 10px',fontSize:isBold?13:12,color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isBold?700:400}},item.n),
       [item.budget,item.reel,item.n1].map(function(v,j){
         return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'8px 10px',color:isHighlight?'var(--c-gold)':'var(--c-text)',fontWeight:isBold?700:400}},v.toLocaleString('fr'));
       }),
@@ -695,16 +737,126 @@ var VuePL = function(props){
     );
   };
 
-  var margeB=totalP('budget')-totalC('budget');
-  var margeR=totalP('reel')-totalC('reel');
-  var margeN=totalP('n1')-totalC('n1');
+  var thStyle=function(align){return {textAlign:align||'right',fontSize:9,letterSpacing:'0.08em',textTransform:'uppercase',color:'var(--c-muted)',fontFamily:'DM Mono,monospace',padding:'0 6px 10px',borderBottom:'1px solid var(--c-border)'};};
+  var tdStyle=function(color,bold){return {textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:11,padding:'6px',color:color||'var(--c-text)',fontWeight:bold?700:400,borderBottom:'1px solid rgba(30,39,56,.3)'};};
 
   return React.createElement('div',{className:'space-y-6 slide-up'},
     React.createElement('div',{className:'flex items-center justify-between'},
       React.createElement(SectionTitle,{title:'Compte de R\u00E9sultat',sub:'Exercice 2025 \u2014 '+ent.label+' \u2014 k\u20AC'}),
-      React.createElement(XBtn,{onClick:handleExport})
+      React.createElement('div',{className:'flex items-center gap-3'},
+        React.createElement('div',{style:{display:'flex',gap:2,background:'var(--c-surface)',border:'1px solid var(--c-border)',borderRadius:8,padding:2}},
+          ['mensuel','ytd','annuel'].map(function(v){
+            var labels={mensuel:'Mensuel',ytd:'Cumul YTD',annuel:'Annuel'};
+            return React.createElement('button',{key:v,onClick:function(){setPlView(v);},
+              style:{padding:'4px 12px',fontSize:10,borderRadius:6,cursor:'pointer',border:'none',
+                background:plView===v?'var(--c-gold)':'transparent',
+                color:plView===v?'#0a0c10':'var(--c-muted)',
+                fontFamily:'DM Mono,monospace',fontWeight:plView===v?700:400,transition:'all .2s'}},labels[v]);
+          })
+        ),
+        React.createElement(XBtn,{onClick:handleExport})
+      )
     ),
+    React.createElement('div',{className:'grid grid-cols-4 gap-4'},
+      React.createElement(KPICard,{label:'Produits totaux',value:totalP('reel')/1000,unit:'M\u20AC',delta:+((totalP('reel')/totalP('n1')-1)*100).toFixed(1),deltaUnit:'% vs N-1',color:ent.color}),
+      React.createElement(KPICard,{label:'Charges totales',value:totalC('reel')/1000,unit:'M\u20AC',delta:+((totalC('reel')/totalC('n1')-1)*100).toFixed(1),deltaUnit:'% vs N-1',color:'var(--c-red)'}),
+      React.createElement(KPICard,{label:'Exc\u00E9dent d\u2019exploitation',value:margeR/1000,unit:'M\u20AC',delta:+((margeR/margeN-1)*100).toFixed(1),deltaUnit:'% vs N-1',color:'var(--c-green)'}),
+      React.createElement(KPICard,{label:'Taux d\u2019exc\u00E9dent',value:+(margeR/totalP('reel')*100).toFixed(1),unit:'%',delta:+((margeR/totalP('reel')-margeN/totalP('n1'))*100).toFixed(1),deltaUnit:' pts',color:'var(--c-gold)'})
+    ),
+
+    /* CHART */
     React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:plView==='ytd'?'\u00C9volution cumul\u00E9e (YTD)':'Produits \u00B7 Charges \u00B7 Exc\u00E9dent',sub:plView==='ytd'?'Cumul progressif mois par mois \u2014 k\u20AC':'\u00C9volution mensuelle \u2014 k\u20AC'}),
+      React.createElement(ResponsiveContainer,{width:'100%',height:240},
+        plView==='ytd'?
+        React.createElement(ComposedChart,{data:ytdData,margin:{top:5,right:20,bottom:0,left:0}},
+          React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+          React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+          React.createElement(Area,{type:'monotone',dataKey:'pBudget',name:'Produits Budget',stroke:'var(--c-gold)',fill:'var(--c-gold)',fillOpacity:0.08,strokeDasharray:'4 2'}),
+          React.createElement(Area,{type:'monotone',dataKey:'pReel',name:'Produits R\u00E9alis\u00E9',stroke:'var(--c-gold)',fill:'var(--c-gold)',fillOpacity:0.2,strokeWidth:2}),
+          React.createElement(Area,{type:'monotone',dataKey:'cReel',name:'Charges R\u00E9alis\u00E9',stroke:'var(--c-red)',fill:'var(--c-red)',fillOpacity:0.1,strokeWidth:2}),
+          React.createElement(Line,{dataKey:'excReel',name:'Exc\u00E9dent cumul\u00E9',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#52c97a'},type:'monotone'})
+        ):
+        React.createElement(ComposedChart,{data:chartData,margin:{top:5,right:20,bottom:0,left:0}},
+          React.createElement(CartesianGrid,{stroke:'var(--c-border)',strokeDasharray:'3 3',vertical:false}),
+          React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
+          React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
+          React.createElement(Bar,{dataKey:'Produits',name:'Produits',fill:'var(--c-gold)',fillOpacity:0.7,radius:[3,3,0,0]}),
+          React.createElement(Bar,{dataKey:'Charges',name:'Charges',fill:'var(--c-red)',fillOpacity:0.5,radius:[3,3,0,0]}),
+          React.createElement(Line,{dataKey:'Exc\u00E9dent',name:'Exc\u00E9dent',stroke:'var(--c-green)',strokeWidth:2.5,dot:{r:3,fill:'#52c97a'},type:'monotone'}),
+          React.createElement(Line,{dataKey:'Budget Prod.',name:'Budget',stroke:'var(--c-gold)',strokeWidth:1,dot:false,strokeDasharray:'4 2',strokeOpacity:0.5}),
+          React.createElement(Line,{dataKey:'N-1 Prod.',name:'N-1',stroke:'var(--c-blue)',strokeWidth:1,dot:false,strokeDasharray:'4 2',strokeOpacity:0.5})
+        )
+      )
+    ),
+
+    /* MONTHLY TABLE */
+    (plView==='mensuel'||plView==='ytd')&&React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',overflowX:'auto'}},
+      React.createElement(SectionTitle,{title:plView==='ytd'?'D\u00E9tail cumul\u00E9 YTD':'D\u00E9tail mois par mois',sub:'Budget \u00B7 R\u00E9alis\u00E9 \u00B7 N-1 \u00B7 \u00C9cart \u2014 k\u20AC'}),
+      React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
+        React.createElement('thead',null,
+          React.createElement('tr',null,
+            React.createElement('th',{style:thStyle('left'),rowSpan:2},'Mois'),
+            React.createElement('th',{colSpan:4,style:Object.assign({},thStyle('center'),{color:'var(--c-green)',borderBottom:'none',paddingBottom:2})},'PRODUITS'),
+            React.createElement('th',{colSpan:4,style:Object.assign({},thStyle('center'),{color:'var(--c-red)',borderBottom:'none',paddingBottom:2})},'CHARGES'),
+            React.createElement('th',{colSpan:2,style:Object.assign({},thStyle('center'),{color:'var(--c-gold)',borderBottom:'none',paddingBottom:2})},'EXC\u00C9DENT')
+          ),
+          React.createElement('tr',null,
+            ['Bud.','R\u00E9al.','N-1','\u00C9cart'].map(function(h,i){return React.createElement('th',{key:'p'+i,style:thStyle()},h);}),
+            ['Bud.','R\u00E9al.','N-1','\u00C9cart'].map(function(h,i){return React.createElement('th',{key:'c'+i,style:thStyle()},h);}),
+            ['Bud.','R\u00E9al.'].map(function(h,i){return React.createElement('th',{key:'e'+i,style:thStyle()},h);})
+          )
+        ),
+        React.createElement('tbody',null,
+          (plView==='ytd'?ytdData:stableMonthlyPL).map(function(d,i){
+            var pR=plView==='ytd'?d.pReel:d.pReel;
+            var pB=plView==='ytd'?d.pBudget:d.pBudget;
+            var pN=plView==='ytd'?d.pN1:d.pN1;
+            var cR=plView==='ytd'?d.cReel:d.cReel;
+            var cB=plView==='ytd'?d.cBudget:d.cBudget;
+            var cN=plView==='ytd'?d.cN1:d.cN1;
+            var pEcart=pR!==null?((pR-pB)/Math.abs(pB)*100).toFixed(1):'\u2014';
+            var cEcart=cR!==null?((cR-cB)/Math.abs(cB)*100).toFixed(1):'\u2014';
+            var excB=pB-cB;
+            var excR=pR!==null&&cR!==null?pR-cR:null;
+            var isLast=i===11;
+            return React.createElement('tr',{key:i,style:{background:isLast&&plView!=='ytd'?'rgba(201,169,110,.04)':'transparent'}},
+              React.createElement('td',{style:{padding:'6px',fontSize:11,color:'var(--c-text)',fontWeight:isLast?600:400,borderBottom:'1px solid rgba(30,39,56,.3)'}},d.m),
+              React.createElement('td',{style:tdStyle('var(--c-text)',false)},pB.toLocaleString('fr')),
+              React.createElement('td',{style:tdStyle(pR!==null?'var(--c-text)':'var(--c-muted)',false)},pR!==null?pR.toLocaleString('fr'):'\u2014'),
+              React.createElement('td',{style:tdStyle('var(--c-muted)',false)},pN.toLocaleString('fr')),
+              React.createElement('td',{style:tdStyle(pEcart!=='\u2014'&&parseFloat(pEcart)>=0?'var(--c-green)':'var(--c-red)',false)},pEcart!=='\u2014'?(parseFloat(pEcart)>=0?'+':'')+pEcart+'%':'\u2014'),
+              React.createElement('td',{style:tdStyle('var(--c-text)',false)},cB.toLocaleString('fr')),
+              React.createElement('td',{style:tdStyle(cR!==null?'var(--c-text)':'var(--c-muted)',false)},cR!==null?cR.toLocaleString('fr'):'\u2014'),
+              React.createElement('td',{style:tdStyle('var(--c-muted)',false)},cN.toLocaleString('fr')),
+              React.createElement('td',{style:tdStyle(cEcart!=='\u2014'&&parseFloat(cEcart)<=0?'var(--c-green)':'var(--c-red)',false)},cEcart!=='\u2014'?(parseFloat(cEcart)>=0?'+':'')+cEcart+'%':'\u2014'),
+              React.createElement('td',{style:tdStyle('var(--c-gold)',true)},excB.toLocaleString('fr')),
+              React.createElement('td',{style:tdStyle(excR!==null?(excR>=0?'var(--c-green)':'var(--c-red)'):'var(--c-muted)',true)},excR!==null?excR.toLocaleString('fr'):'\u2014')
+            );
+          }),
+          React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)',background:'rgba(201,169,110,.06)'}},
+            React.createElement('td',{style:{padding:'8px 6px',fontSize:12,fontWeight:700,color:'var(--c-gold)'}},'TOTAL'),
+            React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalP('budget').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalP('reel').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle('var(--c-muted)',true)},totalP('n1').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle(totalP('reel')>=totalP('budget')?'var(--c-green)':'var(--c-red)',true)},((totalP('reel')-totalP('budget'))/totalP('budget')*100).toFixed(1)+'%'),
+            React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalC('budget').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle('var(--c-gold)',true)},totalC('reel').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle('var(--c-muted)',true)},totalC('n1').toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle(totalC('reel')<=totalC('budget')?'var(--c-green)':'var(--c-red)',true)},((totalC('reel')-totalC('budget'))/totalC('budget')*100).toFixed(1)+'%'),
+            React.createElement('td',{style:tdStyle('var(--c-gold)',true)},margeB.toLocaleString('fr')),
+            React.createElement('td',{style:tdStyle(margeR>=0?'var(--c-green)':'var(--c-red)',true)},margeR.toLocaleString('fr'))
+          )
+        )
+      )
+    ),
+
+    /* ANNUAL DETAIL */
+    plView==='annuel'&&React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-3',style:{color:'var(--c-gold)'}},'D\u00E9tail par poste comptable'),
       React.createElement('table',{style:{width:'100%',borderCollapse:'collapse'}},
         React.createElement('thead',null,
           React.createElement('tr',null,
@@ -725,7 +877,7 @@ var VuePL = function(props){
           pl.charges.map(function(c){return renderRow(c,false,false);}),
           renderRow({n:'Total Charges',budget:totalC('budget'),reel:totalC('reel'),n1:totalC('n1')},true,false),
           React.createElement('tr',{style:{borderTop:'2px solid var(--c-border)'}},
-            React.createElement('td',{style:{padding:'14px 10px',fontSize:14,fontWeight:700,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'Marge d\'exploitation'),
+            React.createElement('td',{style:{padding:'14px 10px',fontSize:14,fontWeight:700,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'Exc\u00E9dent d\u2019exploitation'),
             [margeB,margeR,margeN].map(function(v,j){
               return React.createElement('td',{key:j,style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'14px 10px',color:'var(--c-gold)',fontWeight:700}},v.toLocaleString('fr'));
             }),
