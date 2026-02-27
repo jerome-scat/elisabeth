@@ -83,12 +83,12 @@ const ENTITES = [
 ];
 
 const KPI_DATA = {
-  groupe:{produits:45.1,ebe:3.2,excedent:0.9,effectifs:680,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:5900},
-  anne:{produits:12.5,ebe:0.9,excedent:0.25,effectifs:205,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:3800},
-  claire:{produits:7.8,ebe:0.5,excedent:0.12,effectifs:115,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:480},
-  marie:{produits:12.8,ebe:1.0,excedent:0.28,effectifs:185,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:1200},
-  yolande:{produits:6.1,ebe:0.4,excedent:0.10,effectifs:95,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:380},
-  inclusion:{produits:1.4,ebe:0.1,excedent:0.03,effectifs:18,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:55},
+  groupe:{produits:45.1,ebe:3.2,excedent:0.9,effectifs:680,taux_exec:97.1,ecart_budget:-0.3,fin_public:19.6,benef:5505},
+  anne:{produits:12.5,ebe:0.9,excedent:0.25,effectifs:205,taux_exec:98.5,ecart_budget:+0.11,fin_public:6.6,benef:3540},
+  claire:{produits:7.8,ebe:0.5,excedent:0.12,effectifs:115,taux_exec:95.8,ecart_budget:-0.08,fin_public:4.1,benef:450},
+  marie:{produits:12.8,ebe:1.0,excedent:0.28,effectifs:185,taux_exec:95.2,ecart_budget:-0.25,fin_public:5.2,benef:1115},
+  yolande:{produits:6.1,ebe:0.4,excedent:0.10,effectifs:95,taux_exec:97.2,ecart_budget:+0.04,fin_public:3.0,benef:350},
+  inclusion:{produits:1.4,ebe:0.1,excedent:0.03,effectifs:18,taux_exec:99.3,ecart_budget:+0.03,fin_public:0.5,benef:50},
   apollonia:{produits:4.5,ebe:0.3,excedent:0.12,effectifs:62,taux_exec:97.4,ecart_budget:+0.08,fin_public:0.2,benef:0},
 };
 
@@ -303,12 +303,12 @@ const GRILLE_SAS = [
 const SAS_INFO = {biennale:2.0,indice:968.04,prochaine:'T3 2026 (estim\u00E9)',impact_tranche:'+2.3M\u20AC masse salariale',masse:33600};
 
 const PLAN_PLURIANNUEL = [
-  {annee:2023,produits:39.6,charges:38.9,excedent:0.7,effectifs:620,invest:2.8,benef:5000},
-  {annee:2024,produits:42.6,charges:41.8,excedent:0.8,effectifs:650,invest:3.2,benef:5500},
-  {annee:2025,produits:45.1,charges:44.2,excedent:0.9,effectifs:680,invest:4.8,benef:5900},
-  {annee:2026,produits:47.8,charges:46.8,excedent:1.0,effectifs:714,invest:5.2,benef:6200},
-  {annee:2027,produits:50.2,charges:49.1,excedent:1.1,effectifs:744,invest:3.6,benef:6500},
-  {annee:2028,produits:52.8,charges:51.6,excedent:1.2,effectifs:770,invest:2.8,benef:6800},
+  {annee:2023,produits:39.6,charges:38.9,excedent:0.7,effectifs:620,invest:2.8,benef:4650},
+  {annee:2024,produits:42.6,charges:41.8,excedent:0.8,effectifs:650,invest:3.2,benef:5100},
+  {annee:2025,produits:45.1,charges:44.2,excedent:0.9,effectifs:680,invest:4.8,benef:5505},
+  {annee:2026,produits:47.8,charges:46.8,excedent:1.0,effectifs:714,invest:5.2,benef:5800},
+  {annee:2027,produits:50.2,charges:49.1,excedent:1.1,effectifs:744,invest:3.6,benef:6050},
+  {annee:2028,produits:52.8,charges:51.6,excedent:1.2,effectifs:770,invest:2.8,benef:6350},
 ];
 
 const VEILLE_REGLEMENTAIRE = [
@@ -363,6 +363,10 @@ const INSTITUTIONS = [
   {name:'Ste Elisabeth Am Park',loc:'Luxembourg',lat:49.610,lng:6.128,entity:'claire',tel:'+352 26 44 13',budget:3500,eff:138},
   {name:'Sacr\u00E9-Coeur',loc:'Diekirch',lat:49.868,lng:6.158,entity:'claire',tel:'+352 80 31 23',budget:2700,eff:106},
   {name:'\u00C9cole Priv\u00E9e Marie-Consolatrice',loc:'Esch-sur-Alzette',lat:49.495,lng:5.982,entity:'marie',tel:'+352 55 01 11',budget:3290,eff:85},
+  {name:'Internat Marie-Consolatrice',loc:'Esch-sur-Alzette',lat:49.497,lng:5.984,entity:'marie',tel:'+352 55 01 12',budget:2800,eff:45},
+  {name:'Centre de Formation Elisabeth',loc:'Luxembourg',lat:49.608,lng:6.126,entity:'marie',tel:'+352 26 44 14',budget:2400,eff:35},
+  {name:'Lyc\u00E9e Technique Priv\u00E9 Ste Elisabeth',loc:'Ettelbruck',lat:49.847,lng:6.100,entity:'marie',tel:'+352 81 22 01',budget:2600,eff:40},
+  {name:'Foyer Scolaire Marie',loc:'Differdange',lat:49.524,lng:5.891,entity:'marie',tel:'+352 58 77 01',budget:1710,eff:25},
   {name:'Institut St Joseph',loc:'Betzdorf',lat:49.683,lng:6.350,entity:'yolande',tel:'+352 71 02 02',budget:1660,eff:86},
   {name:'Am Klouschter',loc:'Mondorf-les-Bains',lat:49.506,lng:6.283,entity:'yolande',tel:'+352 23 66 84',budget:1170,eff:55},
   {name:'De Seefenatelier',loc:'Betzdorf',lat:49.684,lng:6.351,entity:'yolande',tel:'+352 71 02 03',budget:435,eff:25},
@@ -615,7 +619,7 @@ var VueSynthese = function(props){
           React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:12,color:'rgba(255,255,255,.7)',letterSpacing:'.08em',textTransform:'uppercase'}},'Acteur social historique du Luxembourg \u00B7 Depuis 1672')
         ),
         React.createElement('div',{className:'flex gap-8'},
-          [{v:'5 505',l:'B\u00E9n\u00E9ficiaires quotidiens',icon:'\u2764\uFE0F'},{v:'48',l:'Institutions dans le pays',icon:'\u{1F3E0}'},{v:'5',l:'Secteurs d\u2019activit\u00E9s',icon:'\u{1F91D}'}].map(function(s,i){
+          [{v:'5 505',l:'B\u00E9n\u00E9ficiaires quotidiens',icon:'\u2764\uFE0F'},{v:''+INSTITUTIONS.length,l:'Institutions dans le pays',icon:'\u{1F3E0}'},{v:'5',l:'Secteurs d\u2019activit\u00E9s',icon:'\u{1F91D}'}].map(function(s,i){
             return React.createElement('div',{key:i,className:'text-center'},
               React.createElement('div',{style:{fontSize:10,marginBottom:2}},s.icon),
               React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:28,fontWeight:900,color:'#ffffff'}},s.v),
@@ -1516,9 +1520,9 @@ var VueConsolidee = function(){
     var rows=[['Entit\u00E9','Produits M\u20AC','EBE M\u20AC','Taux exc. %','Effectifs','Tx Ex\u00E9c. %','Fin. public M\u20AC','Statut']];
     ENTITES.filter(function(e){return e.id!=='groupe';}).forEach(function(e){
       var k=KPI_DATA[e.id];
-      rows.push([e.label,k.produits,k.ebe,(k.ebe/k.produits*100).toFixed(1),k.effectifs,k.taux_exec,k.fin_public,k.ecart_budget >= 0?'Favorable':'D\u00E9ficitaire']);
+      rows.push([e.label,k.produits,k.ebe,(k.excedent/k.produits*100).toFixed(1),k.effectifs,k.taux_exec,k.fin_public,k.ecart_budget >= 0?'Favorable':'D\u00E9ficitaire']);
     });
-    rows.push(['GROUPE TOTAL',45.1,3.2,'7.1',680,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
+    rows.push(['GROUPE TOTAL',45.1,3.2,(KPI_DATA.groupe.excedent/KPI_DATA.groupe.produits*100).toFixed(1),680,97.1,19.6,'D\u00E9f. 0.3M\u20AC']);
     exportXLSX(rows,'consolide_groupe');
   };
 
@@ -1540,7 +1544,7 @@ var VueConsolidee = function(){
         React.createElement('tbody',null,
           ENTITES.filter(function(e){return e.id!=='groupe';}).map(function(e,i){
             var k=KPI_DATA[e.id];
-            var marge=(k.ebe/k.produits*100).toFixed(1);
+            var marge=(k.excedent/k.produits*100).toFixed(1);
             var ok=k.ecart_budget >= 0;
             return React.createElement('tr',{key:i,style:{borderBottom:'1px solid rgba(30,39,56,.5)'}},
               React.createElement('td',{style:{padding:'12px 10px'}},
@@ -1573,7 +1577,7 @@ var VueConsolidee = function(){
             React.createElement('td',{style:{padding:'12px 10px',fontWeight:700,fontSize:13,color:'var(--c-gold)',fontFamily:'Playfair Display,serif'}},'\u{1F339} GROUPE TOTAL'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'45.1M\u20AC'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:14,padding:'12px 10px',color:'var(--c-gold)',fontWeight:700}},'3.2M\u20AC'),
-            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},'7.1%'),
+            React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-muted)'}},(KPI_DATA.groupe.excedent/KPI_DATA.groupe.produits*100).toFixed(1)+'%'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:12,padding:'12px 10px',color:'var(--c-text)'}},'680'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-green)',fontWeight:600}},'97.1%'),
             React.createElement('td',{style:{textAlign:'right',fontFamily:'DM Mono,monospace',fontSize:13,padding:'12px 10px',color:'var(--c-cyan)',fontWeight:600}},'19.6M\u20AC'),
