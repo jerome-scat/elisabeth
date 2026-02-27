@@ -640,6 +640,53 @@ var VueSynthese = function(props){
         React.createElement(KPICard,{label:'B\u00E9n\u00E9ficiaires servis',value:kpi.benef,unit:'pers.',delta:340,deltaUnit:'',color:'var(--c-orange)'})
       )
     ),
+    /* ---- NOTE DU CONTROLEUR DE GESTION ---- */
+    React.createElement('div',{className:'rounded-xl p-6',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderLeft:'4px solid var(--c-gold)'}},
+      React.createElement('div',{className:'flex items-center gap-3 mb-4'},
+        React.createElement('div',{style:{width:32,height:32,borderRadius:'50%',background:'var(--c-gold)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:'#fff'}},'\u{1F4CB}'),
+        React.createElement('div',null,
+          React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:16,fontWeight:700,color:'var(--c-gold)'}},'Note du Contr\u00F4leur de Gestion'),
+          React.createElement('div',{style:{fontFamily:'DM Mono,monospace',fontSize:10,color:'var(--c-muted)'}},'Synth\u00E8se analytique \u2014 Cl\u00F4ture exercice 2025 \u2014 F\u00E9vrier 2026')
+        )
+      ),
+      React.createElement('div',{style:{fontSize:13,color:'var(--c-text)',lineHeight:1.8}},
+        entity==='groupe'?
+        React.createElement('div',{className:'space-y-4'},
+          React.createElement('div',null,
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-gold)'}},'Fait marquant : '),
+            'L\u2019exercice 2025 se cl\u00F4ture avec un exc\u00E9dent net de ',React.createElement('strong',null,'0.9M\u20AC'),' (taux 2.0%), conforme au plan pluriannuel et coh\u00E9rent avec notre statut d\u2019asbl. Les produits progressent de +5.9% port\u00E9s par la revalorisation des bar\u00E8mes CSA (+3.5%) et la hausse CNS (+3.2%).'
+          ),
+          React.createElement('div',null,
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-red)'}},'Point de vigilance : '),
+            'La masse salariale repr\u00E9sente ',React.createElement('strong',null,'76%'),' des charges totales. L\u2019activation de la tranche indiciaire de janvier 2026 (+2.5%) g\u00E9n\u00E8rera +1.1M\u20AC/an de co\u00FBts suppl\u00E9mentaires. Sans revalorisation \u00E9quivalente des financements publics, le taux d\u2019exc\u00E9dent pourrait passer sous les 1% en 2027.'
+          ),
+          React.createElement('div',null,
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-green)'}},'Opportunit\u00E9 : '),
+            'Le projet de cr\u00E8che \u00E0 Dudelange (2.6M\u20AC, ouverture T1 2027) est soutenu par la commune et le MFSVA (60% de subvention). Avec 100+ familles en liste d\u2019attente, le risque de sous-remplissage est faible. Exc\u00E9dent r\u00E9current estim\u00E9 \u00E0 +200k\u20AC/an \u00E0 partir de 2030.'
+          ),
+          React.createElement('div',{style:{borderTop:'1px solid var(--c-border)',paddingTop:12,marginTop:4}},
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-blue)'}},'Recommandations : '),
+            React.createElement('ol',{style:{margin:'8px 0 0 18px',padding:0}},
+              React.createElement('li',{style:{marginBottom:4}},'N\u00E9gocier l\u2019indexation des enveloppes MFSVA au rythme des tranches indiciaires SAS'),
+              React.createElement('li',{style:{marginBottom:4}},'Acc\u00E9l\u00E9rer la mutualisation des achats inter-entit\u00E9s (potentiel estim\u00E9 : 180k\u20AC/an)'),
+              React.createElement('li',{style:{marginBottom:4}},'Lancer l\u2019\u00E9tude d\u2019impact de la r\u00E9forme du ratio encadrement cr\u00E8ches (1/6) pr\u00E9vue mars 2026'),
+              React.createElement('li',null,'Provisionner 450k\u20AC pour les biennales automatiques de septembre 2026')
+            )
+          )
+        ):
+        React.createElement('div',{className:'space-y-4'},
+          React.createElement('div',null,
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-gold)'}},'Analyse '+ent.label.split('\u2014')[0].trim()+' : '),
+            'L\u2019entit\u00E9 cl\u00F4ture avec un taux d\u2019ex\u00E9cution de ',React.createElement('strong',null,kpi.taux_exec+'%'),
+            kpi.ecart_budget>=0?'. L\u2019\u00E9cart budg\u00E9taire est favorable (+'+kpi.ecart_budget.toFixed(1)+'M\u20AC), refl\u00E9tant une bonne ma\u00EEtrise des co\u00FBts op\u00E9rationnels.':'. Un \u00E9cart d\u00E9ficitaire de '+Math.abs(kpi.ecart_budget).toFixed(1)+'M\u20AC est constat\u00E9, principalement li\u00E9 \u00E0 des d\u00E9passements sur les postes RH et maintenance.'
+          ),
+          React.createElement('div',null,
+            React.createElement('span',{style:{fontWeight:700,color:'var(--c-blue)'}},'Action requise : '),
+            kpi.ecart_budget>=0?'Maintenir la trajectoire. Identifier les bonnes pratiques transf\u00E9rables aux autres entit\u00E9s du groupe.':'Mettre en place un plan de ma\u00EEtrise budg\u00E9taire avec revue mensuelle renforc\u00E9e. Objectif : retour \u00E0 l\u2019\u00E9quilibre au T2 2026.'
+          )
+        )
+      )
+    ),
     React.createElement('div',{className:'grid grid-cols-3 gap-4'},
       React.createElement('div',{className:'col-span-2 rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
         React.createElement(SectionTitle,{title:'Budget \u00B7 R\u00E9el \u00B7 N-1',sub:'\u00C9volution mensuelle en k\u20AC'}),
@@ -770,23 +817,28 @@ var VueSynthese = function(props){
         React.createElement(SectionTitle,{title:'Alertes par institution',sub:'\u00C9carts significatifs \u2014 suivi mensuel'}),
         React.createElement('div',{className:'space-y-2'},
           [
-            {inst:'Foyer Ste Elisabeth',loc:'Bettembourg',type:'D\u00E9passement RH',ecart:'+48k\u20AC',pct:'+6.2%',color:'var(--c-red)',note:'22 recrutements urgence Q3-Q4'},
-            {inst:'Maison Relais Conter',loc:'Contern',type:'Sous-ex\u00E9cution',ecart:'-32k\u20AC',pct:'-4.8%',color:'var(--c-orange)',note:'Taux remplissage 87% (obj. 95%)'},
-            {inst:'Haaptmann\'s Schlass',loc:'Berbourg',type:'D\u00E9passement maintenance',ecart:'+28k\u20AC',pct:'+12%',color:'var(--c-red)',note:'R\u00E9paration chaudi\u00E8re impr\u00E9vue'},
-            {inst:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',type:'\u00C9conomie r\u00E9alis\u00E9e',ecart:'-18k\u20AC',pct:'-3.1%',color:'var(--c-green)',note:'Mutualisation achats p\u00E9dagogiques'},
-            {inst:'Institut St Joseph',loc:'Betzdorf',type:'D\u00E9passement transport',ecart:'+15k\u20AC',pct:'+8.5%',color:'var(--c-orange)',note:'Hausse carburant + nouveau circuit'},
+            {inst:'Foyer Ste Elisabeth',loc:'Bettembourg',type:'D\u00E9passement RH',ecart:'+48k\u20AC',pct:'+6.2%',color:'var(--c-red)',note:'22 recrutements urgence Q3-Q4',reco:'\u2192 Plan de mutualisation inter-sites T1 2026 valid\u00E9. Red\u00E9ployer 4 ETP depuis Claire asbl.'},
+            {inst:'Maison Relais Conter',loc:'Contern',type:'Sous-ex\u00E9cution',ecart:'-32k\u20AC',pct:'-4.8%',color:'var(--c-orange)',note:'Taux remplissage 87% (obj. 95%)',reco:'\u2192 Campagne d\u2019inscription cibl\u00E9e + partenariat \u00E9cole Contern. Objectif 93% au T2.'},
+            {inst:'Haaptmann\'s Schlass',loc:'Berbourg',type:'D\u00E9passement maintenance',ecart:'+28k\u20AC',pct:'+12%',color:'var(--c-red)',note:'R\u00E9paration chaudi\u00E8re impr\u00E9vue',reco:'\u2192 Plan de maintenance pr\u00E9ventive \u00E0 d\u00E9ployer. Budget exceptionnel valid\u00E9 en CA.'},
+            {inst:'Cr\u00E8che Siweschl\u00E9ifer',loc:'Luxembourg',type:'\u00C9conomie r\u00E9alis\u00E9e',ecart:'-18k\u20AC',pct:'-3.1%',color:'var(--c-green)',note:'Mutualisation achats p\u00E9dagogiques',reco:'\u2713 Bonne pratique \u00E0 g\u00E9n\u00E9raliser. Mod\u00E8le de groupement d\u2019achats en cours pour 12 sites.'},
+            {inst:'Institut St Joseph',loc:'Betzdorf',type:'D\u00E9passement transport',ecart:'+15k\u20AC',pct:'+8.5%',color:'var(--c-orange)',note:'Hausse carburant + nouveau circuit',reco:'\u2192 \u00C9tude covoiturage + n\u00E9gociation contrat flotte. \u00C9ch\u00E9ance mars 2026.'},
           ].map(function(a,i){
-            return React.createElement('div',{key:i,className:'flex items-center gap-3 p-3 rounded-lg',style:{background:'var(--c-surface2)',borderLeft:'3px solid '+a.color}},
-              React.createElement('div',{className:'flex-1'},
-                React.createElement('div',{className:'flex items-center gap-2'},
-                  React.createElement('span',{className:'text-xs font-bold',style:{color:'var(--c-text)'}},a.inst),
-                  React.createElement('span',{className:'text-xs',style:{color:'var(--c-muted)'}},'\u00B7 '+a.loc)
+            return React.createElement('div',{key:i,className:'p-3 rounded-lg',style:{background:'var(--c-surface2)',borderLeft:'3px solid '+a.color}},
+              React.createElement('div',{className:'flex items-center gap-3'},
+                React.createElement('div',{className:'flex-1'},
+                  React.createElement('div',{className:'flex items-center gap-2'},
+                    React.createElement('span',{className:'text-xs font-bold',style:{color:'var(--c-text)'}},a.inst),
+                    React.createElement('span',{className:'text-xs',style:{color:'var(--c-muted)'}},'\u00B7 '+a.loc)
+                  ),
+                  React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)',marginTop:2}},a.type+' \u2014 '+a.note)
                 ),
-                React.createElement('div',{className:'text-xs',style:{color:'var(--c-muted)',marginTop:2}},a.type+' \u2014 '+a.note)
+                React.createElement('div',{className:'text-right'},
+                  React.createElement('div',{className:'font-mono text-sm font-bold',style:{color:a.color}},a.ecart),
+                  React.createElement('div',{className:'font-mono text-xs',style:{color:a.color}},a.pct)
+                )
               ),
-              React.createElement('div',{className:'text-right'},
-                React.createElement('div',{className:'font-mono text-sm font-bold',style:{color:a.color}},a.ecart),
-                React.createElement('div',{className:'font-mono text-xs',style:{color:a.color}},a.pct)
+              React.createElement('div',{className:'mt-2 pt-2',style:{borderTop:'1px solid rgba(30,39,56,.3)'}},
+                React.createElement('div',{className:'text-xs',style:{color:a.color,fontWeight:600}},a.reco)
               )
             );
           })
@@ -899,6 +951,35 @@ var VuePL = function(props){
       React.createElement(KPICard,{label:'Charges totales',value:totalC('reel')/1000,unit:'M\u20AC',delta:+((totalC('reel')/totalC('n1')-1)*100).toFixed(1),deltaUnit:'% vs N-1',color:'var(--c-red)'}),
       React.createElement(KPICard,{label:'Exc\u00E9dent d\u2019exploitation',value:margeR/1000,unit:'M\u20AC',delta:+((margeR/margeN-1)*100).toFixed(1),deltaUnit:'% vs N-1',color:'var(--c-green)'}),
       React.createElement(KPICard,{label:'Taux d\u2019exc\u00E9dent',value:+(margeR/totalP('reel')*100).toFixed(1),unit:'%',delta:+((margeR/totalP('reel')-margeN/totalP('n1'))*100).toFixed(1),deltaUnit:' pts',color:'var(--c-gold)'})
+    ),
+
+    /* COMMENTAIRE DE GESTION P&L */
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderLeft:'4px solid var(--c-gold)'}},
+      React.createElement('div',{className:'flex items-center gap-2 mb-3'},
+        React.createElement('span',{style:{fontSize:13}},'\u{1F4DD}'),
+        React.createElement('span',{style:{fontFamily:'DM Mono,monospace',fontSize:11,fontWeight:700,color:'var(--c-gold)',textTransform:'uppercase',letterSpacing:'.08em'}},'Commentaire de gestion')
+      ),
+      React.createElement('div',{style:{fontSize:13,color:'var(--c-text)',lineHeight:1.7}},
+        (function(){
+          var pctProd=((totalP('reel')/totalP('n1')-1)*100).toFixed(1);
+          var pctCharge=((totalC('reel')/totalC('n1')-1)*100).toFixed(1);
+          var tauxExc=(margeR/totalP('reel')*100).toFixed(1);
+          var isGroupe=entity==='groupe';
+          return React.createElement('div',{className:'space-y-3'},
+            React.createElement('p',null,
+              'Les produits progressent de ',React.createElement('strong',{style:{color:'var(--c-green)'}},'+'+pctProd+'%'),
+              ' vs N-1',isGroupe?', tir\u00E9s par la hausse des bar\u00E8mes CSA (+3.5%) et CNS (+3.2%). Les subventions MFSVA restent stables (+2.1%), inf\u00E9rieures \u00E0 l\u2019inflation des co\u00FBts salariaux.':', en ligne avec la croissance du groupe.'
+            ),
+            React.createElement('p',null,
+              'Les charges augmentent de ',React.createElement('strong',{style:{color:'var(--c-red)'}},'+'+pctCharge+'%'),
+              isGroupe?'. Le poste personnel (76% des charges) cro\u00EEt de +6.3% sous l\u2019effet des recrutements (+30 ETP) et de la tranche indiciaire. Les services ext\u00E9rieurs sont ma\u00EEtris\u00E9s (-1.2%).':'. La structure de co\u00FBts reste align\u00E9e sur les ratios normatifs du secteur.'
+            ),
+            React.createElement('p',{style:{fontWeight:600,color:'var(--c-gold)'}},
+              'Taux d\u2019exc\u00E9dent : '+tauxExc+'% \u2014 '+(parseFloat(tauxExc)>=2?'Conforme \u00E0 l\u2019objectif asbl (cible 1.5-2.5%). Marge de s\u00E9curit\u00E9 suffisante pour absorber les al\u00E9as 2026.':parseFloat(tauxExc)>0?'Sous l\u2019objectif de 2%. Vigilance requise sur l\u2019\u00E9volution des charges T1 2026.':'Situation d\u00E9ficitaire. Plan d\u2019action n\u00E9cessaire.')
+            )
+          );
+        })()
+      )
     ),
 
     /* CHART */
@@ -1501,6 +1582,30 @@ var VueConsolidee = function(){
             )
           )
         )
+      )
+    ),
+    /* ANALYSE CONSOLIDEE */
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)',borderLeft:'4px solid var(--c-gold)'}},
+      React.createElement('div',{className:'flex items-center gap-2 mb-3'},
+        React.createElement('span',{style:{fontSize:13}},'\u{1F50D}'),
+        React.createElement('span',{style:{fontFamily:'DM Mono,monospace',fontSize:11,fontWeight:700,color:'var(--c-gold)',textTransform:'uppercase',letterSpacing:'.08em'}},'Analyse inter-entit\u00E9s \u2014 Points d\u2019attention')
+      ),
+      React.createElement('div',{className:'grid grid-cols-3 gap-4'},
+        [
+          {entite:'Claire asbl',icon:'\u{1F338}',color:'#F8C537',titre:'Tension RH p\u00F4le Seniors',texte:'Taux d\u2019ex\u00E9cution le plus faible du groupe (95.8%). 22 recrutements non budg\u00E9t\u00E9s en 2025. Risque de d\u00E9passement salarial de 380k\u20AC si non ma\u00EEtris\u00E9.',reco:'Mutualisation inter-sites + partenariat \u00E9cole d\u2019aides-soignants'},
+          {entite:'Marie asbl',icon:'\u{1F393}',color:'#9B5DE5',titre:'\u00C9cart budg\u00E9taire d\u00E9ficitaire',texte:'Seule entit\u00E9 avec un \u00E9cart n\u00E9gatif significatif (-0.25M\u20AC). Hausse des co\u00FBts p\u00E9dagogiques (+8%) non compens\u00E9e par les inscriptions.',reco:'Rengo\u00E9ciation convention communale + r\u00E9vision tarifs'},
+          {entite:'e4inclusion',icon:'\u{1F91D}',color:'#00BBF9',titre:'Meilleure performance',texte:'Taux d\u2019ex\u00E9cution 99.3% et \u00E9cart favorable +0.03M\u20AC. Mod\u00E8le de gestion lean \u00E0 documenter et partager.',reco:'\u00C9tablir un benchmark interne bas\u00E9 sur les pratiques e4inclusion'}
+        ].map(function(item,i){
+          return React.createElement('div',{key:i,className:'rounded-lg p-4',style:{background:'var(--c-surface2)',borderTop:'3px solid '+item.color}},
+            React.createElement('div',{className:'flex items-center gap-2 mb-2'},
+              React.createElement('span',null,item.icon),
+              React.createElement('span',{className:'text-xs font-bold',style:{color:item.color}},item.entite)
+            ),
+            React.createElement('div',{className:'text-sm font-bold mb-1',style:{color:'var(--c-text)'}},item.titre),
+            React.createElement('div',{className:'text-xs mb-3',style:{color:'var(--c-muted)',lineHeight:1.6}},item.texte),
+            React.createElement('div',{className:'text-xs p-2 rounded',style:{background:'var(--c-surface)',color:item.color,fontWeight:600}},'\u2192 '+item.reco)
+          );
+        })
       )
     ),
     React.createElement('div',{className:'grid grid-cols-2 gap-4'},
