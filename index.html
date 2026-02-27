@@ -493,6 +493,7 @@ var fmt = function(v,u){
   u=u||'M\u20AC';
   if(u==='M\u20AC') return v.toFixed(1)+'M\u20AC';
   if(u==='k\u20AC') return Math.round(v).toLocaleString('fr')+'k\u20AC';
+  if(u==='\u20AC') return v.toFixed(1)+'\u20AC';
   if(u==='%') return v.toFixed(1)+'%';
   if(u==='ETP') return v.toLocaleString('fr');
   if(u==='pers.') return v.toLocaleString('fr');
@@ -1153,16 +1154,115 @@ var VueAnalytique = function(props){
   var kpiColors=['#09BC8A','#00479B','#F8C537','#e85a5a','#9B5DE5','#E20613'];
 
   var chData=CHARGES_DATA[entity]||CHARGES_DATA.groupe;
-  var pctRH=(chData[0].v||76)/100, pctSvc=(chData[1].v||10)/100, pctFonct=(chData[2].v||9)/100;
+  var pctCat=chData.map(function(c){return (c.v||0)/100;});
   var areaData=monthly.map(function(d){
-    return {m:d.m,
-      rh:d.reel?Math.round(d.reel*pctRH):null,
-      immo:d.reel?Math.round(d.reel*pctSvc):null,
-      fonct:d.reel?Math.round(d.reel*pctFonct):null
-    };
+    var obj={m:d.m};
+    pctCat.forEach(function(p,i){obj['cat'+i]=d.reel?Math.round(d.reel*p):null;});
+    return obj;
   });
 
+  // Ratio computations
+  var kd=KPI_DATA[entity]||KPI_DATA.groupe;
+  var chargesT=kd.produits-kd.excedent;
+  var coutETP=kd.effectifs>0?Math.round(chargesT*1000/kd.effectifs):0;
+  var prodETP=kd.effectifs>0?Math.round(kd.produits*1000/kd.effectifs):0;
+  var coutBJ=kd.benef>0?(chargesT*1000000/(kd.benef*365)):0;
+  var pctRHv=chData[0].v||76;
+
+  var gk=KPI_DATA.groupe;
+  var gCh=gk.produits-gk.excedent;
+  var gCoutETP=Math.round(gCh*1000/gk.effectifs);
+  var gProdETP=Math.round(gk.produits*1000/gk.effectifs);
+  var gCoutBJ=gk.benef>0?(gCh*1000000/(gk.benef*365)):0;
+  var gPctRH=(CHARGES_DATA.groupe[0].v||76);
+
+  // Benchmark data
+  var entIds=['anne','claire','marie','yolande','inclusion','apollonia'];
+  var benchData=entIds.map(function(id){
+    var k=KPI_DATA[id];var ch=k.produits-k.excedent;
+    return {id:id,label:ENTITES.find(function(e){return e.id===id;}).label.split(' \u2014 ')[1]||id,
+      prodETP:k.effectifs>0?Math.round(k.produits*1000/k.effectifs):0,
+      coutETP:k.effectifs>0?Math.round(ch*1000/k.effectifs):0,
+      color:ENTITES.find(function(e){return e.id===id;}).color};
+  });
+  var benchProd=benchData.slice().sort(function(a,b){return b.prodETP-a.prodETP;});
+  var benchCout=benchData.slice().sort(function(a,b){return a.coutETP-b.coutETP;});
+
+  var ratios=[
+    {n:'Co\u00FBt / ETP',v:fmt(coutETP,'k\u20AC'),delta:coutETP-gCoutETP,u:'k\u20AC',lower:true,
+     sub:'Groupe: '+fmt(gCoutETP,'k\u20AC')},
+    {n:'Produit / ETP',v:fmt(prodETP,'k\u20AC'),delta:prodETP-gProdETP,u:'k\u20AC',lower:false,
+     sub:'Groupe: '+fmt(gProdETP,'k\u20AC')},
+    kd.benef>0?{n:'Co\u00FBt / b\u00E9n\u00E9f. / jour',v:coutBJ.toFixed(1)+'\u20AC',delta:coutBJ-gCoutBJ,u:'\u20AC',lower:true,
+     sub:'Groupe: '+gCoutBJ.toFixed(1)+'\u20AC'}:
+    {n:'Taux exc\u00E9dent',v:(kd.excedent/kd.produits*100).toFixed(1)+'%',delta:(kd.excedent/kd.produits*100)-(gk.excedent/gk.produits*100),u:'pts',lower:false,
+     sub:'Groupe: '+(gk.excedent/gk.produits*100).toFixed(1)+'%'},
+    {n:'Ratio charges RH',v:pctRHv+'%',delta:pctRHv-gPctRH,u:'pts',lower:true,
+     sub:'Groupe: '+gPctRH+'%'},
+  ];
+
   return React.createElement('div',{className:'space-y-6 slide-up'},
+    // Ratio cards
+    React.createElement('div',null,
+      React.createElement(SectionTitle,{title:'Ratios de gestion',sub:'Indicateurs cl\u00E9s vs moyenne groupe \u2014 '+ent.label}),
+      React.createElement('div',{className:'grid grid-cols-4 gap-4'},
+        ratios.map(function(r,i){
+          var isGood=r.lower?(r.delta<=0):(r.delta>=0);
+          var dSign=r.delta>0?'+':'';
+          var dText=r.u==='k\u20AC'?dSign+Math.round(r.delta)+'k\u20AC':r.u==='pts'?dSign+r.delta.toFixed(1)+' pts':dSign+r.delta.toFixed(1)+r.u;
+          return React.createElement('div',{key:i,className:'card-hover rounded-xl p-5 relative overflow-hidden',
+            style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+            React.createElement('div',{style:{position:'absolute',top:0,left:0,right:0,height:'3px',
+              background:isGood?'var(--c-green)':'var(--c-orange)'}}),
+            React.createElement('div',{className:'text-xs font-mono uppercase tracking-widest mb-3',style:{color:'var(--c-muted)'}},r.n),
+            React.createElement('div',{style:{fontFamily:'Playfair Display,serif',fontSize:26,fontWeight:700,color:'var(--c-text)'}},r.v),
+            React.createElement('div',{className:'flex items-center gap-2 mt-2'},
+              React.createElement('span',{className:'text-xs font-mono',style:{color:isGood?'var(--c-green)':'var(--c-orange)'}},
+                (isGood?'\u25B2':'\u25BC')+' '+dText+' vs groupe'),
+              entity==='groupe'?null:React.createElement('span',{className:'text-xs',style:{color:'var(--c-muted)'}},'')
+            ),
+            React.createElement('div',{className:'text-xs mt-1',style:{color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},r.sub)
+          );
+        })
+      )
+    ),
+    // Benchmark inter-entit\u00E9s
+    entity==='groupe'?React.createElement('div',{className:'grid grid-cols-2 gap-4'},
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Productivit\u00E9 par entit\u00E9',sub:'Produit / ETP (k\u20AC)'}),
+        React.createElement('div',{className:'space-y-3 mt-3'},
+          benchProd.map(function(b){
+            var maxVal=benchProd[0].prodETP;
+            return React.createElement('div',{key:b.id,className:'flex items-center gap-3'},
+              React.createElement('span',{className:'text-xs font-mono w-20 truncate',style:{color:'var(--c-muted)'}},b.label),
+              React.createElement('div',{style:{flex:1,height:12,background:'var(--c-surface2)',borderRadius:6,overflow:'hidden',position:'relative'}},
+                React.createElement('div',{style:{width:Math.round(b.prodETP/maxVal*100)+'%',height:'100%',background:b.color,borderRadius:6,transition:'width 0.8s'}}),
+                React.createElement('div',{style:{position:'absolute',left:Math.round(gProdETP/maxVal*100)+'%',top:0,bottom:0,width:2,background:'var(--c-text)',opacity:0.4}})
+              ),
+              React.createElement('span',{className:'text-xs font-mono w-14 text-right',style:{color:'var(--c-text)'}},b.prodETP.toLocaleString('fr')+'k\u20AC')
+            );
+          })
+        ),
+        React.createElement('div',{className:'text-xs mt-2',style:{color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},'\u2502 Moy. groupe: '+gProdETP.toLocaleString('fr')+'k\u20AC')
+      ),
+      React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+        React.createElement(SectionTitle,{title:'Co\u00FBt par ETP',sub:'Charges totales / ETP (k\u20AC) \u2014 croissant'}),
+        React.createElement('div',{className:'space-y-3 mt-3'},
+          benchCout.map(function(b){
+            var maxVal=benchCout[benchCout.length-1].coutETP;
+            return React.createElement('div',{key:b.id,className:'flex items-center gap-3'},
+              React.createElement('span',{className:'text-xs font-mono w-20 truncate',style:{color:'var(--c-muted)'}},b.label),
+              React.createElement('div',{style:{flex:1,height:12,background:'var(--c-surface2)',borderRadius:6,overflow:'hidden',position:'relative'}},
+                React.createElement('div',{style:{width:Math.round(b.coutETP/maxVal*100)+'%',height:'100%',background:b.color,borderRadius:6,transition:'width 0.8s'}}),
+                React.createElement('div',{style:{position:'absolute',left:Math.round(gCoutETP/maxVal*100)+'%',top:0,bottom:0,width:2,background:'var(--c-text)',opacity:0.4}})
+              ),
+              React.createElement('span',{className:'text-xs font-mono w-14 text-right',style:{color:'var(--c-text)'}},b.coutETP.toLocaleString('fr')+'k\u20AC')
+            );
+          })
+        ),
+        React.createElement('div',{className:'text-xs mt-2',style:{color:'var(--c-muted)',fontFamily:'DM Mono,monospace'}},'\u2502 Moy. groupe: '+gCoutETP.toLocaleString('fr')+'k\u20AC')
+      )
+    ):null,
     React.createElement('div',null,
       React.createElement(SectionTitle,{title:'KPIs op\u00E9rationnels secteur social',sub:'Performance vs objectifs \u2014 '+ent.label}),
       React.createElement('div',{className:'grid grid-cols-3 gap-4'},
@@ -1202,9 +1302,63 @@ var VueAnalytique = function(props){
           React.createElement(XAxis,{dataKey:'m',tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(YAxis,{tick:{fill:'var(--c-muted)',fontSize:10,fontFamily:'DM Mono,monospace'},axisLine:false,tickLine:false}),
           React.createElement(Tooltip,{content:React.createElement(CustomTooltip)}),
-          React.createElement(Area,{type:'monotone',dataKey:'rh',name:'RH',stackId:'1',stroke:'#E20613',fill:'#E20613',fillOpacity:0.4}),
-          React.createElement(Area,{type:'monotone',dataKey:'immo',name:'Immobilier',stackId:'1',stroke:'#00479B',fill:'#00479B',fillOpacity:0.4}),
-          React.createElement(Area,{type:'monotone',dataKey:'fonct',name:'Fonctionnement',stackId:'1',stroke:'#09BC8A',fill:'#09BC8A',fillOpacity:0.4})
+          React.createElement(Area,{type:'monotone',dataKey:'cat0',name:chData[0]?chData[0].n:'RH',stackId:'1',stroke:'#E20613',fill:'#E20613',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'cat1',name:chData[1]?chData[1].n:'Services ext.',stackId:'1',stroke:'#00479B',fill:'#00479B',fillOpacity:0.4}),
+          React.createElement(Area,{type:'monotone',dataKey:'cat2',name:chData[2]?chData[2].n:'Fonctionnement',stackId:'1',stroke:'#09BC8A',fill:'#09BC8A',fillOpacity:0.4}),
+          chData[3]?React.createElement(Area,{type:'monotone',dataKey:'cat3',name:chData[3].n,stackId:'1',stroke:'#F8C537',fill:'#F8C537',fillOpacity:0.4}):null
+        )
+      )
+    ),
+    // Note analytique CDG
+    React.createElement('div',{className:'rounded-xl p-5',style:{background:'var(--c-surface)',border:'1px solid var(--c-border)'}},
+      React.createElement(SectionTitle,{title:'Note analytique CDG',sub:'Synth\u00E8se de gestion \u2014 '+ent.label}),
+      React.createElement('div',{className:'space-y-3 mt-2',style:{fontSize:13,lineHeight:1.7,color:'var(--c-text)'}},
+        entity==='groupe'?React.createElement(React.Fragment,null,
+          React.createElement('p',null,
+            '\u{1F4CA} ',React.createElement('strong',null,'Productivit\u00E9'),': ',
+            'La meilleure productivit\u00E9 par ETP revient \u00E0 ',
+            React.createElement('span',{style:{color:benchProd[0].color,fontWeight:600}},benchProd[0].label),
+            ' ('+benchProd[0].prodETP.toLocaleString('fr')+'k\u20AC/ETP) tandis que ',
+            React.createElement('span',{style:{color:benchProd[benchProd.length-1].color,fontWeight:600}},benchProd[benchProd.length-1].label),
+            ' pr\u00E9sente la productivit\u00E9 la plus faible ('+benchProd[benchProd.length-1].prodETP.toLocaleString('fr')+'k\u20AC/ETP). \u00C9cart: '+
+            (benchProd[0].prodETP-benchProd[benchProd.length-1].prodETP).toLocaleString('fr')+'k\u20AC.'
+          ),
+          React.createElement('p',null,
+            '\u{1F4B0} ',React.createElement('strong',null,'Charges RH'),': ',
+            'Le ratio moyen groupe est de '+gPctRH+'%. Les entit\u00E9s \u00E0 forte intensit\u00E9 RH (>'+gPctRH+'%) n\u00E9cessitent une attention particuli\u00E8re sur l\u2019optimisation des plannings et le contr\u00F4le des heures suppl\u00E9mentaires.'
+          ),
+          React.createElement('p',null,
+            '\u{1F3AF} ',React.createElement('strong',null,'Levier prioritaire'),': ',
+            'L\u2019harmonisation des pratiques de gestion entre entit\u00E9s (notamment ',benchProd[benchProd.length-1].label,
+            ') et le d\u00E9ploiement de KPIs communs constituent les axes d\u2019am\u00E9lioration principaux pour 2026.'
+          )
+        ):React.createElement(React.Fragment,null,
+          React.createElement('p',null,
+            '\u{1F4CA} ',React.createElement('strong',null,'Productivit\u00E9'),': ',
+            ent.label.split(' \u2014 ')[1]+' affiche un produit de '+prodETP.toLocaleString('fr')+'k\u20AC/ETP ',
+            prodETP>=gProdETP?
+              React.createElement('span',{style:{color:'var(--c-green)',fontWeight:600}},'(+'+Math.round((prodETP/gProdETP-1)*100)+'% vs groupe)'):
+              React.createElement('span',{style:{color:'var(--c-orange)',fontWeight:600}},'('+(Math.round((prodETP/gProdETP-1)*100))+'% vs groupe)'),
+            '. ',prodETP>=gProdETP?'Performance sup\u00E9rieure \u00E0 la moyenne du groupe.':'Un levier d\u2019optimisation existe par rapport \u00E0 la moyenne groupe ('+gProdETP.toLocaleString('fr')+'k\u20AC/ETP).'
+          ),
+          React.createElement('p',null,
+            '\u{1F4B0} ',React.createElement('strong',null,'Structure de co\u00FBts'),': ',
+            'Co\u00FBt par ETP de '+coutETP.toLocaleString('fr')+'k\u20AC ',
+            coutETP<=gCoutETP?
+              React.createElement('span',{style:{color:'var(--c-green)'}},'\u2713 inf\u00E9rieur au groupe'):
+              React.createElement('span',{style:{color:'var(--c-orange)'}},'\u26A0 sup\u00E9rieur au groupe de '+(coutETP-gCoutETP).toLocaleString('fr')+'k\u20AC'),
+            '. Ratio RH: '+pctRHv+'% ',pctRHv<=gPctRH?'(ma\u00EEtris\u00E9).':'(au-dessus de la r\u00E9f\u00E9rence groupe de '+gPctRH+'%).'
+          ),
+          React.createElement('p',null,
+            '\u{1F3AF} ',React.createElement('strong',null,'Recommandation'),': ',
+            coutETP>gCoutETP&&pctRHv>gPctRH?
+              'Prioriser l\u2019analyse des postes RH et l\u2019optimisation des plannings pour r\u00E9duire le co\u00FBt/ETP.':
+            coutETP>gCoutETP?
+              'Investiguer les charges hors RH (services ext., fonctionnement) pour identifier les marges de r\u00E9duction.':
+            prodETP<gProdETP?
+              'Explorer les leviers de croissance des produits (nouvelles conventions, extension de capacit\u00E9) pour am\u00E9liorer la productivit\u00E9 par ETP.':
+              'Maintenir la trajectoire actuelle et partager les bonnes pratiques avec les entit\u00E9s moins performantes.'
+          )
         )
       )
     ),
