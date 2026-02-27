@@ -223,13 +223,34 @@ const FINANCEMENT = {
     {source:'Participations r\u00E9sidents',montant:1.7,pct:21.8,color:'#F8C537'},
     {source:'Autres',montant:0.6,pct:7.7,color:'#00BBF9'},
   ],
+  marie:[
+    {source:'Participations familles & frais scolaires',montant:5.1,pct:39.8,color:'#F8C537'},
+    {source:'Ch\u00E8ques-service accueil (CSA)',montant:3.2,pct:25.0,color:'#09BC8A'},
+    {source:'Subventions \u00C9tat (MFSVA)',montant:2.6,pct:20.3,color:'#E20613'},
+    {source:'Conventions communales',montant:1.4,pct:10.9,color:'#9B5DE5'},
+    {source:'Dons & autres',montant:0.5,pct:3.9,color:'#00BBF9'},
+  ],
+  yolande:[
+    {source:'Subventions \u00C9tat (MFSVA)',montant:2.8,pct:45.9,color:'#E20613'},
+    {source:'Assurance d\u00E9pendance (CNS)',montant:1.4,pct:23.0,color:'#00479B'},
+    {source:'Participations usagers & familles',montant:1.1,pct:18.0,color:'#F8C537'},
+    {source:'Revenus ateliers prot\u00E9g\u00E9s',montant:0.5,pct:8.2,color:'#09BC8A'},
+    {source:'Dons & autres',montant:0.3,pct:4.9,color:'#00BBF9'},
+  ],
+  inclusion:[
+    {source:'Subventions \u00C9tat (MFSVA)',montant:0.5,pct:35.7,color:'#E20613'},
+    {source:'Ventes boutique & ateliers',montant:0.4,pct:28.6,color:'#09BC8A'},
+    {source:'Subventions communales',montant:0.2,pct:14.3,color:'#9B5DE5'},
+    {source:'\u00C9conomie sociale & solidaire',montant:0.2,pct:14.3,color:'#F8C537'},
+    {source:'Dons & m\u00E9c\u00E9nat',montant:0.1,pct:7.1,color:'#00BBF9'},
+  ],
+  apollonia:[
+    {source:'Refacturation services groupe',montant:2.4,pct:53.3,color:'#E20613'},
+    {source:'Loyers inter-groupe',montant:1.0,pct:22.2,color:'#00479B'},
+    {source:'Subventions MFSVA (direction)',montant:0.7,pct:15.6,color:'#9B5DE5'},
+    {source:'Produits financiers & autres',montant:0.4,pct:8.9,color:'#00BBF9'},
+  ],
 };
-['marie','yolande','inclusion','apollonia'].forEach(function(id){
-  var r=KPI_DATA[id].produits/KPI_DATA.groupe.produits;
-  FINANCEMENT[id]=FINANCEMENT.groupe.map(function(f){
-    return {source:f.source,montant:+(f.montant*r).toFixed(1),pct:f.pct,color:f.color};
-  });
-});
 
 const KPIS_SOCIAL = {
   groupe:[
