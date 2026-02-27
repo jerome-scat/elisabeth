@@ -110,12 +110,12 @@ const MONTHLY_DATA = {
     {m:'Nov',budget:1140,reel:1145,n1:1075},{m:'D\u00E9c',budget:1210,reel:1200,n1:1130},
   ],
   marie:[
-    {m:'Jan',budget:1000,reel:1055,n1:955},{m:'F\u00E9v',budget:1000,reel:1050,n1:960},
-    {m:'Mar',budget:1085,reel:1140,n1:1030},{m:'Avr',budget:1085,reel:1135,n1:1040},
-    {m:'Mai',budget:1160,reel:1170,n1:1095},{m:'Jun',budget:1160,reel:1165,n1:1105},
-    {m:'Jul',budget:1075,reel:1085,n1:1010},{m:'Ao\u00FB',budget:1020,reel:1040,n1:965},
-    {m:'Sep',budget:1160,reel:1175,n1:1115},{m:'Oct',budget:1160,reel:1180,n1:1125},
-    {m:'Nov',budget:1235,reel:1245,n1:1180},{m:'D\u00E9c',budget:1300,reel:1290,n1:1220},
+    {m:'Jan',budget:1020,reel:985,n1:955},{m:'F\u00E9v',budget:1020,reel:980,n1:960},
+    {m:'Mar',budget:1095,reel:1065,n1:1030},{m:'Avr',budget:1095,reel:1060,n1:1040},
+    {m:'Mai',budget:1160,reel:1090,n1:1095},{m:'Jun',budget:1160,reel:1085,n1:1105},
+    {m:'Jul',budget:1080,reel:1010,n1:1010},{m:'Ao\u00FB',budget:1020,reel:970,n1:965},
+    {m:'Sep',budget:1160,reel:1095,n1:1115},{m:'Oct',budget:1160,reel:1100,n1:1125},
+    {m:'Nov',budget:1225,reel:1160,n1:1180},{m:'D\u00E9c',budget:1280,reel:1200,n1:1220},
   ],
 };
 ['apollonia','claire','yolande','inclusion'].forEach(function(id){
@@ -312,14 +312,14 @@ const KPIS_SOCIAL = {
 };
 
 const GRILLE_SAS = [
-  {code:'C1',intitule:'Agent d\u2019ex\u00E9cution',indice:100,salaire:2570,effectifs:85,pct:12.5},
-  {code:'C2',intitule:'Agent qualifi\u00E9',indice:130,salaire:3341,effectifs:143,pct:21.0},
-  {code:'C3',intitule:'Agent hautement qualifi\u00E9',indice:155,salaire:3983,effectifs:134,pct:19.7},
-  {code:'C4',intitule:'Technicien',indice:180,salaire:4626,effectifs:121,pct:17.8},
-  {code:'C5',intitule:'Technicien sup\u00E9rieur',indice:220,salaire:5654,effectifs:93,pct:13.7},
-  {code:'C6',intitule:'Cadre (CDG)',indice:260,salaire:6682,effectifs:62,pct:9.1},
-  {code:'C7',intitule:'Cadre sup\u00E9rieur',indice:310,salaire:7967,effectifs:31,pct:4.6},
-  {code:'C8',intitule:'Direction',indice:370,salaire:9509,effectifs:11,pct:1.6},
+  {code:'C1',intitule:'Agent d\u2019ex\u00E9cution',indice:100,salaire:2570,effectifs:135,pct:19.9},
+  {code:'C2',intitule:'Agent qualifi\u00E9',indice:130,salaire:3341,effectifs:170,pct:25.0},
+  {code:'C3',intitule:'Agent hautement qualifi\u00E9',indice:155,salaire:3983,effectifs:140,pct:20.6},
+  {code:'C4',intitule:'Technicien',indice:180,salaire:4626,effectifs:100,pct:14.7},
+  {code:'C5',intitule:'Technicien sup\u00E9rieur',indice:220,salaire:5654,effectifs:65,pct:9.6},
+  {code:'C6',intitule:'Cadre (CDG)',indice:260,salaire:6682,effectifs:42,pct:6.2},
+  {code:'C7',intitule:'Cadre sup\u00E9rieur',indice:310,salaire:7967,effectifs:20,pct:2.9},
+  {code:'C8',intitule:'Direction',indice:370,salaire:9509,effectifs:8,pct:1.1},
 ];
 const SAS_INFO = {biennale:2.0,indice:968.04,prochaine:'T3 2026 (estim\u00E9)',impact_tranche:'+2.3M\u20AC masse salariale',masse:33600};
 
@@ -1166,14 +1166,14 @@ var VueAnalytique = function(props){
   var chargesT=kd.produits-kd.excedent;
   var coutETP=kd.effectifs>0?Math.round(chargesT*1000/kd.effectifs):0;
   var prodETP=kd.effectifs>0?Math.round(kd.produits*1000/kd.effectifs):0;
-  var coutBJ=kd.benef>0?(chargesT*1000000/(kd.benef*365)):0;
+  var coutBenef=kd.benef>0?Math.round(chargesT*1000/kd.benef):0;
   var pctRHv=chData[0].v||76;
 
   var gk=KPI_DATA.groupe;
   var gCh=gk.produits-gk.excedent;
   var gCoutETP=Math.round(gCh*1000/gk.effectifs);
   var gProdETP=Math.round(gk.produits*1000/gk.effectifs);
-  var gCoutBJ=gk.benef>0?(gCh*1000000/(gk.benef*365)):0;
+  var gCoutBenef=gk.benef>0?Math.round(gCh*1000/gk.benef):0;
   var gPctRH=(CHARGES_DATA.groupe[0].v||76);
 
   // Benchmark data
@@ -1193,8 +1193,8 @@ var VueAnalytique = function(props){
      sub:'Groupe: '+fmt(gCoutETP,'k\u20AC')},
     {n:'Produit / ETP',v:fmt(prodETP,'k\u20AC'),delta:prodETP-gProdETP,u:'k\u20AC',lower:false,
      sub:'Groupe: '+fmt(gProdETP,'k\u20AC')},
-    kd.benef>0?{n:'Co\u00FBt / b\u00E9n\u00E9f. / jour',v:coutBJ.toFixed(1)+'\u20AC',delta:coutBJ-gCoutBJ,u:'\u20AC',lower:true,
-     sub:'Groupe: '+gCoutBJ.toFixed(1)+'\u20AC'}:
+    kd.benef>0?{n:'Charges / b\u00E9n\u00E9ficiaire',v:fmt(coutBenef,'k\u20AC')+'/an',delta:coutBenef-gCoutBenef,u:'k\u20AC',lower:true,
+     sub:'Groupe: '+fmt(gCoutBenef,'k\u20AC')+'/an'}:
     {n:'Taux exc\u00E9dent',v:(kd.excedent/kd.produits*100).toFixed(1)+'%',delta:(kd.excedent/kd.produits*100)-(gk.excedent/gk.produits*100),u:'pts',lower:false,
      sub:'Groupe: '+(gk.excedent/gk.produits*100).toFixed(1)+'%'},
     {n:'Ratio charges RH',v:pctRHv+'%',delta:pctRHv-gPctRH,u:'pts',lower:true,
